@@ -10,7 +10,6 @@ deploy_to_sftp_with_password:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
 
-    - ssh-keyscan -H $SFTP_HOST >> ~/.ssh/known_hosts
   script:
     - rm -rf .git
 
