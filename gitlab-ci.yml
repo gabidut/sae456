@@ -1,0 +1,24 @@
+stages:
+  - deploy
+
+deploy_to_sftp_with_password:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client sshpass
+
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+    - ssh-keyscan -H $SFTP_HOST >> ~/.ssh/known_hosts
+  script:
+    - rm -rf .git
+
+    - |
+      sshpass -p "$SFTP_PASSWORD" sftp $SFTP_USER@$SFTP_HOST <<EOF
+      cd $SFTP_TARGET_DIR
+      put -R ./*
+      bye
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
