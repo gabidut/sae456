@@ -1,10 +1,6 @@
 
 <?php
 
-/**
- * Database wrapper class using PDO.
- * Converted from procedural functions to an OO interface and English method names.
- */
 class Database {
     private $conn;
 
