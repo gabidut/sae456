@@ -1,7 +1,6 @@
 <?php
 // On appelle global.php qui va charger la session, le CSS et la navBar
 include 'global.php'; 
-include 'global.php'; 
 ?>
 <head>
     <meta charset="UTF-8">
@@ -78,6 +77,7 @@ include 'global.php';
 
     </main>
 
-    <?php include 'footer.php'; ?>
+    
 
 </body>
+<?php include 'footer.php'; ?>
