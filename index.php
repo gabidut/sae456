@@ -1,9 +1,6 @@
 <?php
-// On inclut le fichier global pour avoir accès aux fonctions de structure
-require_once 'global.php';
-
-// On appelle le header en lui passant le titre de la page en paramètre
-includeHeader("Viking Transport - Accueil");
+// On appelle global.php qui va charger la session, le CSS et la navBar
+include 'global.php'; 
 ?>
 
 <section class="hero">
@@ -18,22 +15,22 @@ includeHeader("Viking Transport - Accueil");
     <div class="services-grid">
         <div class="service-card">
             <h4>Transport Routier</h4>
-            <p>Une flotte moderne de camions pour acheminer vos marchandises partout en Europe, en toute sécurité et dans les délais.</p>
+            <p>Une flotte moderne de camions pour acheminer vos marchandises partout en Europe.</p>
         </div>
         
         <div class="service-card">
             <h4>Fret Express</h4>
-            <p>Vos livraisons urgentes gérées avec une rapidité absolue et un suivi en temps réel de votre cargaison.</p>
+            <p>Vos livraisons urgentes gérées avec une rapidité absolue.</p>
         </div>
         
         <div class="service-card">
             <h4>Logistique Lourde</h4>
-            <p>Convois exceptionnels et marchandises volumineuses. Rien n'est trop lourd pour les drakkars de notre flotte.</p>
+            <p>Convois exceptionnels. Rien n'est trop lourd pour nos drakkars.</p>
         </div>
     </div>
 </section>
 
 <?php
-// On appelle le footer pour fermer proprement la page
-includeFooter();
+// On ferme la page avec le footer
+include 'footer.php'; 
 ?>
