@@ -12,7 +12,7 @@ include 'includes/global.php';
         <form action="traitement_connexion.php" method="POST" class="login-form">
             
             <div class="form-group">
-                <label for="username">Identifiant ou Email</label>
+                <label for="username">Email</label>
                 <input type="text" id="username" name="username" placeholder="Ex: Porcq.tourDeFrance" required>
             </div>
 
