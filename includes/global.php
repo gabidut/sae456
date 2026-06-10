@@ -21,6 +21,7 @@ $authentificator = new Authentificator(
     $session
 );
 
+include __DIR__ . '/../includes/navBar.php';
 // Démarrage du HTML commun
 ?>
 <!DOCTYPE html>
@@ -29,7 +30,7 @@ $authentificator = new Authentificator(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Viking Transport</title>
-    <link rel="stylesheet" href="assets/style/global.css">
+    <link rel="stylesheet" href="/assets/style/global.css">
 </head>
 <body>
 
