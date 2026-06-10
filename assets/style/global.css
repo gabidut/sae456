@@ -327,8 +327,7 @@ footer p span {
     background-color: var(--surface-color);
     border-bottom: 3px solid var(--accent-color);
     padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
+    position: relative; /* Changé de sticky à relative pour éviter les chevauchements */
     z-index: 1000;
 }
 
@@ -431,6 +430,70 @@ footer p span {
 .btn-contact:hover {
     background-color: var(--accent-hover);
     transform: translateY(-2px);
+}
+
+/* ==========================================
+   RESPONSIVE HEADER & NAVIGATION
+   ========================================== */
+@media (max-width: 992px) {
+    .main-header {
+        padding: 1.5rem 1rem;
+    }
+
+    .header-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        height: auto;
+        align-items: center;
+    }
+
+    .header-left {
+        display: none;
+    }
+
+    .header-center {
+        position: static;
+        transform: none;
+        text-align: center;
+        width: 100%;
+    }
+
+    .main-title {
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-right {
+        width: 100%;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .navBar .nav-links {
+        flex-direction: row; /* Aligné horizontalement */
+        flex-wrap: wrap; /* Permet de passer à la ligne si besoin */
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .navBar .nav-links a {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-title {
+        font-size: 1.8rem;
+    }
 }
 
 /* code CSS de la page "À propos" */
