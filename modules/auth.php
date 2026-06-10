@@ -97,6 +97,41 @@ class Authentificator
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newmdp' => $this->hash_password($newmdp)]);
     }
+
+    public function changeMail($num_utilisateur, $newmail)
+    {
+        $sql = "update vik_client set cli_courriel = :newmail where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'newmail' => $this->hash_password($newmail)]);
+    }
+
+    public function changeNom($num_utilisateur, $newNom)
+    {
+        $sql = "update vik_client set cli_nom = :newNom where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'newNom' => $this->hash_password($newNom)]);
+    }
+
+    public function changePrenom($num_utilisateur, $newPrenom)
+    {
+        $sql = "update vik_client set cli_prenom = :newPrenom where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'newPrenom' => $this->hash_password($newPrenom)]);
+    }
+
+    public function updatePointTot($num_utilisateur, $point)
+    {
+        $sql = "update vik_client set cli_nb_points_tot = :point where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'point' => $this->hash_password($point)]);
+    }
+
+    public function updatePointEC($num_utilisateur, $point)
+    {
+        $sql = "update vik_client set cli_nb_points_ec = :point where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'point' => $this->hash_password($point)]);
+    }
 }
 
 class AuthExeption extends Exception
