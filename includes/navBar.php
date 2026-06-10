@@ -40,7 +40,6 @@ function is_active($page, $dir = '') {
                     <li><a href="/reservation" class="<?php echo ($current_dir == 'reservation') ? 'active' : ''; ?>">Réservation</a></li>
                     <li><a href="/carte.php" class="<?php echo ($current_page == 'carte.php') ? 'active' : ''; ?>">Réseau</a></li>
                     <li><a href="/lignes" class="<?php echo ($current_dir == 'lignes') ? 'active' : ''; ?>">Lignes</a></li>
-                    <li><a href="/contact" class="<?php echo ($current_dir == 'contact') ? 'active' : ''; ?>">Contact</a></li>
                 </ul>
             </nav>
             <div class="header-actions">
