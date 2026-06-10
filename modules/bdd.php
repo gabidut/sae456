@@ -75,11 +75,18 @@ class Database
         return $stmt->execute(['dep' => $dep, 'ville' => $ville, 'nom' => $nom, 'prenom' => $prenom, 'mdp' => $mdp, 'mail' => $mail, 'tel' => $tel]);
     }
 
-    public function updateConnexionDate($num)
+    public function updateConnexionDate($num_utilisateur)
     {
         $sql = "update vik_client set cli_date_connec = sysdate where cli_num = :num";
         $stmt = $this->prepareStatement($sql);
-        return $stmt->execute(['num' => $num]);
+        return $stmt->execute(['num' => $num_utilisateur]);
+    }
+
+    public function changePassword($num_utilisateur, $newmdp)
+    {
+        $sql = "update vik_client set cli_mdp = :newmdp where cli_num = :num";
+        $stmt = $this->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'newmdp' => $newmdp]);
     }
 
     public function getTripsAndTimesSameLine($codeInseeDepart, $codeInseeArrivee)
