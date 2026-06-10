@@ -2,6 +2,7 @@
 require __DIR__ . '/session.php';
 require __DIR__ . '/../modules/bdd.php';
 require __DIR__ . '/../modules/auth.php';
+require __DIR__ . '/../modules/ligne.php';
 
 $env = require_once __DIR__ . '/../env.php';
 
@@ -14,6 +15,10 @@ $database = new Database(
 $authentificator = new Authentificator(
     $database,
     $env['password_secret']
+);
+
+$ligneManager = new Ligne(
+    $database,
 );
 
 include_once 'footer.php';
