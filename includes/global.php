@@ -2,6 +2,7 @@
 require __DIR__ . '/session.php';
 require __DIR__ . '/../modules/bdd.php';
 require __DIR__ . '/../modules/auth.php';
+require __DIR__ . '/../modules/ligne.php';
 
 $env = require_once __DIR__ . '/../env.php';
 
