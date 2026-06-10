@@ -1,9 +1,23 @@
 <?php
-include_once 'session.php';
-include_once 'footer.php';
-include_once 'navBar.php'; // On inclut ton nouveau fichier ici
+require __DIR__ . '/session.php';
+require __DIR__ . '/../modules/bdd.php';
+require __DIR__ . '/../modules/auth.php';
 
-// Démarrage du HTML commun
+$env = require_once __DIR__ . '/../env.php';
+
+$database = new Database(
+    $env['db_oracle'],
+    $env['db_username'],
+    $env['db_password']
+);
+
+$authentificator = new Authentificator(
+    $database,
+    $env['password_secret']
+);
+
+include_once 'footer.php';
+include_once 'navBar.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
