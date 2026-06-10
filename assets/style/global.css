@@ -360,8 +360,12 @@ footer p span {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 1;
-    pointer-events: none; /* Évite de bloquer les clics autour du titre */
+    z-index: 3;
+}
+
+.header-center a {
+    text-decoration: none;
+    display: block;
 }
 
 .main-title {
@@ -371,7 +375,7 @@ footer p span {
     font-weight: 800;
     color: var(--text-main);
     margin: 0;
-    white-space: nowrap; /* Empêche le titre de se couper sur deux lignes */
+    white-space: nowrap;
 }
 
 .main-title span {
