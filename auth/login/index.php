@@ -39,7 +39,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 
         <div class="login-footer-links">
             <a href="#">Mot de passe oublié ?</a>
-            <p>Pas encore de compte ? <a href="register.php">Créer un compte</a></p>
+            <p>Pas encore de compte ? <a href="../register/">Créer un compte</a></p>
         </div>
     </div>
 </div>

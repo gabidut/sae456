@@ -518,7 +518,7 @@ footer p span {
         .team-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            border-color: #3b82f6; /* Lueur bleue au survol */
+            border-color: #ff0000; /* Lueur bleue au survol */
         }
 
         /* Photo du membre */
@@ -528,7 +528,7 @@ footer p span {
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 15px;
-            border: 3px solid #3b82f6;
+            border: 3px solid #ff00009f;
         }
 
         .member-name {
@@ -674,7 +674,7 @@ hr {
 .button-dir:hover {
     background-color: #2e2e36;
     color: #ffffff;
-    border-color: #3b82f6; /* Lueur bleue au survol */
+    border-color: #f63b3b; /* Lueur bleue au survol */
     transform: translateY(-2px);
 }
 
@@ -744,7 +744,7 @@ tbody tr:hover {
 td:not(:first-child) {
     text-align: center;
     font-weight: 500;
-    color: #3b82f6; /* Met en valeur les horaires avec la couleur bleue */
+    color: #ff5454; /* Met en valeur les horaires avec la couleur bleue */
     background-color: rgba(59, 130, 246, 0.03); /* Léger fond bleuté */
 }
 
