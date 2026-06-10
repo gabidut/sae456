@@ -74,7 +74,7 @@ class Authentificator
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('1',:dep,:nom,:prenom,:ville,:tel,:mail,'0','0',sysdate,:mdp)";
+        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,:nom,:prenom,:ville,:tel,:mail,'0','0',sysdate,:mdp)";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['dep' => $dep, 'ville' => $ville, 'nom' => $nom, 'prenom' => $prenom, 'mdp' => $mdp, 'mail' => $mail, 'tel' => $tel]);
     }
@@ -131,6 +131,42 @@ class Authentificator
         $sql = "update vik_client set cli_nb_points_ec = :point where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'point' => $this->hash_password($point)]);
+    }
+
+    public function ajoutPointApresResa($num_utilisateur, $nbkilometre)
+    {
+        $nbpoints = floor($nbkilometre) / 10;
+
+        $sqlPoints = "UPDATE vik_client SET cli_nb_points_ec = cli_nb_points_ec + :nbpoints, cli_nb_points_tot = cli_nb_points_tot + :nbpoints WHERE cli_num = :num";
+
+        $stmtPoints = $this->database->prepareStatement($sqlPoints);
+        $success = $stmtPoints->execute(['num' => $num_utilisateur, 'nbpoints' => $nbpoints]);
+
+        if (!$success) {
+            return false;
+        }
+
+        $sqlGetTotal = "SELECT cli_nb_points_tot FROM vik_client WHERE cli_num = :num";
+        $stmtGetTotal = $this->database->prepareStatement($sqlGetTotal);
+        $stmtGetTotal->execute(['num' => $num_utilisateur]);
+        $client = $stmtGetTotal->fetch();
+
+        $newTotalPoints = $client['cli_nb_points_tot'];
+        
+        $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points <= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE ASC";
+        $stmtGetTier = $this->database->prepareStatement($sqlGetTier);
+        $stmtGetTier->execute(['points' => $newTotalPoints]);
+        $tier = $stmtGetTier->fetch();
+
+        if ($tier) {
+            $newType = $tier['TYP_NUM'];
+        } else {
+            $newType = 5;
+        }
+        $sqlUpgrade = "UPDATE vik_client SET typ_num = :newType WHERE cli_num = :num";
+        $stmtUpgrade = $this->database->prepareStatement($sqlUpgrade);
+
+        return $stmtUpgrade->execute(['newType' => $newType, 'num' => $num_utilisateur]);
     }
 }
 
