@@ -2,6 +2,7 @@
 require __DIR__ . '/session.php';
 require __DIR__ . '/../modules/bdd.php';
 require __DIR__ . '/../modules/auth.php';
+require __DIR__ . '/../modules/ligne.php';
 
 $env = require_once __DIR__ . '/../env.php';
 
@@ -15,6 +16,13 @@ $authentificator = new Authentificator(
         $database,
         $env['password_secret']
 );
+
+$ligneManager = new Ligne(
+        $database
+);
+
+include_once 'footer.php';
+include_once 'navBar.php';
 
 include_once 'navBar.php'; // On inclut ton nouveau fichier ici
 
@@ -32,3 +40,4 @@ include_once 'navBar.php'; // On inclut ton nouveau fichier ici
 
 
     <main>
+
