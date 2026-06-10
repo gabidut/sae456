@@ -97,3 +97,6 @@ if(isset($_GET['direction']))
 </div>
 </body>
 </html>
+<?php
+require '../includes/footer.php';
+?>
