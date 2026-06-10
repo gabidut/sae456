@@ -1,5 +1,7 @@
-
-<html lang="fr">
+<?php
+// On appelle global.php qui va charger la session, le CSS et la navBar
+include 'includes/global.php'; 
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,8 +31,8 @@
             <div class="team-grid">
                 
                 <div class="team-card">
-                    <img src="chemin/vers/photo1.jpg" alt="Photo de Membre 1" class="member-photo">
-                    <p class="member-name">Victorien GAIGNE</p>
+                    <img src="image/elias.png" alt="Photo de Membre 1" class="member-photo">
+                    <p class="member-name">Elias ALLIGNE</p>
                     <p class="member-role">Fondateur & Dev Back-End</p>
                 </div>
 
@@ -78,4 +80,7 @@
     <?php include 'footer.php'; ?>
 
 </body>
-</html>
+<?php
+// On ferme la page avec le footer
+require 'includes/footer.php'; 
+?>
