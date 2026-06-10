@@ -32,5 +32,5 @@ include 'includes/global.php';
 
 <?php
 // On ferme la page avec le footer
-include 'footer.php'; 
+require 'includes/footer.php'; 
 ?>
