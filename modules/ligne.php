@@ -26,7 +26,6 @@ class Ligne
         return $result;
     }
 
-    // Ajoute cette fonction dans ta classe Ligne, juste en dessous de getLignes()
     public function getDirections($numeroDeLigne) {
         $sql = "SELECT LIG_NUM 
                 FROM VIK_LIGNE 
@@ -37,6 +36,21 @@ class Ligne
         $stmt->execute(['numero' => $numeroDeLigne]);
         
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    public function getHoraire($numeroDeLigne) {
+
+        $sql = "SELECT c.COM_NOM AS VILLE_ARRET, TO_CHAR(n.NOE_HEURE_PASSAGE, 'HH24:MI') AS HEURE_PASSAGE
+            FROM VIK_NOEUD n
+            JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_ARRET = c.COM_CODE_INSEE
+            
+            WHERE TRIM(UPPER(n.LIG_NUM)) = TRIM(UPPER(:direction))
+            ORDER BY n.NOE_HEURE_PASSAGE ASC";
+
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['direction' => $numeroDeLigne]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 }
