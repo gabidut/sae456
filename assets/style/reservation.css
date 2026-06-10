@@ -1,0 +1,151 @@
+/* ==========================================
+   PAGE RÉSERVATION (DÉDIÉ)
+   ========================================== */
+
+/* Section Hero avec image de fond unique - Prend tout l'espace disponible */
+.reservation-hero {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 80px - 150px);
+    background-image: url('/image/fond.jpg');
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+/* Effet de flou léger sur l'ensemble du fond */
+.reservation-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    filter: blur(2px); /* Flou réduit */
+    transform: scale(1.05); /* Évite les bords blancs */
+    z-index: 1;
+}
+
+/* On n'utilise plus ces éléments séparés */
+.hero-bg-top, .hero-bg-bottom {
+    display: none;
+}
+
+/* Barre de recherche (z-index supérieur au pseudo-élément de flou) */
+.search-bar-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 98%;
+    max-width: 1300px;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 10px 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.search-form-horizontal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.input-group label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #bbb;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding-left: 5px;
+}
+
+.input-group input {
+    border: none;
+    padding: 5px;
+    font-size: 1rem;
+    color: #333;
+    width: 100%;
+    background: transparent;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.input-group input:focus {
+    outline: none;
+}
+
+.divider {
+    width: 1px;
+    height: 35px; /* Plus petit */
+    background-color: #eee;
+    margin: 0 5px;
+}
+
+.btn-search {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 12px 30px; /* Moins haut */
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-search:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+/* Résultats */
+.results-section {
+    padding: 80px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.results-section h3 {
+    margin-bottom: 40px;
+    font-size: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .search-form-horizontal {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .divider {
+        display: none;
+    }
+    .search-bar-container {
+        position: relative;
+        top: 0;
+        left: 0;
+        transform: none;
+        width: 95%;
+        margin: -100px auto 40px auto;
+    }
+    .reservation-hero {
+        height: 300px;
+    }
+}
