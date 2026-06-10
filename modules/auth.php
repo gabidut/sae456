@@ -21,8 +21,9 @@ class Authentificator
     public function processAuth($email, $password): array
     {
         $user = $this->getClientFromMail($email);
+        var_dump($user);
         if (empty($user)) {
-            throw new AuthExeption("Invalid email or password");
+            throw new AuthExeption("Invalid email or password 1");
         } else {
             if ($this->verify_password($password, $user['CLI_MDP'])) {
                 echo "Password verified";
@@ -32,7 +33,7 @@ class Authentificator
             }
         }
 
-        throw new AuthExeption("Invalid email or password");
+        throw new AuthExeption("Invalid email or password 2");
     }
     public function logout()
     {
@@ -57,10 +58,11 @@ class Authentificator
         $sql = 'SELECT * FROM vik_client WHERE CLI_COURRIEL = :email';
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['email' => $email]);
-        if ($stmt->rowCount() === 0) {
-            return [];
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (count($result) > 0) {
+            return $result[0];
         }
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return [];
     }
     /**
      * @param string $dep
