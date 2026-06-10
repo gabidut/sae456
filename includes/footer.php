@@ -2,7 +2,7 @@
     <div class="footer-container">
         
         <div class="footer-brand">
-            <img src="logo.png" alt="Les Casseurs Codeurs" class="footer-logo">
+            <img src="image/car_vikingTransport.png" alt="Les Casseurs Codeurs" class="footer-logo">
         </div>
 
         <div class="footer-nav">
