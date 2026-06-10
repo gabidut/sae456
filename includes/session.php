@@ -7,9 +7,9 @@ session_start();
  * @return void
  */
 function page_requirements(
-    $require_auth = false
-) {
-    if(!$_SESSION['user'] && $require_auth) {
+    bool $require_auth = false
+): void {
+    if (!$_SESSION['user'] && $require_auth) {
         header('Location: /login.php');
         exit();
     }
