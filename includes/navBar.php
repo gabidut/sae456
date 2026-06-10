@@ -1,5 +1,5 @@
 <?php
-$current_page = basename($_SERVER['PHP_SELF']);
+include 'includes/global.php'; 
 ?>
 
 <header class="main-header">
@@ -33,7 +33,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </ul>
             </nav>
             <div class="header-actions">
-                <a href="connexion.php" class="btn-contact">Connexion</a>
+                <a href="login.php" class="btn-contact">Connexion</a>
             </div>
         </div>
 
