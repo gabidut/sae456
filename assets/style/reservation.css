@@ -10,23 +10,16 @@
     flex-direction: column;
     min-height: calc(100vh - 80px - 150px);
     background-image: url('/image/fond.jpg');
-    background-size: cover;
+    background-size: 100%; /* Dézoomé : l'image s'adapte à la largeur */
+    background-repeat: no-repeat;
+    background-color: #121212; /* Fond de secours si l'image ne couvre pas tout en hauteur */
     background-position: center;
     overflow: hidden;
 }
 
-/* Effet de flou léger sur l'ensemble du fond */
+/* On n'utilise plus d'effet de flou */
 .reservation-hero::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: inherit;
-    filter: blur(2px); /* Flou réduit */
-    transform: scale(1.05); /* Évite les bords blancs */
-    z-index: 1;
+    display: none;
 }
 
 /* On n'utilise plus ces éléments séparés */
