@@ -12,9 +12,14 @@ $database = new Database(
         $env['db_password']
 );
 
+$session = new SessionHelper(
+    $database,
+);
+
 $authentificator = new Authentificator(
         $database,
-        $env['password_secret']
+        $env['password_secret'],
+    $session
 );
 
 $ligneManager = new Ligne(
@@ -23,8 +28,7 @@ $ligneManager = new Ligne(
 
 include_once 'navBar.php';
 
-include_once 'navBar.php'; // On inclut ton nouveau fichier ici
-
+include __DIR__ . '/../includes/navBar.php';
 // Démarrage du HTML commun
 ?>
 <!DOCTYPE html>
@@ -33,10 +37,10 @@ include_once 'navBar.php'; // On inclut ton nouveau fichier ici
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Viking Transport</title>
-    <link rel="stylesheet" href="assets/style/global.css">
+    <link rel="stylesheet" href="/assets/style/global.css">
 </head>
 <body>
 
 
-    <main>
-
+    <main> 
+>>>>>>>>> Temporary merge branch 2
