@@ -1,7 +1,7 @@
 <?php
 
 
-require_once './includes/global.php';
+require_once '../includes/global.php';
 
 $lignes = $ligneManager->getLignes();
 
