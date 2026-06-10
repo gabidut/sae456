@@ -354,17 +354,14 @@ footer p span {
     display: block;
 }
 
+/* Zone Centrale : TITRE ANCRÉ ET CENTRÉ PILE AU MILIEU */
 .header-center {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 3;
-}
-
-.header-center a {
-    text-decoration: none;
-    display: block;
+    z-index: 1;
+    pointer-events: none; /* Évite de bloquer les clics autour du titre */
 }
 
 .main-title {
@@ -374,21 +371,23 @@ footer p span {
     font-weight: 800;
     color: var(--text-main);
     margin: 0;
-    white-space: nowrap;
+    white-space: nowrap; /* Empêche le titre de se couper sur deux lignes */
 }
 
 .main-title span {
     color: var(--accent-color);
 }
 
+/* Zone Droite : Liens + bouton */
 .header-right {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: 2rem;
-    z-index: 2; 
+    z-index: 2; /* Reste au-dessus du titre pour pouvoir cliquer sur les liens */
 }
 
+/* La navBar (B majuscule) */
 .navBar .nav-links {
     display: flex;
     list-style: none;

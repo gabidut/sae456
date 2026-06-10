@@ -1,6 +1,6 @@
 <?php
 // On appelle global.php qui va charger la session, le CSS et la navBar
-include 'includes/global.php'; 
+include 'global.php'; 
 ?>
 <head>
     <meta charset="UTF-8">
@@ -63,7 +63,7 @@ include 'includes/global.php';
                 <div class="team-card">
                     <img src="chemin/vers/photo6.jpg" alt="Photo de Membre 6" class="member-photo">
                     <p class="member-name">Gabriel DUTEURTRE</p>
-                    <p class="member-role">Développeuse Fullstack</p>
+                    <p class="member-role">Père fondateur de l'équipe</p>
                 </div>
 
                 <div class="team-card">
@@ -77,10 +77,7 @@ include 'includes/global.php';
 
     </main>
 
-    <?php include 'footer.php'; ?>
+    
 
 </body>
-<?php
-// On ferme la page avec le footer
-require 'includes/footer.php'; 
-?>
+<?php include 'footer.php'; ?>
