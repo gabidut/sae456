@@ -455,7 +455,7 @@ footer p span {
         }
 
         .about-logo {
-            max-height: 120px; /* Ajuste selon la taille de ton logo */
+            max-height: 80px; /* Ajuste selon la taille de ton logo */
             width: auto;
             margin-bottom: 15px;
         }
