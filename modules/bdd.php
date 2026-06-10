@@ -33,19 +33,26 @@ class Database {
     }
 
     public function listLines() {
-        $cur = $this->conn->query("SELECT * FROM sae.vik_ligne");
+        $cur = $this->conn->query("SELECT * FROM vik_ligne");
         return $cur->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getClientReservationHistory($cliNum) {
-        $sql = "SELECT * FROM sae.vik_reservation JOIN sae.vik_client USING (cli_num) WHERE cli_num = :num";
+        $sql = "SELECT * FROM vik_reservation JOIN vik_client USING (cli_num) WHERE cli_num = :num";
         $stmt = $this->prepareStatement($sql);
         $stmt->execute(['num' => $cliNum]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getClientFromMail($email): object {
+        $sql = 'SELET * FROM vik_client WHERE CLI_COURRIEL = :mail';
+        $stmt = $this->prepareStatement($sql);
+        $stmt->execute(['email'=> $email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getClientInfo($cliNum) {
-        $sql = "SELECT * FROM sae.vik_client WHERE cli_num = :num";
+        $sql = "SELECT * FROM vik_client WHERE cli_num = :num";
         $stmt = $this->prepareStatement($sql);
         $stmt->execute(['num' => $cliNum]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -55,7 +62,7 @@ class Database {
         $sql = "SELECT LIG_NUM, 
                        TO_CHAR(ETA_HEURE, 'DD/MM/YYYY HH24:MI:SS') AS heure_depart,
                        ETA_DISTANCE AS distance
-                FROM sae.VIK_ETAPE
+                FROM VIK_ETAPE
                 WHERE COM_CODE_INSEE_DEPART = :depart 
                   AND COM_CODE_INSEE_ARRIVEE = :arrivee
                 ORDER BY ETA_HEURE ASC";
@@ -69,7 +76,7 @@ class Database {
         $sql = "SELECT LIG_NUM, 
                        ETA_DISTANCE,
                        TO_CHAR(ETA_HEURE, 'DD/MM/YYYY HH24:MI:SS') AS heure_voyage
-                FROM sae.VIK_ETAPE
+                FROM VIK_ETAPE
                 WHERE COM_CODE_INSEE_DEPART = :depart 
                   AND COM_CODE_INSEE_ARRIVEE = :arrivee
                 ORDER BY ETA_DISTANCE ASC
@@ -84,7 +91,7 @@ class Database {
         $sql = "SELECT LIG_NUM, 
                        TO_CHAR(ETA_HEURE, 'DD/MM/YYYY HH24:MI:SS') AS heure_voyage,
                        ETA_DISTANCE
-                FROM sae.VIK_ETAPE
+                FROM VIK_ETAPE
                 WHERE COM_CODE_INSEE_DEPART = :depart 
                   AND COM_CODE_INSEE_ARRIVEE = :arrivee
                 ORDER BY ETA_HEURE ASC
@@ -96,12 +103,12 @@ class Database {
     }
 
     public function listLineSchedules() {
-        $cur = $this->conn->query("SELECT * FROM sae.vik_ligne");
+        $cur = $this->conn->query("SELECT * FROM vik_ligne");
         return $cur->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function isUserAllowed($email, $password) {
-        $sql = "SELECT * FROM sae.vik_client WHERE cli_mail = :email AND cli_password = :password";
+        $sql = "SELECT * FROM vik_client WHERE cli_mail = :email AND cli_password = :password";
         $stmt = $this->prepareStatement($sql);
         $stmt->execute(['email' => $email, 'password' => $password]);
         $client = $stmt->fetch(PDO::FETCH_ASSOC);
