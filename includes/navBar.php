@@ -1,5 +1,4 @@
 <?php
-// Détecte automatiquement la page actuelle pour appliquer le style "actif"
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -13,7 +12,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <div class="header-center">
+            <a href="index.php">
             <h1 class="main-title">Viking<span>Transport</span></h1>
+            </a>
         </div>
 
         <button class="burger-menu" id="burger" aria-label="Ouvrir le menu">
