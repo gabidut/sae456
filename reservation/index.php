@@ -2,7 +2,8 @@
 include '../includes/global.php';
 
 // Récupération des villes
-$villes = $database->listCities();
+$villes = $reservationManager->listCities();
+$lignes = $ligneManager->getLignes();
 ?>
 
 <!-- Style spécifique à la page de réservation -->
@@ -14,6 +15,13 @@ $villes = $database->listCities();
     
     <div class="search-bar-container">
         <form action="index.php" method="GET" class="search-form-horizontal">
+
+            <div class="input-group">
+                <label for="ligne">Ligne</label>
+                <input list="lignes-list" name="ligne" id="ligne" placeholder="Sélectionnez une ligne" required autocomplete="off">
+            </div>
+            
+            <div class="divider"></div>
             <div class="input-group">
                 <label for="depart">Départ</label>
                 <input list="villes-list" name="depart" id="depart" placeholder="D'où partez-vous ?" required autocomplete="off">
@@ -28,11 +36,6 @@ $villes = $database->listCities();
             
             <div class="divider"></div>
             
-            <div class="input-group">
-                <label for="date_voyage">Date du voyage</label>
-                <input type="date" name="date_voyage" id="date_voyage" value="<?php echo date('Y-m-d'); ?>" required>
-            </div>
-            
             <button type="submit" class="btn-search">Rechercher</button>
         </form>
     </div>
@@ -40,19 +43,22 @@ $villes = $database->listCities();
 
 <datalist id="villes-list">
     <?php foreach ($villes as $ville) : ?>
-        <option value="<?php echo htmlspecialchars($ville['COM_NOM']); ?>">
+        <option value="<?php echo htmlspecialchars($ville['COM_NOM']); ?>"/>
     <?php endforeach; ?>
 </datalist>
 
+<datalist id="lignes-list">
+    <?php foreach ($lignes as $ligne) : ?>
+        <option value="<?php echo htmlspecialchars($ligne['LIG_NUM']); ?>"/>
+    <?php endforeach; ?>
+</datalist>
 <?php
 // Affichage des résultats
 if (isset($_GET['depart']) && isset($_GET['arrivee'])) {
     $depart = $_GET['depart'];
     $arrivee = $_GET['arrivee'];
-    $date = $_GET['date_voyage'];
     
     echo '<section class="results-section">';
-    echo '<h3>Trajets disponibles le ' . date('d/m/Y', strtotime($date)) . '</h3>';
     echo '<p style="color: var(--text-muted);">Aucun trajet trouvé entre <strong>' . htmlspecialchars($depart) . '</strong> et <strong>' . htmlspecialchars($arrivee) . '</strong> pour le moment.</p>';
     echo '</section>';
 }

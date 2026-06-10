@@ -104,13 +104,6 @@ class Database
         $cur = $this->conn->query("SELECT * FROM vik_ligne");
         return $cur->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function listCities() {
-        $sql = "SELECT DISTINCT COM_NOM FROM vik_commune ORDER BY COM_NOM ASC";
-        $stmt = $this->conn->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function isUserAllowed($email, $password)
     {
         $sql = "SELECT * FROM vik_client WHERE cli_mail = :email AND cli_password = :password";
