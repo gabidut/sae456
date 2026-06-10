@@ -215,18 +215,15 @@ footer p span {
         font-family: Arial, sans-serif;
     }
 
-    /* ==========================================
+/* ==========================================
    BARRE DE NAVIGATION & HEADER (navBar)
    ========================================== */
 
 .main-header {
     background-color: var(--surface-color);
     border-bottom: 3px solid var(--accent-color);
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky; /* Reste fixé en haut de la page au défilement */
+    padding: 0.8rem 2rem;
+    position: sticky;
     top: 0;
     z-index: 1000;
 }
@@ -236,28 +233,57 @@ footer p span {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px; /* Élargi pour laisser de la place au titre centré */
     margin: 0 auto;
 }
 
-.logo a {
-    font-size: 1.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: bold;
-    color: var(--text-main);
-    text-decoration: none;
+/* Zone Gauche : Alignement de l'image */
+.header-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 
-.logo span {
+.header-logo-img {
+    height: 50px; /* Ajuste la hauteur de ton image selon tes besoins */
+    width: auto;
+    display: block;
+}
+
+/* Zone Centrale : Grand titre parfaitement centré */
+.header-center {
+    flex: 2;
+    text-align: center;
+}
+
+.main-title {
+    font-size: 2.6rem; /* Titre écrit beaucoup plus gros */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.main-title span {
     color: var(--accent-color);
 }
 
-/* Ciblage de la navBar avec le B majuscule */
+/* Zone Droite : Regroupe les liens et le bouton */
+.header-right {
+    flex: 2;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* La navBar (B majuscule) */
 .navBar .nav-links {
     display: flex;
     list-style: none;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .navBar .nav-links a {
@@ -270,24 +296,24 @@ footer p span {
     padding: 5px 0;
 }
 
-/* Effet au survol et gestion du lien actif (Page courante) */
 .navBar .nav-links a:hover, 
 .navBar .nav-links a.active {
     color: var(--accent-color);
 }
 
-/* Bouton Connexion / Action à droite */
+/* Bouton Action / Connexion */
 .btn-contact {
     display: inline-block;
     background-color: var(--accent-color);
     color: var(--text-main);
-    padding: 0.6rem 1.5rem;
+    padding: 0.6rem 1.3rem;
     text-decoration: none;
     font-weight: bold;
     text-transform: uppercase;
     border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: background-color 0.3s, transform 0.2s;
+    white-space: nowrap;
 }
 
 .btn-contact:hover {
@@ -295,14 +321,25 @@ footer p span {
     transform: translateY(-2px);
 }
 
-/* Version Mobile / Responsive du Header */
-@media (max-width: 768px) {
-    .main-header .header-container {
+/* Version Mobile / Responsive */
+@media (max-width: 992px) {
+    .header-container {
         flex-direction: column;
         gap: 1rem;
     }
     
-    .navBar .nav-links {
+    .header-left, .header-center, .header-right {
+        flex: none;
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .header-right {
+        flex-direction: column;
         gap: 1rem;
+    }
+
+    .main-title {
+        font-size: 2rem;
     }
 }
