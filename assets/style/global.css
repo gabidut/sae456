@@ -283,14 +283,14 @@ main {
     left: 33.33%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 3;
+    z-index: 10;
+    pointer-events: none;
 }
 
 .header-center a {
     text-decoration: none;
-    display: block;
-    z-index: 1;
-    pointer-events: none; /* Évite de bloquer les clics autour du titre */
+    display: inline-block;
+    pointer-events: auto; /* Évite de bloquer les clics autour du titre */
 }
 
 .main-title {

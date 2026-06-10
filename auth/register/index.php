@@ -26,7 +26,7 @@ include '../../includes/global.php';
 
                     <div class="form-group">
                         <label for="phone">Numéro de téléphone</label>
-                        <input type="tel" id="phone" name="phone" placeholder="Ex: 07 80 39 44 67" required>
+                        <input type="tel" id="phone" name="phone" placeholder="Ex: 06 20 74 58 80" required>
                     </div>
                 </div>
 
