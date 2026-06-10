@@ -3,6 +3,7 @@ require __DIR__ . '/session.php';
 require __DIR__ . '/../modules/bdd.php';
 require __DIR__ . '/../modules/auth.php';
 require __DIR__ . '/../modules/ligne.php';
+require __DIR__ . '/../modules/reservation.php';
 
 $env = require_once __DIR__ . '/../env.php';
 
@@ -23,6 +24,7 @@ $authentificator = new Authentificator(
 );
 
 $ligneManager = new Ligne($database);
+$reservationManager = new Reservation($database);
 
 
 include __DIR__ . '/../includes/navBar.php';
