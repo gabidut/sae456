@@ -4,7 +4,7 @@ include 'includes/global.php';
 
 <link rel="stylesheet" href="assets/style/login_register.css">
 
-<main class="login-main">
+<div class="login-main">
     <div class="login-container">
         <h2>Connexion <span>Viking</span></h2>
         <p class="login-subtitle">Accédez à votre espace utilisateur</p>
@@ -26,10 +26,10 @@ include 'includes/global.php';
 
         <div class="login-footer-links">
             <a href="#">Mot de passe oublié ?</a>
-            <p>Pas encore de compte ? <a href="Register.php">Créer un compte</a></p>
+            <p>Pas encore de compte ? <a href="register.php">Créer un compte</a></p>
         </div>
     </div>
-</main>
+</div>
 
 <?php
 require 'includes/footer.php'; 
