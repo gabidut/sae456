@@ -51,7 +51,7 @@ class SessionHelper
     
     public function getClientInfoFromId($cliNum)
     {
-        $sql = "SELECT cli_nom,cli_prenom,cli_courriel,cli_telephone,cli_ville,cli_nb_points_ec,type_nom FROM vik_client  join vik_type_client USING (typ_num) WHERE cli_num = :num";
+        $sql = "SELECT cli_nom,cli_prenom,cli_courriel,cli_telephone,cli_ville,cli_nb_points_ec,typ_nom FROM vik_client JOIN vik_type_client USING (typ_num) WHERE cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['num' => $cliNum]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
