@@ -121,6 +121,13 @@ class Authentificator
         return $stmt->execute(['num' => $num_utilisateur, 'newPrenom' => $this->hash_password($newPrenom)]);
     }
 
+    public function changeTel($num_utilisateur, $newTel)
+    {
+        $sql = "update vik_client set cli_telephone = :newTel where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'newTel' => $this->hash_password($newTel)]);
+    }
+
     public function updatePointTot($num_utilisateur, $point)
     {
         $sql = "update vik_client set cli_nb_points_tot = :point where cli_num = :num";
