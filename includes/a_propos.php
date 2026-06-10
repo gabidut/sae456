@@ -38,37 +38,37 @@ include 'includes/global.php';
 
                 <div class="team-card">
                     <img src="chemin/vers/photo2.jpg" alt="Photo de Membre 2" class="member-photo">
-                    <p class="member-name">Alice Martin</p>
+                    <p class="member-name">Kevin ERNAULT</p>
                     <p class="member-role">Co-fondatrice & UI/UX Designer</p>
                 </div>
 
                 <div class="team-card">
-                    <img src="chemin/vers/photo3.jpg" alt="Photo de Membre 3" class="member-photo">
-                    <p class="member-name">Marc Durand</p>
+                    <img src="image/armand.jpg" alt="Photo de Membre 3" class="member-photo">
+                    <p class="member-name">Armand PIVERT</p>
                     <p class="member-role">Développeur Front-End</p>
                 </div>
 
                 <div class="team-card">
                     <img src="chemin/vers/photo4.jpg" alt="Photo de Membre 4" class="member-photo">
-                    <p class="member-name">Chloé Bernard</p>
+                    <p class="member-name">Victorien GAIGNE</p>
                     <p class="member-role">Chef de Projet</p>
                 </div>
 
                 <div class="team-card">
                     <img src="chemin/vers/photo5.jpg" alt="Photo de Membre 5" class="member-photo">
-                    <p class="member-name">Thomas Petit</p>
+                    <p class="member-name">Victor ANGER--RENAULT</p>
                     <p class="member-role">Expert DevOps</p>
                 </div>
 
                 <div class="team-card">
                     <img src="chemin/vers/photo6.jpg" alt="Photo de Membre 6" class="member-photo">
-                    <p class="member-name">Sarah Moreau</p>
+                    <p class="member-name">Gabriel DUTEURTRE</p>
                     <p class="member-role">Développeuse Fullstack</p>
                 </div>
 
                 <div class="team-card">
                     <img src="chemin/vers/photo7.jpg" alt="Photo de Membre 7" class="member-photo">
-                    <p class="member-name">Lucas Roux</p>
+                    <p class="member-name">Lorenzo COUTY</p>
                     <p class="member-role">Alternant Développeur</p>
                 </div>
 
