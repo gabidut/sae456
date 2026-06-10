@@ -50,7 +50,7 @@ include 'includes/global.php';
         </form>
 
         <div class="login-footer-links">
-            <p>Déjà inscrit ? <a href="connexion.php">Se connecter</a></p>
+            <p>Déjà inscrit ? <a href="login.php">Se connecter</a></p>
         </div>
     </div>
 </main>
