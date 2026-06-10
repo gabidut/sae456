@@ -127,6 +127,12 @@ class Authentificator
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newTel' => $newTel]);
     }
+    public function changeVille($num_utilisateur, $newVille)
+    {
+        $sql = "update vik_client set cli_ville = :newVille where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'newVille' => $newVille]);
+    }
 
     public function updatePointTot($num_utilisateur, $point)
     {
@@ -185,7 +191,7 @@ class Authentificator
         $stmt->execute(['numClient' => $numClient]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (count($result) > 0) {
-            return $result[0];
+            return $result;
         }
         return [];
     }
