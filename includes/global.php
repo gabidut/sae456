@@ -43,4 +43,3 @@ include __DIR__ . '/../includes/navBar.php';
 
 
     <main> 
->>>>>>>>> Temporary merge branch 2
