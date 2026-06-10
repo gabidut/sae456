@@ -22,9 +22,7 @@ $authentificator = new Authentificator(
     $session
 );
 
-$ligneManager = new Ligne(
-        $database
-);
+$ligneManager = new Ligne($database);
 
 include_once 'navBar.php';
 

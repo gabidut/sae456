@@ -1,6 +1,6 @@
 <?php
-include 'includes/global.php';
-require_once 'modules/bdd.php';
+include '../includes/global.php';
+require_once '../modules/bdd.php';
 
 // On imagine que tu as tes identifiants de connexion quelque part ou que tu les passes ici
 // Pour l'exemple, j'instancie la classe Database (à adapter selon ta config réelle)
@@ -53,5 +53,5 @@ if (isset($db)) {
 </div>
 
 <?php
-require 'includes/footer.php';
+require '../includes/footer.php';
 ?>

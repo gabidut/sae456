@@ -597,3 +597,166 @@ footer p span {
     border: none;
     cursor: pointer;
 }
+
+/* ==========================================================================
+   Styles Généraux
+   ========================================================================== */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a1e; /* Fond sombre assorti au footer */
+    color: #ffffff;
+}
+
+/* Conteneur principal automatique basé sur la grille du footer */
+#lig-button-container, #table-horaire-lig {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+h3 {
+    color: #f4f4f5;
+    font-size: 1.4rem;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #232329;
+    margin: 40px 0;
+}
+
+/* ==========================================================================
+   Boutons (Lignes & Directions)
+   ========================================================================== */
+#dir-button-container {
+    margin-top: 15px;
+}
+
+/* Style de base des boutons */
+.button-lig, .button-dir {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 0 10px 15px 0;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+}
+
+/* Boutons des Lignes (Style principal en bleu) */
+.button-lig {
+    background-color: #f63b3b;
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(246, 59, 59, 0.2);
+}
+
+.button-lig:hover {
+    background-color: #eb2525;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(246, 59, 59, 0.3);
+}
+
+/* Boutons des Directions (Style secondaire plus discret) */
+.button-dir {
+    background-color: #292323;
+    color: #e4e4e7;
+    border-color: #3f3f46;
+}
+
+.button-dir:hover {
+    background-color: #2e2e36;
+    color: #ffffff;
+    border-color: #3b82f6; /* Lueur bleue au survol */
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Tableau des Horaires
+   ========================================================================== */
+/* On rend le tableau scrollable horizontalement sur mobile s'il y a trop d'heures */
+#table-horaire-lig {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate; /* Permet d'avoir des arrondis propres */
+    border-spacing: 0;
+    background-color: #232329;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #2e2e36 !important; /* Remplace le border="1" du HTML */
+    margin-bottom: 40px;
+}
+
+/* En-tête du tableau */
+th {
+    background-color: #121214;
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 2px solid #2e2e36;
+}
+
+/* Première colonne (Villes) spécifique pour l'alignement */
+th:first-child, td:first-child {
+    min-width: 200px;
+    font-size: 1rem;
+}
+
+/* Cellules de données */
+td {
+    padding: 14px 20px;
+    color: #e4e4e7;
+    border-bottom: 1px solid #2e2e36;
+    border-right: 1px solid #2e2e36;
+    font-variant-numeric: tabular-nums; /* Aligne parfaitement les chiffres des heures */
+}
+
+/* Supprime la bordure droite sur la dernière colonne */
+td:last-child {
+    border-right: none;
+}
+
+/* Supprime la bordure basse sur la dernière ligne */
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* Effet de survol sur les lignes du tableau pour une meilleure lecture */
+tbody tr:hover {
+    background-color: #2a2a32;
+}
+
+/* Style des heures (les cases d'horaires) */
+td:not(:first-child) {
+    text-align: center;
+    font-weight: 500;
+    color: #3b82f6; /* Met en valeur les horaires avec la couleur bleue */
+    background-color: rgba(59, 130, 246, 0.03); /* Léger fond bleuté */
+}
+
+/* ==========================================================================
+   Responsive Mobile
+   ========================================================================== */
+@media (max-width: 600px) {
+    .button-lig, .button-dir {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+        margin-right: 0;
+    }
+}
