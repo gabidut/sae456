@@ -52,30 +52,6 @@ class Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getClientFromMail($email): object
-    {
-        $sql = 'SELET * FROM vik_client WHERE CLI_COURRIEL = :mail';
-        $stmt = $this->prepareStatement($sql);
-        $stmt->execute(['email' => $email]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function getClientInfo($cliNum)
-    {
-        $sql = "SELECT * FROM vik_client WHERE cli_num = :num";
-        $stmt = $this->prepareStatement($sql);
-        $stmt->execute(['num' => $cliNum]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
-    {
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('1',:dep,:nom,:prenom,:ville,:tel,:mail,'0','0',sysdate,:mdp)";
-        $stmt = $this->prepareStatement($sql);
-        return $stmt->execute(['dep' => $dep, 'ville' => $ville, 'nom' => $nom, 'prenom' => $prenom, 'mdp' => $mdp, 'mail' => $mail, 'tel' => $tel]);
-    }
-
-
     public function getTripsAndTimesSameLine($codeInseeDepart, $codeInseeArrivee)
     {
         $sql = "SELECT LIG_NUM, 

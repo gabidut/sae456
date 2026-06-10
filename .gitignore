@@ -474,5 +474,4 @@ composer.lock
 *.sass.map
 *.scss.map
 
-env.php
-env.php
+**/env.php/*

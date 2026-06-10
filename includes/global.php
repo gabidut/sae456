@@ -11,7 +11,13 @@ $database = new Database(
     $env['db_password']
 );
 
+$session = new SessionHelper(
+    $database,
+);
+
 $authentificator = new Authentificator(
     $database,
-    $env['password_secret']
+    $env['password_secret'],
+    $session
 );
+
