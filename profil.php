@@ -13,10 +13,21 @@
     $newNom = trim($_POST['nom_famille']);
     $newPrenom = trim($_POST['prenom_client']);
 
+    /*$newMail = trim($_POST['mail_client']);
+    $newNum = trim($_POST['telephone']);*/
+
     if (!empty($newNom) && !empty($newPrenom)) {
         
-        $session->$auth->changeNom($cliTest, $newNom);
-        $session->$auth->changePrenom($cliTest, $newPrenom);
+        $session->$session->changeNom($cliTest, $newNom);
+        $session->$session->changePrenom($cliTest, $newPrenom);
+        
+        $messageSucces = "Les modifications ont bien été enregistrées";
+    }
+
+    if (!empty($newMail) && !empty($newNum)) {
+        
+        $session->$auth->changeTel($cliTest, $newNum);
+        $session->$auth->changeMail($cliTest, $newMail);
         
         $messageSucces = "Les modifications ont bien été enregistrées";
     }
@@ -52,6 +63,22 @@ $infoClient = $session->getClientInfoFromId($cliTest);
 
                     <h3>Prénom :</h3>
                     <input type="text" name="prenom_client" value="<?= htmlspecialchars($infoClient['CLI_PRENOM'])?>">
+
+                    <br><br>
+                    <input type="submit" class="btn-submit" value="Enregistrer les modifications">
+                </form>
+            </div>
+
+            <div class="info-card">
+                <form method="post" action="">
+                    <h2>Contacte</h2>
+
+                    <?php if (isset($messageSucces)): ?>
+                        <div class="msg-succes"><?= $messageSucces ?></div>
+                    <?php endif; ?>
+
+                    <h3>Mail :</h3>
+                    <input type="text" name="mail_client" value="<?= htmlspecialchars($infoClient['CLI_COURRIEL'])?>">
 
                     <h3>Téléphone :</h3>
                     <input type="text" name="telephone" value="<?= htmlspecialchars($infoClient['CLI_TELEPHONE'] ?? '')?>">
