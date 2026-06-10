@@ -7,7 +7,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         
         <div class="header-left">
             <a href="index.php">
-                <img src="image/car_vikingTransport.png" alt="Logo Viking Transport" class="header-logo-img">
+                <img src="/image/car_vikingTransport.png" alt="Logo Viking Transport" class="header-logo-img">
             </a>
         </div>
 
