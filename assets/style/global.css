@@ -217,19 +217,3 @@ footer p span {
         margin-top: 40px;
         font-family: Arial, sans-serif;
     }
-    .footer-links {
-        list-style: none;
-        padding: 0;
-        margin: 10px 0 0 0;
-    }
-    .footer-links li {
-        display: inline;
-        margin: 0 10px;
-    }
-    .footer-links a {
-        color: #aaa;
-        text-decoration: none;
-    }
-    .footer-links a:hover {
-        color: #fff;
-    }
