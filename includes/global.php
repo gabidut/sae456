@@ -17,6 +17,3 @@ include_once 'navBar.php'; // On inclut ton nouveau fichier ici
 
 
     <main> 
- <?php       
-    include_once 'footer.php';
-?>
