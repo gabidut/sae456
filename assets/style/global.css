@@ -193,7 +193,6 @@ main {
 footer {
     background-color: var(--surface-color);
     border-top: 1px solid var(--border-color);
-    padding: 2rem;
     text-align: center;
     color: var(--text-muted);
     font-size: 0.9rem;
@@ -220,20 +219,23 @@ footer p span {
     /* Fond sombre moderne */
     color: #ffffff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 40px 20px 20px 20px;
     margin-top: 60px;
     border-top: 1px solid #232329;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Alignement du contenu principal */
 .footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 1em 4em 1em 4em;
+    width: 100%; /* Prend toute la largeur de la page */
+    box-sizing: border-box; /* Évite que le padding élargisse la page */
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: space-between; /* Pousse les éléments de part et d'autre */
+    align-items: center; 
     flex-wrap: wrap;
-    gap: 30px;
 }
 
 /* Section Logo */
@@ -248,6 +250,7 @@ footer p span {
     /* Aligne la taille de ton logo */
     width: auto;
     object-fit: contain;
+    border-radius: 20px;
 }
 
 .footer-date {
@@ -293,13 +296,13 @@ footer p span {
 
 /* Barre de copyright tout en bas */
 .footer-bottom {
-    max-width: 1200px;
     margin: 40px auto 0 auto;
     padding-top: 20px;
     border-top: 1px solid #232329;
     text-align: center;
     color: #71717a;
     font-size: 0.85rem;
+    width: 100%;
 }
 
 /* Responsive pour les téléphones */
@@ -339,7 +342,8 @@ footer p span {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
-    position: relative; /* INDISPENSABLE pour calibrer le centrage absolu du titre */
+    position: relative;
+    /* INDISPENSABLE pour calibrer le centrage absolu du titre */
 }
 
 /* Zone Gauche : Image */
@@ -356,12 +360,9 @@ footer p span {
 
 /* Zone Centrale : TITRE ANCRÉ ET CENTRÉ PILE AU MILIEU */
 .header-center {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
     z-index: 1;
-    pointer-events: none; /* Évite de bloquer les clics autour du titre */
+    pointer-events: none;
+    /* Évite de bloquer les clics autour du titre */
 }
 
 .main-title {
@@ -371,7 +372,8 @@ footer p span {
     font-weight: 800;
     color: var(--text-main);
     margin: 0;
-    white-space: nowrap; /* Empêche le titre de se couper sur deux lignes */
+    white-space: nowrap;
+    /* Empêche le titre de se couper sur deux lignes */
 }
 
 .main-title span {
@@ -384,7 +386,8 @@ footer p span {
     justify-content: flex-end;
     align-items: center;
     gap: 2rem;
-    z-index: 2; /* Reste au-dessus du titre pour pouvoir cliquer sur les liens */
+    z-index: 2;
+    /* Reste au-dessus du titre pour pouvoir cliquer sur les liens */
 }
 
 /* La navBar (B majuscule) */
@@ -427,4 +430,8 @@ footer p span {
 .btn-contact:hover {
     background-color: var(--accent-hover);
     transform: translateY(-2px);
+}
+
+.burger-menu {
+    display: none;
 }

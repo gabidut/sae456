@@ -21,7 +21,6 @@ $ligneManager = new Ligne(
         $database
 );
 
-include_once 'footer.php';
 include_once 'navBar.php';
 
 include_once 'navBar.php'; // On inclut ton nouveau fichier ici

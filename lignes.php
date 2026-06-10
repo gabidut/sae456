@@ -51,3 +51,5 @@ if(isset($_GET['ligne']))
     </div>
 </body>
 </html>
+
+<?= include 'includes/footer.php'; ?> 
