@@ -15,18 +15,9 @@
     overflow: hidden;
 }
 
-/* Effet de flou léger sur l'ensemble du fond */
+/* On n'utilise plus d'effet de flou */
 .reservation-hero::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: inherit;
-    filter: blur(2px); /* Flou réduit */
-    transform: scale(1.05); /* Évite les bords blancs */
-    z-index: 1;
+    display: none;
 }
 
 /* On n'utilise plus ces éléments séparés */
