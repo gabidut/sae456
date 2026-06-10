@@ -10,9 +10,11 @@
     flex-direction: column;
     min-height: calc(100vh - 80px - 150px);
     background-image: url('/image/fond.jpg');
-    background-size: 100%; /* Dézoomé : l'image s'adapte à la largeur */
+    background-size: 100%;
+    /* Dézoomé : l'image s'adapte à la largeur */
     background-repeat: no-repeat;
-    background-color: #121212; /* Fond de secours si l'image ne couvre pas tout en hauteur */
+    background-color: #121212;
+    /* Fond de secours si l'image ne couvre pas tout en hauteur */
     background-position: center;
     overflow: hidden;
 }
@@ -23,7 +25,8 @@
 }
 
 /* On n'utilise plus ces éléments séparés */
-.hero-bg-top, .hero-bg-bottom {
+.hero-bg-top,
+.hero-bg-bottom {
     display: none;
 }
 
@@ -35,20 +38,23 @@
     transform: translate(-50%, -50%);
     width: 98%;
     max-width: 1300px;
-    background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border-radius: 8px;
-    padding: 10px 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    z-index: 10;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+
 }
 
 .search-form-horizontal {
+    margin: 20px;
+    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    color: black;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
 }
 
 .input-group {
@@ -85,7 +91,8 @@
 
 .divider {
     width: 1px;
-    height: 35px; /* Plus petit */
+    height: 35px;
+    /* Plus petit */
     background-color: #eee;
     margin: 0 5px;
 }
@@ -94,7 +101,8 @@
     background-color: var(--accent-color);
     color: white;
     border: none;
-    padding: 12px 30px; /* Moins haut */
+    padding: 12px 30px;
+    /* Moins haut */
     border-radius: 4px;
     font-size: 0.9rem;
     font-weight: 700;
@@ -127,9 +135,11 @@
         flex-direction: column;
         align-items: stretch;
     }
+
     .divider {
         display: none;
     }
+
     .search-bar-container {
         position: relative;
         top: 0;
@@ -138,7 +148,12 @@
         width: 95%;
         margin: -100px auto 40px auto;
     }
+
     .reservation-hero {
         height: 300px;
     }
+}
+
+.errored {
+    border-left: solid 5px red;
 }
