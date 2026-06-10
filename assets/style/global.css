@@ -331,7 +331,8 @@ footer p span {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky; /* Reste fixé en haut de la page au défilement */
+    position: sticky;
+    /* Reste fixé en haut de la page au défilement */
     top: 0;
     z-index: 1000;
 }
@@ -341,7 +342,8 @@ footer p span {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 1400px; /* Élargi pour laisser de la place au titre centré */
+    max-width: 1400px;
+    /* Élargi pour laisser de la place au titre centré */
     margin: 0 auto;
 }
 
@@ -354,7 +356,8 @@ footer p span {
 }
 
 .header-logo-img {
-    height: 50px; /* Ajuste la hauteur de ton image selon tes besoins */
+    height: 50px;
+    /* Ajuste la hauteur de ton image selon tes besoins */
     width: auto;
     display: block;
 }
@@ -366,7 +369,8 @@ footer p span {
 }
 
 .main-title {
-    font-size: 2.6rem; /* Titre écrit beaucoup plus gros */
+    font-size: 2.6rem;
+    /* Titre écrit beaucoup plus gros */
     text-transform: uppercase;
     letter-spacing: 2px;
     font-weight: 800;
@@ -405,7 +409,7 @@ footer p span {
 }
 
 /* Effet au survol et gestion du lien actif (Page courante) */
-.navBar .nav-links a:hover, 
+.navBar .nav-links a:hover,
 .navBar .nav-links a.active {
     color: var(--accent-color);
 }
@@ -437,12 +441,14 @@ footer p span {
         gap: 1rem;
     }
 
-    .header-left, .header-center, .header-right {
+    .header-left,
+    .header-center,
+    .header-right {
         flex: none;
         justify-content: center;
         text-align: center;
     }
-    
+
     .header-right {
         flex-direction: column;
         gap: 1rem;
