@@ -1,6 +1,6 @@
 <?php
 $env = require_once __DIR__ . '/../env.php';
-require_once __DIR__ . '/../modules/bdd.php';
+require_once '/../modules/bdd.php';
 require_once __DIR__ . '/../modules/reservation.php';
 
 $database = new Database(
