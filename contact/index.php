@@ -72,5 +72,5 @@ include '../includes/global.php';
 </div>
 
 <?php 
-require 'includes/footer.php'; 
+require '../includes/footer.php'; 
 ?>
