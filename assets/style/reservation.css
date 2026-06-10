@@ -10,7 +10,9 @@
     flex-direction: column;
     min-height: calc(100vh - 80px - 150px);
     background-image: url('/image/fond.jpg');
-    background-size: cover;
+    background-size: 100%; /* Dézoomé : l'image s'adapte à la largeur */
+    background-repeat: no-repeat;
+    background-color: #121212; /* Fond de secours si l'image ne couvre pas tout en hauteur */
     background-position: center;
     overflow: hidden;
 }
