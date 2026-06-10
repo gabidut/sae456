@@ -52,8 +52,47 @@ $lignes = $ligneManager->getLignes();
         <option value="<?php echo htmlspecialchars($ligne['LIG_NUM']); ?>"/>
     <?php endforeach; ?>
 </datalist>
+
+<script>
+document.getElementById('ligne').addEventListener('change', function() {
+    const ligneValue = this.value;
+    
+    if (ligneValue) {
+        fetch(`/api/reservation.php?ligne=${encodeURIComponent(ligneValue)}`)
+            .then(response => response.json())
+            .then(data => {
+                // Récupérer les villes uniques
+                const villes = [...new Set(data.map(step => step.VILLE_ARRET))];
+                
+                let stepsDatalist = document.getElementById('etapes-list');
+                if (!stepsDatalist) {
+                    stepsDatalist = document.createElement('datalist');
+                    stepsDatalist.id = 'etapes-list';
+                    document.body.appendChild(stepsDatalist);
+                } else {
+                    stepsDatalist.innerHTML = '';
+                }
+                
+                // Remplir la datalist avec les villes uniques
+                villes.forEach(ville => {
+                    const option = document.createElement('option');
+                    option.value = ville;
+                    stepsDatalist.appendChild(option);
+                });
+                
+                // Mettre à jour les listes de départ et arrivée
+                document.getElementById('depart').setAttribute('list', 'etapes-list');
+                document.getElementById('arrivee').setAttribute('list', 'etapes-list');
+                
+                // Vider les valeurs précédentes
+                document.getElementById('depart').value = '';
+                document.getElementById('arrivee').value = '';
+            })
+            .catch(error => console.error('Erreur:', error));
+    }
+});
+</script>
 <?php
-// Affichage des résultats
 if (isset($_GET['depart']) && isset($_GET['arrivee'])) {
     $depart = $_GET['depart'];
     $arrivee = $_GET['arrivee'];

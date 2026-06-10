@@ -2,6 +2,7 @@
 $env = require_once __DIR__ . '/../env.php';
 require_once '/../modules/bdd.php';
 require_once __DIR__ . '/../modules/reservation.php';
+require_once __DIR__ . '/../modules/ligne.php';
 
 $database = new Database(
     $env['db_oracle'],
@@ -9,12 +10,13 @@ $database = new Database(
     $env['db_password']
 );
 $reservationManager = new Reservation($database);
+$ligneManager = new Ligne($database);
 
 header('Content-Type: application/json');
 
 if (isset($_GET['ligne'])) {
     try {
-        $steps = $reservationManager->getStepsOfLine($_GET['ligne']);
+        $steps = $ligneManager->getHoraire($_GET['ligne'] . 'A');
         echo json_encode($steps);
     } catch (Exception $e) {
         http_response_code(500);
