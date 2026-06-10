@@ -58,11 +58,11 @@ include '../../includes/global.php';
         </form>
 
         <div class="login-footer-links">
-            <p>Déjà inscrit ? <a href="login.php">Se connecter</a></p>
+            <p>Déjà inscrit ? <a href="../login/">Se connecter</a></p>
         </div>
     </div>
 </main>
 
 <?php
-require 'includes/footer.php'; 
+require '../../includes/footer.php'; 
 ?>
