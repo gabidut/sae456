@@ -244,7 +244,7 @@ footer p span {
 }
 
 .footer-logo {
-    max-height: 50px;
+    max-height: 70px;
     /* Aligne la taille de ton logo */
     width: auto;
     object-fit: contain;

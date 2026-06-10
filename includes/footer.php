@@ -2,25 +2,12 @@
     <div class="footer-container">
         
         <div class="footer-brand">
-            <img src="image/car_vikingTransport.png" alt="Les Casseurs Codeurs" class="footer-logo">
+            <img src="image/logo_noir.png" alt="Les Casseurs Codeurs" class="footer-logo">
         </div>
 
         <div class="footer-nav">
             <div class="footer-col">
-                <h3>Membre :</h3>
-                <ul>
-                    <li>Armand PIVERT</li> 
-                    <li>Lorenzo COUTY</li>
-                    <li>Victorien GAIGNE</li>
-                    <li>Elias ALLIGNE</li>
-                    <li>Victor ANGER--RENAULT</li>
-                    <li>Gabriel DUTEURTRE</li>
-                    <li>Kevin ERNAULT</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>À propos</h3>
-                <p>Les Casseurs Codeurs, ici on fait les back !</p>
+                <h3><a href="a_propos.php">À propos</a></h3>
             </div>
         </div>
 
