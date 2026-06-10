@@ -58,6 +58,14 @@ class Database {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail,$tel){
+        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec) values ('0',':dep',':nom',':prenom',':ville',':tel',':mail','0','0',sysdate);";
+        $stmt = $this->prepareStatement($sql);
+        $stmt->execute(['dep' => $dep, 'ville' => $ville, 'nom' => $nom, 'prenom' => $prenom, 'mdp' =>$mdp, 'mail'=> $mail, 'tel' => $tel]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
     public function getTripsAndTimesSameLine($codeInseeDepart, $codeInseeArrivee) {
         $sql = "SELECT LIG_NUM, 
                        TO_CHAR(ETA_HEURE, 'DD/MM/YYYY HH24:MI:SS') AS heure_depart,
