@@ -22,6 +22,8 @@ $authentificator = new Authentificator(
     $session
 );
 
+$ligneManager = new Ligne($database);
+
 include __DIR__ . '/../includes/navBar.php';
 // Démarrage du HTML commun
 ?>
