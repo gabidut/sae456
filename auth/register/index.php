@@ -2,7 +2,7 @@
 include '../../includes/global.php'; 
 ?>
 
-<link rel="stylesheet" href="assets/style/login_register.css">
+<link rel="stylesheet" href="/assets/style/login_register.css">
 
 <main class="login-main">
     <div class="login-container register-wide">
