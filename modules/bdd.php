@@ -1,10 +1,12 @@
 
 <?php
 
-class Database {
+class Database
+{
     private $conn;
 
-    public function __construct($dsn, $username, $password) {
+    public function __construct($dsn, $username, $password)
+    {
         try {
             $this->conn = new PDO($dsn, $username, $password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -14,48 +16,48 @@ class Database {
         }
     }
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
 
-    public function executeUpdate($sql) {
+    public function executeUpdate($sql)
+    {
         return $this->conn->exec($sql);
     }
 
-    public function prepareStatement($sql) {
+    public function prepareStatement($sql)
+    {
         return $this->conn->prepare($sql);
     }
 
-    public function readData($sql, &$result) {
+    public function readData($sql, &$result)
+    {
         $cur = $this->conn->query($sql);
         $result = $cur->fetchAll(PDO::FETCH_ASSOC);
         return count($result);
     }
 
-    public function listLines() {
-        $cur = $this->conn->query("SELECT * FROM sae.vik_ligne");
+    public function listLines()
+    {
+        $cur = $this->conn->query("SELECT * FROM vik_ligne");
         return $cur->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getClientReservationHistory($cliNum) {
-        $sql = "SELECT * FROM sae.vik_reservation JOIN sae.vik_client USING (cli_num) WHERE cli_num = :num";
+    public function getClientReservationHistory($cliNum)
+    {
+        $sql = "SELECT * FROM vik_reservation JOIN vik_client USING (cli_num) WHERE cli_num = :num";
         $stmt = $this->prepareStatement($sql);
         $stmt->execute(['num' => $cliNum]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getClientInfo($cliNum) {
-        $sql = "SELECT * FROM sae.vik_client WHERE cli_num = :num";
-        $stmt = $this->prepareStatement($sql);
-        $stmt->execute(['num' => $cliNum]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function getTripsAndTimesSameLine($codeInseeDepart, $codeInseeArrivee) {
+    public function getTripsAndTimesSameLine($codeInseeDepart, $codeInseeArrivee)
+    {
         $sql = "SELECT LIG_NUM, 
                        TO_CHAR(ETA_HEURE, 'DD/MM/YYYY HH24:MI:SS') AS heure_depart,
                        ETA_DISTANCE AS distance
-                FROM sae.VIK_ETAPE
+                FROM VIK_ETAPE
                 WHERE COM_CODE_INSEE_DEPART = :depart 
                   AND COM_CODE_INSEE_ARRIVEE = :arrivee
                 ORDER BY ETA_HEURE ASC";
@@ -65,11 +67,12 @@ class Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getShortestTripSameLine($codeInseeDepart, $codeInseeArrivee) {
+    public function getShortestTripSameLine($codeInseeDepart, $codeInseeArrivee)
+    {
         $sql = "SELECT LIG_NUM, 
                        ETA_DISTANCE,
                        TO_CHAR(ETA_HEURE, 'DD/MM/YYYY HH24:MI:SS') AS heure_voyage
-                FROM sae.VIK_ETAPE
+                FROM VIK_ETAPE
                 WHERE COM_CODE_INSEE_DEPART = :depart 
                   AND COM_CODE_INSEE_ARRIVEE = :arrivee
                 ORDER BY ETA_DISTANCE ASC
@@ -80,11 +83,12 @@ class Database {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getFastestTripSameLine($codeInseeDepart, $codeInseeArrivee) {
+    public function getFastestTripSameLine($codeInseeDepart, $codeInseeArrivee)
+    {
         $sql = "SELECT LIG_NUM, 
                        TO_CHAR(ETA_HEURE, 'DD/MM/YYYY HH24:MI:SS') AS heure_voyage,
                        ETA_DISTANCE
-                FROM sae.VIK_ETAPE
+                FROM VIK_ETAPE
                 WHERE COM_CODE_INSEE_DEPART = :depart 
                   AND COM_CODE_INSEE_ARRIVEE = :arrivee
                 ORDER BY ETA_HEURE ASC
@@ -95,13 +99,21 @@ class Database {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function listLineSchedules() {
-        $cur = $this->conn->query("SELECT * FROM sae.vik_ligne");
+    public function listLineSchedules()
+    {
+        $cur = $this->conn->query("SELECT * FROM vik_ligne");
         return $cur->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function isUserAllowed($email, $password) {
-        $sql = "SELECT * FROM sae.vik_client WHERE cli_mail = :email AND cli_password = :password";
+    public function listCities() {
+        $sql = "SELECT DISTINCT COM_NOM FROM sae.vik_commune ORDER BY COM_NOM ASC";
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function isUserAllowed($email, $password)
+    {
+        $sql = "SELECT * FROM vik_client WHERE cli_mail = :email AND cli_password = :password";
         $stmt = $this->prepareStatement($sql);
         $stmt->execute(['email' => $email, 'password' => $password]);
         $client = $stmt->fetch(PDO::FETCH_ASSOC);
