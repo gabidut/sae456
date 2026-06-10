@@ -12,7 +12,7 @@ include 'global.php';
     <main class="container">
         
         <section class="about-header">
-            <img src="image/logo_CC.png" alt="Logo Les Casseurs Codeurs" class="about-logo">
+            <img src="../image/logo_CC.png" alt="Logo Les Casseurs Codeurs" class="about-logo">
             <h1>Les Casseurs Codeurs</h1>
         </section>
 
@@ -31,45 +31,45 @@ include 'global.php';
             <div class="team-grid">
                 
                 <div class="team-card">
-                    <img src="image/elias.png" alt="Photo de Membre 1" class="member-photo">
+                    <img src="../image/elias.png" alt="Photo de Membre 1" class="member-photo">
                     <p class="member-name">Elias ALLIGNE</p>
-                    <p class="member-role">Fondateur & Dev Back-End</p>
+                    <p class="member-role">Développeur HTML/CSS/PHP</p>
                 </div>
 
                 <div class="team-card">
-                    <img src="chemin/vers/photo2.jpg" alt="Photo de Membre 2" class="member-photo">
+                    <img src="../image/kevin.jpg" alt="Photo de Membre 2" class="member-photo">
                     <p class="member-name">Kevin ERNAULT</p>
-                    <p class="member-role">Co-fondatrice & UI/UX Designer</p>
+                    <p class="member-role">Co-fondatrice</p>
                 </div>
 
                 <div class="team-card">
-                    <img src="image/armand.jpg" alt="Photo de Membre 3" class="member-photo">
+                    <img src="../image/armand.jpg" alt="Photo de Membre 3" class="member-photo">
                     <p class="member-name">Armand PIVERT</p>
-                    <p class="member-role">Développeur Front-End</p>
+                    <p class="member-role">Développeur HTML/CSS/PHP</p>
                 </div>
 
                 <div class="team-card">
-                    <img src="chemin/vers/photo4.jpg" alt="Photo de Membre 4" class="member-photo">
+                    <img src="../image/victorien.jpg" alt="Photo de Membre 4" class="member-photo">
                     <p class="member-name">Victorien GAIGNE</p>
                     <p class="member-role">Chef de Projet</p>
                 </div>
 
                 <div class="team-card">
-                    <img src="chemin/vers/photo5.jpg" alt="Photo de Membre 5" class="member-photo">
+                    <img src="../image/victor.jpg" alt="Photo de Membre 5" class="member-photo">
                     <p class="member-name">Victor ANGER--RENAULT</p>
-                    <p class="member-role">Expert DevOps</p>
+                    <p class="member-role">Animateur</p>
                 </div>
 
                 <div class="team-card">
-                    <img src="chemin/vers/photo6.jpg" alt="Photo de Membre 6" class="member-photo">
+                    <img src="../image/gabriel.jpg" alt="Photo de Membre 6" class="member-photo">
                     <p class="member-name">Gabriel DUTEURTRE</p>
                     <p class="member-role">Père fondateur de l'équipe</p>
                 </div>
 
                 <div class="team-card">
-                    <img src="chemin/vers/photo7.jpg" alt="Photo de Membre 7" class="member-photo">
+                    <img src="../image/lorenzo.jpg" alt="Photo de Membre 7" class="member-photo">
                     <p class="member-name">Lorenzo COUTY</p>
-                    <p class="member-role">Alternant Développeur</p>
+                    <p class="member-role">Développeur HTML/CSS/PHP</p>
                 </div>
 
             </div>
