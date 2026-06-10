@@ -1,5 +1,5 @@
 <?php
-include 'includes/global.php'; 
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
 <header class="main-header">
