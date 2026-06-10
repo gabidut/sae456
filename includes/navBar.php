@@ -30,7 +30,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <li><a href="/reservation" class="<?php echo ($current_page == 'reservation.php') ? 'active' : ''; ?>">Réservation</a></li>
                     <li><a href="carte.php" class="<?php echo ($current_page == 'carte.php') ? 'active' : ''; ?>">Réseau</a></li>
                     <li><a href="/lignes" class="<?php echo ($current_page == 'lignes.php') ? 'active' : ''; ?>">Lignes</a></li>
-                    <li><a href="contact.php" class="<?php echo ($current_page == 'contact.php') ? 'active' : ''; ?>">Contact</a></li>
+                    <li><a href="/contact" class="<?php echo ($current_page == 'a_propos.php') ? 'active' : ''; ?>">Contact</a></li>
                 </ul>
             </nav>
             <div class="header-actions">

@@ -1,6 +1,6 @@
 <?php
 // On appelle global.php qui va charger la session, le CSS et la navBar
-include 'includes/global.php'; 
+include '../includes/global.php'; 
 ?>
 
 <div class="container">
