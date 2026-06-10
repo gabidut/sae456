@@ -27,6 +27,7 @@ class Authentificator
             if ($this->verify_password($password, $user['CLI_MDP'])) {
                 echo "Password verified";
                 $this->session_helper->setUserSession($user['CLI_NUM']);
+                $this->updateConnexionDate($user['CLI_NUM']);
                 return $user;
             }
         }
@@ -56,7 +57,7 @@ class Authentificator
         $sql = 'SELECT * FROM vik_client WHERE CLI_COURRIEL = :email';
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['email' => $email]);
-        if($stmt->rowCount() === 0) {
+        if ($stmt->rowCount() === 0) {
             return [];
         }
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -76,6 +77,25 @@ class Authentificator
         $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('1',:dep,:nom,:prenom,:ville,:tel,:mail,'0','0',sysdate,:mdp)";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['dep' => $dep, 'ville' => $ville, 'nom' => $nom, 'prenom' => $prenom, 'mdp' => $mdp, 'mail' => $mail, 'tel' => $tel]);
+    }
+
+    public function updateConnexionDate($num_utilisateur)
+    {
+        $sql = "update vik_client set cli_date_connec = sysdate where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur]);
+    }
+
+    /**
+     * @param mixed $num_utilisateur
+     * @param string $newmdp PASSWORD NOT HASHED
+     * @return bool
+     */
+    public function changePassword($num_utilisateur, $newmdp)
+    {
+        $sql = "update vik_client set cli_mdp = :newmdp where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'newmdp' => $this->hash_password($newmdp)]);
     }
 }
 
