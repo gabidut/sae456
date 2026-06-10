@@ -34,7 +34,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </ul>
             </nav>
             <div class="header-actions">
-                <a href="login.php" class="btn-contact">Connexion</a>
+                <?php if (!$authentificator->isLoggedIn()) { ?>
+                    <a href="/auth/login" class="btn-contact">Connexion</a>
+                <?php } else { ?>
+                    <a href="/auth/profile" class="btn-contact">Mon compte</a>
+                <?php } ?>
             </div>
         </div>
 
