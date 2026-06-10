@@ -106,7 +106,7 @@ class Database
     }
 
     public function listCities() {
-        $sql = "SELECT DISTINCT COM_NOM FROM sae.vik_commune ORDER BY COM_NOM ASC";
+        $sql = "SELECT DISTINCT COM_NOM FROM vik_commune ORDER BY COM_NOM ASC";
         $stmt = $this->conn->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
