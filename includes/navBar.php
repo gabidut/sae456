@@ -38,7 +38,7 @@ function is_active($page, $dir = '') {
                 <ul class="nav-links">
                     <li><a href="/" class="<?php echo ($current_dir == 'htdocs' && $current_page == 'index.php') ? 'active' : ''; ?>">Accueil</a></li>
                     <li><a href="/reservation" class="<?php echo ($current_dir == 'reservation') ? 'active' : ''; ?>">Réservation</a></li>
-                    <li><a href="/carte.php" class="<?php echo ($current_page == 'carte.php') ? 'active' : ''; ?>">Réseau</a></li>
+                    <li><a href="/reseau" class="<?php echo ($current_page == 'reseau') ? 'active' : ''; ?>">Réseau</a></li>
                     <li><a href="/lignes" class="<?php echo ($current_dir == 'lignes') ? 'active' : ''; ?>">Lignes</a></li>
                 </ul>
             </nav>
