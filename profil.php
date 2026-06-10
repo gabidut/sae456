@@ -10,27 +10,34 @@
     
     //$infoClient = $session->getClientInfoFromId($_SESSION['user'])
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $newNom = trim($_POST['nom_famille']);
-    $newPrenom = trim($_POST['prenom_client']);
 
-    /*$newMail = trim($_POST['mail_client']);
-    $newNum = trim($_POST['telephone']);*/
+        if(isset($_POST['btn_modif_info'])) {
+            $newNom = trim($_POST['nom_famille']);
+            $newPrenom = trim($_POST['prenom_client']);
 
-    if (!empty($newNom) && !empty($newPrenom)) {
+                if (!empty($newNom) && !empty($newPrenom)) {
         
-        $session->$session->changeNom($cliTest, $newNom);
-        $session->$session->changePrenom($cliTest, $newPrenom);
+                $authentificator->changeNom($cliTest, $newNom);
+                $authentificator->changePrenom($cliTest, $newPrenom);
+                
+                $messageSucces = "Les modifications ont bien été enregistrées";
+            }
+        }
         
-        $messageSucces = "Les modifications ont bien été enregistrées";
-    }
+        if(isset($_POST['btn_modif_contact']))
+        {
+            $newMail = trim($_POST['mail_client']);
+            $newNum = trim($_POST['telephone']);
 
-    if (!empty($newMail) && !empty($newNum)) {
+            if (!empty($newMail) && !empty($newNum)) {
         
-        $session->$auth->changeTel($cliTest, $newNum);
-        $session->$auth->changeMail($cliTest, $newMail);
-        
-        $messageSucces = "Les modifications ont bien été enregistrées";
-    }
+                $authentificator->changeTel($cliTest, $newNum);
+                $authentificator->changeMail($cliTest, $newMail);
+                
+                $messageSucces = "Les modifications ont bien été enregistrées";
+            }
+        }
+    
 }
 
 $infoClient = $session->getClientInfoFromId($cliTest);
@@ -65,7 +72,7 @@ $infoClient = $session->getClientInfoFromId($cliTest);
                     <input type="text" name="prenom_client" value="<?= htmlspecialchars($infoClient['CLI_PRENOM'])?>">
 
                     <br><br>
-                    <input type="submit" class="btn-submit" value="Enregistrer les modifications">
+                    <input type="submit" class="btn-submit" value="Enregistrer les modifications" name="btn_modif_info">
                 </form>
             </div>
 
@@ -84,7 +91,7 @@ $infoClient = $session->getClientInfoFromId($cliTest);
                     <input type="text" name="telephone" value="<?= htmlspecialchars($infoClient['CLI_TELEPHONE'] ?? '')?>">
 
                     <br><br>
-                    <input type="submit" class="btn-submit" value="Enregistrer les modifications">
+                    <input type="submit" class="btn-submit" value="Enregistrer les modifications" name="btn_modif_contact">
                 </form>
             </div>
         </div>
@@ -93,3 +100,4 @@ $infoClient = $session->getClientInfoFromId($cliTest);
     <?php endif; ?>
 </body>
 </html>
+
