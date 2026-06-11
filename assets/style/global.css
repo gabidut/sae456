@@ -425,7 +425,9 @@ main {
     }
 }
 
-/* code CSS de la page "À propos" */
+/* ==========================================================================
+   code CSS de À propos
+   ========================================================================== */
         body {
             margin: 0;
             padding: 0;
@@ -447,7 +449,7 @@ main {
         }
 
         .about-logo {
-            max-height: 80px; /* Ajuste selon la taille de ton logo */
+            max-height: 230px; /* Augmenté de 80px à 140px pour agrandir le logo */
             width: auto;
             margin-bottom: 15px;
         }
@@ -529,6 +531,35 @@ main {
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin: 0;
+        }
+/* 4. Section Photo de Groupe */
+        .group-photo-container {
+            margin-top: 50px;
+            margin-bottom: 60px; /* Ajoute l'espace pour décoller le footer */
+            text-align: center;
+            padding: 20px;
+            background-color: #232329;
+            border-radius: 12px;
+            border: 1px solid #2e2e36;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .group-photo {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #ff00009f; /* Assorti à la bordure des photos individuelles */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .group-photo-legend {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            color: #d4d4d8;
+            font-style: italic;
         }
 
 /* ==========================================================================

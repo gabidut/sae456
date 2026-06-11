@@ -67,7 +67,12 @@ include_once '../includes/global.php';
             </div>
 
         </div>
-    </section>
+    </div><div class="group-photo-container">
+            <img src="../image/groupe.jpg" alt="Photo de groupe Les Casseurs Codeurs" class="group-photo">
+            <p class="group-photo-legend">Une photo de tous les membres du groupe accompagnés de leur professeur.</p>
+        </div>
+
+</section>
 
 </div>
 
