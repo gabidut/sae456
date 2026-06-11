@@ -296,8 +296,15 @@ function confirm() {
     // Lancer l'animation du bus au moment de la réservation
     const busContainer = document.getElementById('bus-animation-container');
     if (busContainer) {
-        busContainer.classList.remove('animate-bus');
-        busContainer.classList.remove('animate-bus-return');
+        const currentLeft = window.getComputedStyle(busContainer).left;
+        let startRot = '0deg';
+        if (busContainer.classList.contains('animate-bus-return')) {
+            startRot = '180deg';
+        }
+        busContainer.style.setProperty('--start-left-forward', currentLeft);
+        busContainer.style.setProperty('--start-rot-forward', startRot);
+
+        busContainer.classList.remove('animate-bus', 'animate-bus-return');
         void busContainer.offsetWidth; // Force reflow
         busContainer.classList.add('animate-bus');
     }
@@ -433,7 +440,6 @@ function hideMap() {
     document.querySelector('.map-container').style.display = 'none';
 }
 
-
 function showMap() {
     document.querySelector('.map-container').style.display = 'block';
-}   
+}
