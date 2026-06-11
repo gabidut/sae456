@@ -14,23 +14,22 @@ include 'includes/global.php';
     
     <div class="services-grid">
         <div class="service-card">
-            <h4>Transport Routier</h4>
-            <p>Une flotte moderne de camions pour acheminer vos marchandises partout en Europe.</p>
+            <h4>Lorem ipsum dolor sit amet</h4>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime adipisci maiores architecto eius beatae sunt odit exercitationem ducimus earum consequuntur error natus quam enim sequi provident cumque, qui, ut iusto!</p>
         </div>
         
         <div class="service-card">
-            <h4>Fret Express</h4>
-            <p>Vos livraisons urgentes gérées avec une rapidité absolue.</p>
+            <h4>Lorem ipsum dolor sit amet</h4>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime adipisci maiores architecto eius beatae sunt odit exercitationem ducimus earum consequuntur error natus quam enim sequi provident cumque, qui, ut iusto!</p>
         </div>
         
         <div class="service-card">
-            <h4>Logistique Lourde</h4>
-            <p>Convois exceptionnels. Rien n'est trop lourd pour nos drakkars.</p>
+            <h4>Lorem ipsum dolor sit amet</h4>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime adipisci maiores architecto eius beatae sunt odit exercitationem ducimus earum consequuntur error natus quam enim sequi provident cumque, qui, ut iusto!</p>
         </div>
     </div>
 </section>
 
 <?php
-// On ferme la page avec le footer
 require 'includes/footer.php'; 
 ?>
