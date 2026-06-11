@@ -1,5 +1,5 @@
 <?php
-    require_once 'includes/global.php';
+    require_once __DIR__ . '/../../includes/global.php';
 
     page_requirements(true); 
 
