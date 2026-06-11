@@ -1,6 +1,6 @@
 <?php
-
-require_once '../includes/global.php';
+// Utilisation du chemin absolu basé sur la racine du serveur web
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/global.php';
 
 // 1. Récupération et filtrage des lignes
 $lignesBrutes = $ligneManager->getLignes();
@@ -14,7 +14,6 @@ foreach ($lignesBrutes as $l) {
         ];
     }
 }
-
 $directions = [];
 $horaires = [];
 $grille = [];
@@ -38,7 +37,6 @@ if(isset($_GET['direction']))
     $ordreDesVilles = array_keys($grille); 
     $villeTerminus = !empty($ordreDesVilles) ? end($ordreDesVilles) : '';
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -134,5 +132,6 @@ if(isset($_GET['direction']))
 
 </body>
 </html>
-
-<?php require '../includes/footer.php'; ?>
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php';
+?>
