@@ -541,14 +541,14 @@ main {
             background-color: #232329;
             border-radius: 12px;
             border: 1px solid #2e2e36;
-            max-width: 900px;
+            max-width: 1600px;
             margin-left: auto;
             margin-right: auto;
         }
 
         .group-photo {
             width: 100%;
-            max-width: 800px;
+            max-width: 1500px;
             height: auto;
             border-radius: 8px;
             border: 2px solid #ff00009f; /* Assorti à la bordure des photos individuelles */
