@@ -38,6 +38,7 @@
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    color: #000;
 }
 
 .search-form-horizontal {
@@ -48,6 +49,7 @@
     justify-content: space-between;
     gap: 15px;
     flex-wrap: nowrap;
+    color:#000;
 }
 
 .input-group {
