@@ -12,10 +12,10 @@ include_once '../includes/global.php';
 
     <section class="about-intro">
         <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+            De jeunes développeurs ont monté une start-up de développement web, et obtiennent une commande de la part de leurs premiers clients : “Viking Transports", un devis pour la réalisation d’un site web.
         </p>
         <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+           Tous les membres de cette entreprise étant de grands fans de l’artiste Orelsan, ont voulu lui rendre hommage au travers du nom de cette entreprise et du logo y faisant subtilement référence.
         </p>
     </section>
 
@@ -45,13 +45,13 @@ include_once '../includes/global.php';
             <div class="team-card">
                 <img src="../image/victorien.jpg" alt="Photo de Membre 4" class="member-photo">
                 <p class="member-name">Victorien GAIGNE</p>
-                <p class="member-role">Chef de Projet</p>
+                <p class="member-role">Développeur back-end</p>
             </div>
 
             <div class="team-card">
                 <img src="../image/victor.jpg" alt="Photo de Membre 5" class="member-photo">
                 <p class="member-name">Victor ANGER--RENAULT</p>
-                <p class="member-role">Animateur</p>
+                <p class="member-role">Expert BDD</p>
             </div>
 
             <div class="team-card">

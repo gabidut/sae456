@@ -48,13 +48,29 @@ class SessionHelper
         unset($_SESSION['user']);
     }
 
-    
+
     public function getClientInfoFromId($cliNum)
     {
-        $sql = "SELECT cli_nom,cli_prenom,cli_courriel,cli_telephone,cli_ville,cli_nb_points_ec,typ_nom FROM vik_client JOIN vik_type_client USING (typ_num) WHERE cli_num = :num";
+        $sql = "SELECT cli_num,cli_nom,cli_prenom,cli_courriel,cli_telephone,cli_ville,cli_nb_points_ec,cli_nb_points_tot, typ_nom FROM vik_client  join vik_type_client USING (typ_num) WHERE cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['num' => $cliNum]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+
+
+    public function setCurrentTripDetails($tripDetails)
+    {
+        $_SESSION['current_trip'] = $tripDetails;
+    }
+
+    public function getCurrentTripDetails()
+    {
+        return $_SESSION['current_trip'] ?? null;
+    }
+
+    public function setAdminUser()
+    {
+        $_SESSION['is_admin'] = true;
+    }
 }

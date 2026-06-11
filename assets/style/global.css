@@ -21,7 +21,7 @@
     /* Noir de fond principal */
     --surface-color: #1a1a1a;
     /* Noir légèrement plus clair pour les cartes/header */
-    --accent-color: #e50914;
+    --accent-color: rgb(229, 9, 20);
     /* Rouge vif Viking */
     --accent-hover: #b20710;
     /* Rouge plus sombre au survol */
@@ -196,6 +196,7 @@ main {
     width: 100%;
     background-color: #111111; /* À adapter selon tes couleurs */
     padding: 20px 0;
+    margin-top: auto;
 }
 
 /* Alignement des éléments en ligne */
@@ -249,8 +250,7 @@ main {
     background-color: var(--surface-color);
     border-bottom: 3px solid var(--accent-color);
     padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
+    position: relative; /* Changé de sticky à relative pour éviter les chevauchements */
     z-index: 1000;
 }
 
@@ -283,14 +283,16 @@ main {
     left: 33.33%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 3;
+    z-index: 10;
+    pointer-events: none;
+    z-index: 10;
+    pointer-events: none;
 }
 
 .header-center a {
     text-decoration: none;
-    display: block;
-    z-index: 1;
-    pointer-events: none; /* Évite de bloquer les clics autour du titre */
+    display: inline-block;
+    pointer-events: auto;
 }
 
 .main-title {
@@ -357,6 +359,70 @@ main {
 .btn-contact:hover {
     background-color: var(--accent-hover);
     transform: translateY(-2px);
+}
+
+/* ==========================================
+   RESPONSIVE HEADER & NAVIGATION
+   ========================================== */
+@media (max-width: 1400px) {
+    .main-header {
+        padding: 1.5rem 1rem;
+    }
+
+    .header-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        height: auto;
+        align-items: center;
+    }
+
+    .header-left {
+        display: none;
+    }
+
+    .header-center {
+        position: static;
+        transform: none;
+        text-align: center;
+        width: 100%;
+    }
+
+    .main-title {
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-right {
+        width: 100%;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .navBar .nav-links {
+        flex-direction: row; /* Aligné horizontalement */
+        flex-wrap: wrap; /* Permet de passer à la ligne si besoin */
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .navBar .nav-links a {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-title {
+        font-size: 1.8rem;
+    }
 }
 
 /* code CSS de la page "À propos" */
@@ -497,124 +563,6 @@ hr {
     background: #232329;
     margin: 40px 0;
 }
-
-/* ==========================================================================
-   Boutons (Lignes & Directions)
-   ========================================================================== */
-#dir-button-container {
-    margin-top: 15px;
-}
-
-/* Style de base des boutons */
-.button-lig, .button-dir {
-    display: inline-block;
-    padding: 12px 24px;
-    margin: 0 10px 15px 0;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
-    border: 1px solid transparent;
-}
-
-/* Boutons des Lignes (Style principal en bleu) */
-.button-lig {
-    background-color: #f63b3b;
-    color: #ffffff;
-    box-shadow: 0 4px 6px rgba(246, 59, 59, 0.2);
-}
-
-.button-lig:hover {
-    background-color: #eb2525;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(246, 59, 59, 0.3);
-}
-
-/* Boutons des Directions (Style secondaire plus discret) */
-.button-dir {
-    background-color: #292323;
-    color: #e4e4e7;
-    border-color: #3f3f46;
-}
-
-.button-dir:hover {
-    background-color: #2e2e36;
-    color: #ffffff;
-    border-color: #f63b3b; /* Lueur bleue au survol */
-    transform: translateY(-2px);
-}
-
-/* ==========================================================================
-   Tableau des Horaires
-   ========================================================================== */
-/* On rend le tableau scrollable horizontalement sur mobile s'il y a trop d'heures */
-#table-horaire-lig {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: separate; /* Permet d'avoir des arrondis propres */
-    border-spacing: 0;
-    background-color: #232329;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #2e2e36 !important; /* Remplace le border="1" du HTML */
-    margin-bottom: 40px;
-}
-
-/* En-tête du tableau */
-th {
-    background-color: #121214;
-    color: #ffffff;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    padding: 16px 20px;
-    text-align: left;
-    border-bottom: 2px solid #2e2e36;
-}
-
-/* Première colonne (Villes) spécifique pour l'alignement */
-th:first-child, td:first-child {
-    min-width: 200px;
-    font-size: 1rem;
-}
-
-/* Cellules de données */
-td {
-    padding: 14px 20px;
-    color: #e4e4e7;
-    border-bottom: 1px solid #2e2e36;
-    border-right: 1px solid #2e2e36;
-    font-variant-numeric: tabular-nums; /* Aligne parfaitement les chiffres des heures */
-}
-
-/* Supprime la bordure droite sur la dernière colonne */
-td:last-child {
-    border-right: none;
-}
-
-/* Supprime la bordure basse sur la dernière ligne */
-tr:last-child td {
-    border-bottom: none;
-}
-
-/* Effet de survol sur les lignes du tableau pour une meilleure lecture */
-tbody tr:hover {
-    background-color: #2a2a32;
-}
-
-/* Style des heures (les cases d'horaires) */
-td:not(:first-child) {
-    text-align: center;
-    font-weight: 500;
-    color: #ff5454; /* Met en valeur les horaires avec la couleur bleue */
-    background-color: rgba(59, 130, 246, 0.03); /* Léger fond bleuté */
-}
-
 /* ==========================================================================
    Responsive Mobile
    ========================================================================== */
@@ -626,4 +574,372 @@ td:not(:first-child) {
         text-align: center;
         margin-right: 0;
     }
+}
+
+/* ==========================================================================
+   Boutons (Lignes & Directions)
+   ========================================================================== */
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    background-color: #121212; 
+    color: #ffffff; 
+    line-height: 1.6;
+    scroll-behavior: smooth; 
+}
+
+/* Espacement accru sous les titres et textes d'introduction */
+/* Bloc d'introduction principal */
+.TitreLigne {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    padding-left: 18px; /* Espace pour la barre rouge */
+}
+
+/* La barre rouge verticale distinctive à gauche du titre */
+.TitreLigne::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10%;
+    height: 80%;
+    width: 4px;
+    background-color: #ff1818;
+    border-radius: 2px;
+}
+
+/* Texte d'instruction en dessous */
+.TexteLigne {
+    font-size: 16px;
+    color: #a0a0a0; /* Gris doux pour le contraste */
+    margin-bottom: 70px; /* Espace fortement augmenté pour détacher le bloc du premier bouton */
+    font-style: italic;
+}
+
+/* Boutons de Lignes - Espacement vertical renforcé */
+.button-lig { 
+    display: block; 
+    padding: 18px 24px; 
+    margin: 25px 0; /* Augmenté à 25px pour bien séparer les boutons principaux entre eux */
+    text-decoration: none; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    background: #ff0000c9; 
+    color: #ffffff; 
+    border: 2px solid #ce020267; 
+    max-width: 480px; 
+    transition: all 0.2s ease-in-out; 
+}
+.button-lig:hover { 
+    background: #ff0000c9; 
+    color: white; 
+    transform: translateX(4px); 
+}
+.active-lig { 
+    background: #ff0000c9 !important; 
+    color: white !important; 
+    box-shadow: 0 6px 15px rgba(255, 0, 0, 0.2); 
+}
+
+/* Zones de déploiement (Conteneur des directions) */
+.directions-zone { 
+    margin-top: 30px; /* Plus d'espace entre le bouton principal actif et ses options */
+    margin-left: 25px; 
+    padding-left: 25px; 
+    border-left: 3px dashed #212529; 
+    margin-bottom: 45px; /* Plus d'espace avant le bouton de ligne suivant */
+}
+.directions-zone p {
+    margin-bottom: 20px; /* Plus d'espace sous le texte "Sélectionnez le sens" */
+}
+
+/* Boutons de Directions */
+.button-dir { 
+    display: inline-block; 
+    padding: 12px 22px; 
+    margin: 10px 12px 10px 0; /* Plus d'espace horizontal et vertical entre les choix de direction */
+    text-decoration: none; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    background: #121212; 
+    color: #ff1818; 
+    border: 2px solid #ff18188c; 
+    transition: all 0.2s ease-in-out; 
+}
+.button-dir:hover { 
+    background: #ff1818; 
+    color: white; 
+}
+.active-dir { 
+    background: #ff1818 !important; 
+    color: white !important; 
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.46); 
+}
+
+/* Zone des horaires (Apparaît après le choix d'une direction) */
+.horaires-zone { 
+    margin-top: 45px; /* Crée une vraie rupture visuelle avant d'afficher la frise et le tableau */
+    background: #121212; 
+    padding: 30px; /* Plus d'espace interne pour le bloc de résultats */
+    border-radius: 10px; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+    border: 1px solid #dee2e6;
+}
+
+/* Frise Chronologique */
+.route-timeline { 
+    display: flex; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    margin: 35px 0; /* Plus d'espace autour de la frise */
+    background: #121212; 
+    padding: 20px; 
+    border-radius: 6px; 
+    border-left: 4px solid #ff0000ad;
+}
+.timeline-stop { 
+    display: flex; 
+    align-items: center; 
+}
+.stop-dot { 
+    width: 10px; 
+    height: 10px; 
+    background: #ff1818; 
+    border-radius: 50%; 
+    display: inline-block; 
+}
+.spinning-bus {
+    width: 50px;
+    height: auto;
+    animation: rotate-bus 4s linear infinite;
+    z-index: 5;
+}
+
+@keyframes rotate-bus {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.stop-name { 
+    margin-left: 8px; 
+    font-weight: 600; 
+    font-size: 14px; 
+    color: #ffffff; 
+}
+.timeline-line { 
+    height: 3px; 
+    width: 35px; 
+    background: #ff1818; 
+    margin: 0 4px; 
+    display: inline-block; 
+}
+
+/* Tableau d'horaires */
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 35px; /* Éloigne le tableau de la frise chronologique */
+}
+th, td { 
+    padding: 16px 18px; 
+    text-align: left; 
+    border-bottom: 1px solid #dee2e6; 
+    font-size: 14px; 
+}
+th { 
+    background: #212529; 
+    color: #ffffff; 
+    font-weight: 600;
+}
+tr:hover { 
+    background-color: #1f1f1f; 
+}
+
+/* ==========================================================================
+   Styles pour la page visualisation admin
+   ========================================================================== */
+
+/* --- Structure & Layout --- */
+.admin-dashboard-layout {
+    display: flex;
+}
+
+.admin-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    flex: 1;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-users {
+    height: 380px;
+}
+
+.container-reservations {
+    border-top: 2px dashed #cbd5e1;
+    padding-top: 20px;
+    height: 380px;
+}
+
+.layout-bg-white {
+    background: white;
+}
+
+/* --- Tableaux Éléments --- */
+.table-responsive-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.admin-table {
+    width: 100%;
+}
+
+.table-collapse-white {
+    border-collapse: collapse;
+    background: rgb(20, 20, 20);
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.users-thead-bg {
+    background-color: #f1f5f9;
+}
+
+.resas-thead-bg {
+    background-color: #f8fafc;
+}
+
+/* --- Bordures & Espacements --- */
+.border-bottom-heavy {
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.border-bottom-light {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.p-12 {
+    padding: 12px;
+}
+
+.p-20 {
+    padding: 20px;
+}
+
+/* --- Styles de Textes --- */
+.subtitle {
+    margin-bottom: 10px;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+.font-italic {
+    font-style: italic;
+}
+
+.text-muted {
+    color: #94a3b8;
+}
+
+.text-price {
+    color: #16a34a;
+}
+
+/* --- Interactions & États --- */
+.selected-row-highlight {
+    background-color: #161718;
+}
+
+.placeholder-info-box {
+    color: #94a3b8;
+    font-style: italic;
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px dashed #e2e8f0;
+    margin-top: 10px;
+}
+
+/* --- Boutons --- */
+.btn-action-blue {
+    text-decoration: none;
+    background-color: #3b82f6;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.btn-action-gray {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   Styles pour la page modification admin
+   ========================================================================== */
+
+.admin-form {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-input:disabled {
+    background-color: #e9ecef;
 }
