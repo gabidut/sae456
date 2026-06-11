@@ -10,14 +10,14 @@ L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/
 const colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta', 'yellow', 'brown', 'black'];
 
 (() => {
-    fetch('http://localhost/api/cities.php?citiesAndGPS=1').then(response => response.json())
+    fetch('/api/cities.php?citiesAndGPS=1').then(response => response.json())
         .then(cities => {
             cities.forEach(city => {
                 const marker = L.marker([city.COM_LAT, city.COM_LONG]).addTo(map);
                 marker.bindPopup(`<b>${city.COM_NOM}</b><br>Code INSEE: ${city.COM_CODE_INSEE}`);
                 markers[city.COM_CODE_INSEE] = { marker: marker, name: city.COM_NOM };
             });
-            fetch('http://localhost/api/cities.php?linesAndSteps=1').then(response => response.json())
+            fetch('/api/cities.php?linesAndSteps=1').then(response => response.json())
                 .then(lignes => {
                     const lignesMap = {};
                     lignes.forEach(ligne => {

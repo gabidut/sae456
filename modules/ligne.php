@@ -14,7 +14,23 @@ class Ligne
 
     public function getLignes()
     {
-        $sql = $sql =
+        $sql = "SELECT 
+                REGEXP_REPLACE(l.LIG_NUM, '[^0-9]', '') AS LIG_NUM,
+                c_debu.COM_NOM AS VILLE_DEB,
+                c_term.COM_NOM AS VILLE_TERM
+            FROM VIK_LIGNE l
+            JOIN VIK_COMMUNE c_debu ON l.COM_CODE_INSEE_DEBU = c_debu.COM_CODE_INSEE
+            JOIN VIK_COMMUNE c_term ON l.COM_CODE_INSEE_TERM = c_term.COM_CODE_INSEE
+            ORDER BY TO_NUMBER(REGEXP_REPLACE(l.LIG_NUM, '[^0-9]', '')) ASC";
+
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getLignes2()
+    {
+         $sql =
             "select distinct lig_num
             from vik_noeud  no
             join vik_commune co on co.com_code_insee = no.com_code_insee_arret";
@@ -28,10 +44,11 @@ class Ligne
 
     public function findAllLinesByCity($cityName)
     {
-        $sql = "select distinct lig_num
-            from vik_noeud  no
-            join vik_commune co on co.com_code_insee = no.com_code_insee_arret
-            where LOWER(com_nom) = LOWER(:cityName)";
+        $sql = "SELECT DISTINCT REGEXP_REPLACE(LIG_NUM, '[^0-9]', '') AS LIG_NUM
+                FROM VIK_LIGNE l
+                JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_DEBU = c.COM_CODE_INSEE OR l.COM_CODE_INSEE_TERM = c.COM_CODE_INSEE
+                WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
+                ORDER BY TO_NUMBER(REGEXP_REPLACE(LIG_NUM, '[^0-9]', '')) ASC";
 
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['cityName' => $cityName]);
@@ -42,15 +59,14 @@ class Ligne
 
     public function getDirections($numeroDeLigne)
     {
-        $sql = "SELECT LIG_NUM 
-                FROM VIK_LIGNE 
-                WHERE REGEXP_REPLACE(LIG_NUM, '[^0-9]', '') = :numero
-                ORDER BY LIG_NUM ASC";
+        $sql = "SELECT l.LIG_NUM, c.COM_NOM AS VILLE_TERMINUS
+            FROM VIK_LIGNE l
+            JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_TERM = c.COM_CODE_INSEE
+            WHERE REGEXP_REPLACE(l.LIG_NUM, '[^0-9]', '') = :ligne";
 
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['numero' => $numeroDeLigne]);
-
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmt->execute(['ligne' => $numeroDeLigne]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getHoraire($numeroDeLigne)
@@ -83,18 +99,5 @@ class Ligne
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getCitiesByDepartment($department)
-    {
-
-        $sql = "SELECT COM_NOM FROM vik_commune WHERE TRIM(DEP_NUM) = :department ORDER BY COM_NOM ASC";
-        $stmt = $this->database->prepareStatement($sql);
-
-        $stmt->bindValue(':department', trim($department), PDO::PARAM_STR);
-        $stmt->execute();
-
-
-        return  $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

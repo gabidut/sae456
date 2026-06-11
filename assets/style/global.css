@@ -194,7 +194,7 @@ main {
 /* Style du conteneur principal du footer si nécessaire */
 .site-footer {
     width: 100%;
-    background-color: #111111; /* À adapter selon tes couleurs */
+    background-color: #0c0c0c; /* À adapter selon tes couleurs */
     padding: 20px 0;
 }
 
@@ -363,7 +363,7 @@ main {
 /* ==========================================
    RESPONSIVE HEADER & NAVIGATION
    ========================================== */
-@media (max-width: 992px) {
+@media (max-width: 1250px) {
     .main-header {
         padding: 1.5rem 1rem;
     }
@@ -693,169 +693,173 @@ td:not(:first-child) {
     }
 }
 
-/* ==========================================================================
-   STYLE PAGE ACCUEIL / ESPACE MEMBRE (VIKING TRANSPORT)
-   ========================================================================== */
-
-.welcome-container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 0 20px;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    color: #fff;
-    box-sizing: border-box;
+/* css de la page ligne */
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    background-color: #121212; 
+    color: #ffffff; 
+    line-height: 1.6;
+    scroll-behavior: smooth; 
 }
 
-/* --- BANNER / PROFILE CARD --- */
-.profile-card {
-    background-color: #16161a;
-    border: 1px solid #232329;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-}
-
-.profile-header {
-    background: linear-gradient(135deg, #1e1e24, #0c0c0e);
-    padding: 30px 20px;
-    text-align: center;
-    border-bottom: 1px solid #232329;
-}
-
-/* Avatar avec initiales */
-.avatar {
-    width: 70px;
-    height: 70px;
-    background-color: #e50914;
+/* Espacement accru sous les titres et textes d'introduction */
+/* Bloc d'introduction principal */
+.TitreLigne {
+    font-size: 32px;
+    font-weight: 800;
     color: #ffffff;
-    font-size: 1.6rem;
-    font-weight: 800;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    margin: 0 auto 15px auto;
-    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+    margin-top: 40px;
+    margin-bottom: 12px;
     text-transform: uppercase;
-}
-
-.profile-header h1 {
-    font-size: 1.8rem;
-    font-weight: 800;
-    margin: 0 0 5px 0;
-    letter-spacing: 0.5px;
-}
-
-.profile-role {
-    margin: 0;
-    color: #88888c;
-    font-size: 0.9rem;
-}
-
-/* --- BODY & INFOS --- */
-.profile-body {
-    padding: 30px 24px;
-}
-
-/* Bloc Fidélité */
-.points-section {
-    background-color: #1c1c22;
-    border: 1px solid #2e2e36;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.points-label {
-    display: block;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    color: #88888c;
     letter-spacing: 1px;
-    margin-bottom: 5px;
-    font-weight: 700;
+    position: relative;
+    padding-left: 18px; /* Espace pour la barre rouge */
 }
 
-.points-value {
-    color: #e50914;
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: 4px;
+/* La barre rouge verticale distinctive à gauche du titre */
+.TitreLigne::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10%;
+    height: 80%;
+    width: 4px;
+    background-color: #ff1818;
+    border-radius: 2px;
 }
 
-.points-value .number {
-    font-size: 2.2rem;
-    font-weight: 800;
+/* Texte d'instruction en dessous */
+.TexteLigne {
+    font-size: 16px;
+    color: #a0a0a0; /* Gris doux pour le contraste */
+    margin-bottom: 70px; /* Espace fortement augmenté pour détacher le bloc du premier bouton */
+    font-style: italic;
 }
 
-.points-value .unit {
-    font-size: 1rem;
-    font-weight: 700;
-    text-transform: uppercase;
+/* Boutons de Lignes - Espacement vertical renforcé */
+.button-lig { 
+    display: block; 
+    padding: 18px 24px; 
+    margin: 25px 0; /* Augmenté à 25px pour bien séparer les boutons principaux entre eux */
+    text-decoration: none; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    background: #ff0000c9; 
+    color: #ffffff; 
+    border: 2px solid #ce020267; 
+    max-width: 480px; 
+    transition: all 0.2s ease-in-out; 
+}
+.button-lig:hover { 
+    background: #ff0000c9; 
+    color: white; 
+    transform: translateX(4px); 
+}
+.active-lig { 
+    background: #ff0000c9 !important; 
+    color: white !important; 
+    box-shadow: 0 6px 15px rgba(255, 0, 0, 0.2); 
 }
 
-/* Liste des détails */
-.profile-details {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+/* Zones de déploiement (Conteneur des directions) */
+.directions-zone { 
+    margin-top: 30px; /* Plus d'espace entre le bouton principal actif et ses options */
+    margin-left: 25px; 
+    padding-left: 25px; 
+    border-left: 3px dashed #212529; 
+    margin-bottom: 45px; /* Plus d'espace avant le bouton de ligne suivant */
+}
+.directions-zone p {
+    margin-bottom: 20px; /* Plus d'espace sous le texte "Sélectionnez le sens" */
 }
 
-.detail-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #1f1f24;
-    padding-bottom: 10px;
+/* Boutons de Directions */
+.button-dir { 
+    display: inline-block; 
+    padding: 12px 22px; 
+    margin: 10px 12px 10px 0; /* Plus d'espace horizontal et vertical entre les choix de direction */
+    text-decoration: none; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    background: #121212; 
+    color: #ff1818; 
+    border: 2px solid #ff18188c; 
+    transition: all 0.2s ease-in-out; 
+}
+.button-dir:hover { 
+    background: #ff1818; 
+    color: white; 
+}
+.active-dir { 
+    background: #ff1818 !important; 
+    color: white !important; 
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.46); 
 }
 
-.detail-row:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+/* Zone des horaires (Apparaît après le choix d'une direction) */
+.horaires-zone { 
+    margin-top: 45px; /* Crée une vraie rupture visuelle avant d'afficher la frise et le tableau */
+    background: #121212; 
+    padding: 30px; /* Plus d'espace interne pour le bloc de résultats */
+    border-radius: 10px; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+    border: 1px solid #dee2e6;
 }
 
-.detail-label {
-    color: #88888c;
-    font-size: 0.9rem;
+/* Frise Chronologique */
+.route-timeline { 
+    display: flex; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    margin: 35px 0; /* Plus d'espace autour de la frise */
+    background: #121212; 
+    padding: 20px; 
+    border-radius: 6px; 
+    border-left: 4px solid #ff0000ad;
+}
+.timeline-stop { 
+    display: flex; 
+    align-items: center; 
+}
+.stop-dot { 
+    width: 10px; 
+    height: 10px; 
+    background: #ff1818; 
+    border-radius: 50%; 
+    display: inline-block; 
+}
+.stop-name { 
+    margin-left: 8px; 
+    font-weight: 600; 
+    font-size: 14px; 
+    color: #ffffff; 
+}
+.timeline-line { 
+    height: 3px; 
+    width: 35px; 
+    background: #ff1818; 
+    margin: 0 4px; 
+    display: inline-block; 
+}
+
+/* Tableau d'horaires */
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 35px; /* Éloigne le tableau de la frise chronologique */
+}
+th, td { 
+    padding: 16px 18px; 
+    text-align: left; 
+    border-bottom: 1px solid #dee2e6; 
+    font-size: 14px; 
+}
+th { 
+    background: #212529; 
+    color: #ffffff; 
     font-weight: 600;
 }
-
-.detail-value {
-    color: #ffffff;
-    font-size: 0.95rem;
-    font-weight: 700;
-}
-
-/* --- FOOTER --- */
-.profile-footer {
-    padding: 20px 24px;
-    background-color: #111115;
-    border-top: 1px solid #232329;
-    text-align: center;
-}
-
-/* Bouton Déconnexion */
-.btn-logout {
-    background-color: #16161a;
-    color: #ff4d4d;
-    border: 1px solid #2e2e36;
-    padding: 12px 30px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    width: 100%; /* Prend toute la largeur sur mobile */
-    box-sizing: border-box;
-}
-
-.btn-logout:hover {
-    background-color: #e50914;
-    color: #ffffff;
-    border-color: #e50914;
-    box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+tr:hover { 
+    background-color: #1f1f1f; 
 }

@@ -43,7 +43,7 @@ if (isset($_GET['ligne'])) {
 
 if (isset($_GET['lignes'])) {
     try {
-        $lignes = $ligneManager->getLignes();
+        $lignes = $ligneManager->getLignes2();
         echo json_encode($lignes);
     } catch (Exception $e) {
         http_response_code(500);
