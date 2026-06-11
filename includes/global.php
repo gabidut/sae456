@@ -24,7 +24,7 @@ $authentificator = new Authentificator(
 );
 
 $ligneManager = new Ligne($database);
-$reservationManager = new Reservation($database, $session);
+$reservationManager = new Reservation($database, $session, $authentificator);
 
 
 include __DIR__ . '/../includes/navBar.php';
