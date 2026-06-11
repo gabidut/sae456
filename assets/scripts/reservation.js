@@ -297,6 +297,7 @@ function confirm() {
     const busContainer = document.getElementById('bus-animation-container');
     if (busContainer) {
         busContainer.classList.remove('animate-bus');
+        busContainer.classList.remove('animate-bus-return');
         void busContainer.offsetWidth; // Force reflow
         busContainer.classList.add('animate-bus');
     }
@@ -370,6 +371,22 @@ function confirm() {
         // Réafficher le formulaire original (les données sont préservées dans l'objet 'steps' et dans le DOM)
         stepsContainer.style.display = 'flex';
         searchActions.style.display = 'flex';
+
+        // Lancer l'animation de retour du bus (U-Turn)
+        const busContainer = document.getElementById('bus-animation-container');
+        if (busContainer) {
+            const currentLeft = window.getComputedStyle(busContainer).left;
+            let startRot = '180deg';
+            if (busContainer.classList.contains('animate-bus')) {
+                startRot = '0deg';
+            }
+            busContainer.style.setProperty('--start-left-return', currentLeft);
+            busContainer.style.setProperty('--start-rot-return', startRot);
+            
+            busContainer.classList.remove('animate-bus', 'animate-bus-return');
+            void busContainer.offsetWidth; // Force reflow
+            busContainer.classList.add('animate-bus-return');
+        }
     });
 
     actionsDiv.appendChild(payButton);
@@ -415,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function hideMap() {
     document.querySelector('.map-container').style.display = 'none';
 }
+
 
 function showMap() {
     document.querySelector('.map-container').style.display = 'block';

@@ -334,23 +334,57 @@
     z-index: 9999; /* Par-dessus tout */
     pointer-events: none; /* Let clicks pass through */
     opacity: 0;
+    transform: rotateY(0deg);
+    --start-left-forward: -400px;
+    --start-rot-forward: 0deg;
+    --start-left-return: 100vw;
+    --start-rot-return: 0deg;
 }
 
 .bus-container.animate-bus {
     opacity: 1;
-    animation: driveBus 3.2s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+    animation: driveBusDyn 3.2s ease-in-out forwards;
 }
 
-@keyframes driveBus {
+.bus-container.animate-bus-return {
+    opacity: 1;
+    animation: returnBusDyn 3.2s ease-in-out forwards;
+}
+
+@keyframes driveBusDyn {
     0% {
-        left: -400px;
+        left: var(--start-left-forward);
+        transform: rotateY(var(--start-rot-forward));
         opacity: 1;
+    }
+    15% {
+        transform: rotateY(0deg);
     }
     90% {
         opacity: 1;
     }
     100% {
         left: 100vw;
+        transform: rotateY(0deg);
+        opacity: 0;
+    }
+}
+
+@keyframes returnBusDyn {
+    0% {
+        left: var(--start-left-return);
+        transform: rotateY(var(--start-rot-return));
+        opacity: 1;
+    }
+    15% {
+        transform: rotateY(180deg);
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        left: -400px;
+        transform: rotateY(180deg);
         opacity: 0;
     }
 }
