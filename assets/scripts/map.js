@@ -45,7 +45,7 @@ const colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta', '
                                 if (!arrivMarker) return;
                                 const arrivLatLng = arrivMarker.getLatLng();
 
-                                const poly = L.polyline([departLatLng, arrivLatLng], { color: lineColor, weight: 5 }).addTo(map);
+                                const poly = L.polyline([departLatLng, arrivLatLng], { color: lineColor, weight: 10 }).addTo(map);
                                 poly.bindPopup(`Ligne ${ligneNum}:<br> ${markers[departCode]?.name} → ${markers[arrivCode]?.name}`);
                             });
                         });

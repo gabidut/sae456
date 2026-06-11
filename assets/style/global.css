@@ -363,7 +363,7 @@ main {
 /* ==========================================
    RESPONSIVE HEADER & NAVIGATION
    ========================================== */
-@media (max-width: 1250px) {
+@media (max-width: 1400px) {
     .main-header {
         padding: 1.5rem 1rem;
     }
