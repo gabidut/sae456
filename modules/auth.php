@@ -221,7 +221,8 @@ class Authentificator
                 c_fin.com_nom AS ARRIVE, 
                 TO_CHAR(e_deb.eta_heure, 'HH24:MI') AS HEURE_DEPART
             FROM vik_reservation r
-            JOIN vik_client c USING (cli_num)
+            -- Remplacement du USING par un ON --
+            JOIN vik_client c ON r.cli_num = c.cli_num
             
             JOIN vik_etape e_deb ON r.res_num = e_deb.res_num AND r.cli_num = e_deb.cli_num
             JOIN vik_commune c_deb ON c_deb.com_code_insee = e_deb.com_code_insee_depart

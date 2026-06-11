@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <td>Ligne <?= htmlspecialchars($resa['LIG_NUM']) ?></td>
                                 <td><?= htmlspecialchars($resa['DEPART']) ?></td>
                                 <td><?= htmlspecialchars($resa['ARRIVE']) ?></td>
-                                <td><?= htmlspecialchars($resa['ETA_HEURE']) ?></td>
+                                <td><?= htmlspecialchars($resa['HEURE_DEPART']) ?></td>
                                 <td><?= number_format($resa['RES_PRIX_TOT'], 2, ',', ' ') ?> €</td>
                             </tr>
                         <?php endforeach; ?>
