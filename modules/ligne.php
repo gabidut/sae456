@@ -30,7 +30,7 @@ class Ligne
 
     public function getLignes2()
     {
-         $sql =
+        $sql =
             "select distinct lig_num
             from vik_noeud  no
             join vik_commune co on co.com_code_insee = no.com_code_insee_arret";
@@ -98,6 +98,19 @@ class Ligne
             'direction2' => $numeroDeLigne
         ]);
 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getCitiesByDepartment($departmentId)
+    {
+        $sql = "SELECT DISTINCT c.COM_NOM
+                FROM VIK_COMMUNE c
+                JOIN VIK_DEPARTEMENT l ON c.DEP_NUM = l.DEP_NUM
+                WHERE TRIM(UPPER(l.DEP_NUM)) = TRIM(UPPER(:departmentId))
+                ORDER BY c.COM_NOM ASC";
+
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['departmentId' => $departmentId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
