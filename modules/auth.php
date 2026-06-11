@@ -186,7 +186,7 @@ class Authentificator
     public function getReservation($numClient): array
     {
         $sql = 'select cli_prenom, res_num, res_date, res_prix_tot, lig_num, 
-        a.com_nom, b.com_nom, eta_heure 
+        a.com_nom AS DEPART, b.com_nom AS ARRIVE, eta_heure 
         from vik_reservation 
         join vik_client using (cli_num) 
         join vik_etape using (cli_num, res_num)

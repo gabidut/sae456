@@ -1,16 +1,13 @@
 <?php
     require_once 'includes/global.php';
 
-    $cliTest = '69';
+    page_requirements(true); 
 
-    /*if(!$session->isUserLoggedIn())
-    {
-        header('Location: auth/login/index.php');
-    }  */
-    
-    //$infoClient = $session->getClientInfoFromId($_SESSION['user'])
+    $cliId = $_SESSION['user'];
 
-    $reservation_cli = $authentificator->getReservation($cliTest);
+    $infoClient = $session->getClientInfoFromId($_SESSION['user']);
+
+    $reservation_cli = $authentificator->getReservation($cliId);
 
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,8 +18,8 @@
 
                 if (!empty($newNom) && !empty($newPrenom)) {
         
-                $authentificator->changeNom($cliTest, $newNom);
-                $authentificator->changePrenom($cliTest, $newPrenom);
+                $authentificator->changeNom($cliId, $newNom);
+                $authentificator->changePrenom($cliId, $newPrenom);
                 
                 $messageSucces = "Les modifications ont bien été enregistrées";
             }
@@ -35,8 +32,8 @@
 
             if (!empty($newMail) && !empty($newNum)) {
         
-                $authentificator->changeTel($cliTest, $newNum);
-                $authentificator->changeMail($cliTest, $newMail);
+                $authentificator->changeTel($cliId, $newNum);
+                $authentificator->changeMail($cliId, $newMail);
                 
                 $messageSucces = "Les modifications ont bien été enregistrées";
             }
@@ -51,8 +48,7 @@
 
                 if($authentificator->verify_password($actualPassword, $user['CLI_MDP']))
                 {
-                    $authentificator->changePassword($cliTest ,$newPassword);
-                    // $authentificator->changePassword($_SESSION['user'] ,$newPassword);
+                    $authentificator->changePassword($_SESSION['user'] ,$newPassword);
 
                     $messageSucces = "Les modifications ont bien été enregistrées";
                 }
@@ -64,7 +60,7 @@
     
 }
 
-$infoClient = $session->getClientInfoFromId($cliTest);
+
 
 ?>
 
@@ -161,7 +157,37 @@ $infoClient = $session->getClientInfoFromId($cliTest);
                             <tbody>
                                 <?php foreach($reservation_cli as $resa): ?>
                                     <tr>
+                                        <td>
+                                            <?php htmlspecialchars($resa['CLI_PRENOM'])?>
+                                        </td>
 
+                                        <td>
+                                            <?php htmlspecialchars($resa['RES_NUM'])?>
+                                        </td>
+
+                                        <td>
+                                            <?php htmlspecialchars($resa['RES_DATE'])?>
+                                        </td>
+
+                                        <td>
+                                            <?php htmlspecialchars($resa['RES_PRIX_TOT'])?>
+                                        </td>
+
+                                        <td>
+                                            <?php htmlspecialchars($resa['LIG_NUM'])?>
+                                        </td>
+
+                                        <td>
+                                            <?php htmlspecialchars($resa['DEPART'])?>
+                                        </td>
+
+                                        <td>
+                                            <?php htmlspecialchars($resa['ARRIVE'])?>
+                                        </td>
+
+                                        <td>
+                                            <?php htmlspecialchars($resa['ETA_HEURE'])?>
+                                        </td>
                                     </tr>
                                 <?php endforeach;?>
                             </tbody>
