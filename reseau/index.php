@@ -40,8 +40,16 @@ if (isset($_GET['direction'])) {
 
 </main>
 
-<style>
-    #map {
-        height: 70vh;
-    }
-</style>
+<?php if (isset($_GET['BYPASS_DECO'])) { ?>
+    <style>
+        #map {
+            height: 100vh;
+        }
+    </style>
+<?php } else { ?>
+    <style>
+        #map {
+            height: 70vh;
+        }
+    </style>
+<?php } ?>

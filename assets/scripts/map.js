@@ -15,41 +15,42 @@ const colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta', '
             cities.forEach(city => {
                 const marker = L.marker([city.COM_LAT, city.COM_LONG]).addTo(map);
                 marker.bindPopup(`<b>${city.COM_NOM}</b><br>Code INSEE: ${city.COM_CODE_INSEE}`);
-                markers[city.COM_CODE_INSEE] = marker;
+                markers[city.COM_CODE_INSEE] = { marker: marker, name: city.COM_NOM };
             });
-        });
+            fetch('http://localhost/api/cities.php?linesAndSteps=1').then(response => response.json())
+                .then(lignes => {
+                    const lignesMap = {};
+                    lignes.forEach(ligne => {
+                        if (!lignesMap[ligne.LIGNE]) {
+                            lignesMap[ligne.LIGNE] = {};
+                        }
+                        if (!lignesMap[ligne.LIGNE][ligne.DEPART]) {
+                            lignesMap[ligne.LIGNE][ligne.DEPART] = [];
+                        }
+                        lignesMap[ligne.LIGNE][ligne.DEPART].push(ligne.ARRIVEE);
+                    });
 
-    fetch('http://localhost/api/cities.php?linesAndSteps=1').then(response => response.json())
-        .then(lignes => {
-            const lignesMap = {};
-            lignes.forEach(ligne => {
-                if (!lignesMap[ligne.LIGNE]) {
-                    lignesMap[ligne.LIGNE] = {};
-                }
-                if (!lignesMap[ligne.LIGNE][ligne.DEPART]) {
-                    lignesMap[ligne.LIGNE][ligne.DEPART] = [];
-                }
-                lignesMap[ligne.LIGNE][ligne.DEPART].push(ligne.ARRIVEE);
-            });
+                    console.log(lignes);
 
-            console.log(lignes);
-            
 
-            Object.keys(lignesMap).forEach(ligneNum => {
-                const lineColor = colors[parseInt(ligneNum) % colors.length];
-                const departures = lignesMap[ligneNum];
-                Object.keys(departures).forEach(departCode => {
-                    const departMarker = markers[departCode];
-                    if (!departMarker) return;
-                    const departLatLng = departMarker.getLatLng();
-                    departures[departCode].forEach(arrivCode => {
-                        const arrivMarker = markers[arrivCode];
-                        if (!arrivMarker) return;
-                        const arrivLatLng = arrivMarker.getLatLng();
-                    
-                        L.polyline([departLatLng, arrivLatLng], {color: lineColor}).addTo(map);
+                    Object.keys(lignesMap).forEach(ligneNum => {
+                        const lineColor = colors[parseInt(ligneNum) % colors.length];
+                        const departures = lignesMap[ligneNum];
+                        Object.keys(departures).forEach(departCode => {
+                            const departMarker = markers[departCode].marker;
+                            if (!departMarker) return;
+                            const departLatLng = departMarker.getLatLng();
+                            departures[departCode].forEach(arrivCode => {
+                                const arrivMarker = markers[arrivCode].marker;
+                                if (!arrivMarker) return;
+                                const arrivLatLng = arrivMarker.getLatLng();
+
+                                const poly = L.polyline([departLatLng, arrivLatLng], { color: lineColor, weight: 5 }).addTo(map);
+                                poly.bindPopup(`Ligne ${ligneNum}:<br> ${markers[departCode]?.name} → ${markers[arrivCode]?.name}`);
+                            });
+                        });
                     });
                 });
-            });
         });
+
 })();

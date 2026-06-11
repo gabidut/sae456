@@ -333,3 +333,11 @@ document.addEventListener('DOMContentLoaded', () => {
         addStep();
     });
 });
+
+function hideMap() {
+    document.querySelector('.map-container').style.display = 'none';
+}
+
+function showMap() {
+    document.querySelector('.map-container').style.display = 'block';
+}   
