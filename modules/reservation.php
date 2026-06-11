@@ -86,6 +86,7 @@ class Reservation
             $villeDepartCode = $this->getInseeCode($segment['depart']);
             $villeArriveeCode = $this->getInseeCode($segment['arrivee']);
 
+
             if (!$villeDepartCode || !$villeArriveeCode) continue;
 
             $courant = $villeDepartCode;
@@ -101,9 +102,9 @@ class Reservation
 
                 $stmt = $this->database->prepareStatement($sql);
 
+
                 $stmt->execute(['courant' => $courant, 'ligNum' => $ligNum]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
 
                 if ($result) {
                     $distEtape = isset($result['NOE_DISTANCE_PROCHAIN']) ? (float) str_replace(',', '.', $result['NOE_DISTANCE_PROCHAIN']) : 0;
@@ -167,6 +168,7 @@ class Reservation
         $result1 = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $prix = $result1['TAR_PRIX'];
+
 
         if ($cliNum !== 0) {
             $sql = "SELECT TYP_REDUC FROM vik_type_client WHERE typ_num = (SELECT typ_num FROM vik_client WHERE cli_num = :cliNum)";
