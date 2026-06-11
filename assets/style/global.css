@@ -579,7 +579,9 @@ hr {
 /* ==========================================================================
    CSS ligne
    ========================================================================== */
-/* --- Structure & Thème Sombre Viking --- */
+/* ==========================================================================
+   1. STRUCTURE GÉNÉRALE & THÈME SOMBRE VIKING
+   ========================================================================== */
 body, .viking-theme-body { 
     font-family: 'Segoe UI', Arial, sans-serif; 
     background-color: #121212; 
@@ -601,8 +603,9 @@ body, .viking-theme-body {
 }
 
 /* --- Titres et Introduction --- */
-.viking-title, .TitreLigne {
-    font-size: 32px;
+/* --- Titres et Introduction --- */
+.viking-title {
+    font-size: 42px;       /* Titre agrandi pour plus d'impact */
     font-weight: 800;
     color: #ffffff;
     margin-top: 40px;
@@ -610,37 +613,32 @@ body, .viking-theme-body {
     text-transform: uppercase;
     letter-spacing: 1px;
     position: relative;
-    padding-left: 18px; 
+    padding-left: 24px;    /* Espace augmenté pour accueillir la barre rouge plus épaisse */
 }
 
-/* La barre rouge verticale distinctive à gauche du titre */
-.viking-title::before, .TitreLigne::before {
+/* Ajustement de la barre rouge distinctive à gauche du titre */
+.viking-title::before {
     content: "";
     position: absolute;
     left: 0;
     top: 10%;
     height: 80%;
-    width: 4px;
+    width: 6px;            /* Épaisseur de la barre augmentée de 4px à 6px pour s'aligner sur le grand titre */
     background-color: #ff1818;
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
-.subtitle, .TexteLigne {
+.subtitle {
     font-size: 16px;
     color: #a0a0a0; 
-    margin-bottom: 70px; /* Espace pour détacher le bloc d'introduction du premier bouton */
+    margin-bottom: 50px;
     font-style: italic;
 }
 
-.text-muted {
-    color: #a0a0a0;
-}
+.text-muted { color: #a0a0a0; }
+.text-red { color: #ff1818; }
+.text-center { text-align: center; }
 
-.text-red {
-    color: #ff1818;
-}
-
-/* --- Conteneur Accordéon --- */
 .accordion-container {
     display: flex;
     flex-direction: column;
@@ -651,70 +649,134 @@ body, .viking-theme-body {
     scroll-margin-top: 80px; 
 }
 
-/* --- Boutons Principaux (Lignes) --- */
+/* ==========================================================================
+   2. BOUTON PRINCIPAL (BOUTON DE LIGNE SIMPLIFIÉ DEPART ➔ ARRIVÉE)
+   ========================================================================== */
 .button-lig { 
-    display: block; 
-    padding: 18px 24px; 
-    margin: 25px 0; /* Espace vertical pour séparer les boutons principaux */
+    display: flex; 
+    align-items: center;
+    padding: 18px 28px; /* Un peu plus d'espace interne pour accueillir le grand texte */
+    margin: 20px auto;  
     text-decoration: none; 
     border-radius: 8px; 
-    font-weight: bold; 
-    font-size: 1.1rem;
-    background: #ff0000c9; 
+    background: #ff1818; 
     color: #ffffff; 
-    border: 2px solid #ce020267; 
-    max-width: 480px; 
+    border: 1px solid #ce0202; 
+    max-width: 700px; /* Largeur augmentée pour éviter que les grands noms de villes ne passent à la ligne */
+    width: 100%;
     transition: all 0.2s ease-in-out; 
+    position: relative;
+    box-sizing: border-box;
 }
 
+/* Au survol : le bouton devient sombre */
 .button-lig:hover { 
-    background: #ff0000c9; 
-    color: white; 
+    border-color: #ff1818;
+    background-color: #1a1a1a;
     transform: translateX(4px); 
 }
 
-.button-lig.active-lig, .active-lig { 
-    background: #ff0000c9 !important; 
-    color: white !important; 
-    box-shadow: 0 6px 15px rgba(255, 0, 0, 0.2); 
+/* État actif : quand la ligne est sélectionnée */
+.button-lig.active-lig { 
+    background: #141414 !important; 
+    border-color: #ff1818;
+    box-shadow: 0 6px 20px rgba(255, 24, 24, 0.15); 
 }
 
-.line-badge {
-    background-color: #121212;
-    color: #ffffff;
-    padding: 3px 8px;
+/* Petite barre rouge sur le côté gauche quand le bouton est actif */
+.button-lig.active-lig::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 15%;
+    height: 70%;
+    width: 4px;
+    background-color: #ff1818;
+    border-radius: 0 4px 4px 0;
+}
+
+/* --- Badge Numéro de Ligne --- */
+.line-badge-container {
+    padding-right: 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3); 
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.button-lig .line-badge {
+    background-color: #ffffff;
+    color: #ff1818;
+    padding: 6px 14px;
     border-radius: 4px;
-    font-size: 0.85rem;
-    margin-right: 12px;
-    border: 1px solid #ff18188c;
+    font-weight: 800;
+    font-size: 1.3rem; /* Badge agrandi proportionnellement */
+    transition: all 0.2s;
 }
 
-/* --- Zones de Déploiement (Directions) --- */
+.button-lig:hover .line-badge,
+.button-lig.active-lig .line-badge {
+    background-color: #ff1818;
+    color: #ffffff;
+}
+
+/* --- Conteneur du Texte du Trajet (Agrandi) --- */
+.button-route-text {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* Plus d'espace autour de la flèche */
+    flex: 1;
+}
+
+.route-city {
+    font-size: 22px;  /* Texte encore plus grand */
+    font-weight: 700; 
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.route-arrow {
+    font-size: 24px;  /* Flèche agrandie pour matcher avec le texte */
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.2s;
+}
+
+.button-lig.active-lig .route-arrow {
+    color: #ff1818; 
+}
+
+/* ==========================================================================
+   3. ZONE DE DÉPLOIEMENT & CHOIX DES DIRECTIONS (SENS)
+   ========================================================================== */
 .directions-zone { 
-    margin-top: 30px; 
-    margin-left: 25px; 
-    padding-left: 25px; 
-    border-left: 3px dashed #212529; 
+    margin-top: -15px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 950px;
+    width: 100%;
+    padding: 25px 30px;
+    box-sizing: border-box;
+    border-left: 3px dashed #222222; 
     margin-bottom: 45px; 
 }
 
 .direction-prompt {
     margin-bottom: 20px;
     color: #a0a0a0;
+    font-size: 0.95rem;
 }
 
 .directions-buttons-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 15px;
     margin-bottom: 25px;
 }
 
-/* --- Boutons de Directions --- */
+/* --- Boutons de Directions (Sens) --- */
 .button-dir { 
     display: inline-block; 
     padding: 12px 22px; 
-    margin: 10px 12px 10px 0; 
     text-decoration: none; 
     border-radius: 6px; 
     font-weight: bold; 
@@ -729,114 +791,73 @@ body, .viking-theme-body {
     color: white; 
 }
 
-.button-dir.active-dir, .active-dir { 
+.button-dir.active-dir { 
     background: #ff1818 !important; 
     color: white !important; 
-    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.46); 
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4); 
 }
 
-/* --- Zone des Horaires --- */
+/* ==========================================================================
+   4. ZONE DES HORAIRES & TABLEAU DES PASSAGES
+   ========================================================================== */
 .horaires-zone { 
-    margin-top: 45px; 
-    background: #121212; 
+    margin-top: 35px; 
+    background: #181818; 
     padding: 30px; 
-    border-radius: 10px; 
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
-    border: 1px solid #dee2e6;
+    border-radius: 8px; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+    border: 1px solid #222222;
 }
 
 .terminus-title {
     font-size: 1.3rem;
     margin-top: 0;
     margin-bottom: 25px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* --- Frise Chronologique (Timeline) --- */
-.route-timeline { 
-    display: flex; 
-    align-items: center; 
-    flex-wrap: wrap; 
-    gap: 15px; 
-    margin: 35px 0; 
-    background: #121212; 
-    padding: 20px; 
-    border-radius: 6px; 
-    border-left: 4px solid #ff0000ad;
+/* --- Structure Tableaux --- */
+.table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto;
 }
 
-.timeline-stop { 
-    display: flex; 
-    align-items: center; 
-    flex-direction: column;
-    min-width: 100px;
-    text-align: center;
-}
-
-.stop-dot { 
-    width: 10px; 
-    height: 10px; 
-    background: #ff1818; 
-    border-radius: 50%; 
-    display: inline-block; 
-    margin-bottom: 8px;
-}
-
-.spinning-bus {
-    width: 24px;
-    height: auto;
-    margin-bottom: 4px;
-}
-
-.stop-name { 
-    font-weight: 600; 
-    font-size: 14px; 
-    color: #ffffff; 
-}
-
-.timeline-line { 
-    height: 3px; 
-    width: 35px; 
-    background: #ff1818; 
-    margin: 0 4px; 
-    display: inline-block; 
-    align-self: center;
-    margin-bottom: 20px; /* Aligne la ligne avec l'axe des puces */
-}
-
-/* --- Tableaux d'Horaires --- */
-table, .viking-table { 
+.viking-table { 
     width: 100%; 
     border-collapse: collapse; 
-    margin-top: 35px; 
+    margin-top: 15px; 
 }
 
-th, td { 
+.viking-table th, 
+.viking-table td { 
     padding: 16px 18px; 
     text-align: left; 
-    border-bottom: 1px solid #dee2e6; 
+    border-bottom: 1px solid #222222; 
     font-size: 14px; 
 }
 
-th { 
-    background: #212529; 
+.viking-table th { 
+    background: #222222; 
     color: #ffffff; 
     font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
 }
 
 .cell-station-name {
     width: 25%;
     color: #ffffff;
+    font-size: 15px;
 }
 
-tr:hover { 
+.viking-table tr:hover { 
     background-color: #1f1f1f; 
 }
 
-.text-center {
-    text-align: center;
-}
-
-/* --- Système d'Heures en Puces (Grid interne) --- */
+/* --- Puces des Heures (Hours Grid) --- */
 .hours-grid {
     display: flex;
     flex-wrap: wrap;
@@ -844,19 +865,20 @@ tr:hover {
 }
 
 .hour-tag {
-    background-color: #1f1f1f;
+    background-color: #262626;
     border: 1px solid #333333;
     color: #ffffff;
     padding: 6px 12px;
     border-radius: 4px;
-    font-family: monospace;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
     font-size: 0.9rem;
+    transition: all 0.15s ease-in-out;
 }
 
-/* Responsive Wrapper pour éviter la cassure sur mobile */
-.table-responsive-wrapper {
-    width: 100%;
-    overflow-x: auto;
+.hour-tag:hover {
+    background-color: #ff1818;
+    border-color: #ff1818;
 }
 /* ==========================================================================
    Styles pour la page visualisation admin
