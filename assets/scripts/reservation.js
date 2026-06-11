@@ -289,11 +289,16 @@ function confirm() {
     payButton.addEventListener('click', () => {
         const reservationData = new FormData();
         reservationData.append('setTripDetails', JSON.stringify(steps));
+        console.log(steps);
+        
         fetch('/api/reservation.php', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
             body: new URLSearchParams(reservationData).toString()
         }).then(response => {
-            if (response.ok) location.href = '/reservation/pay/';
+             if (response.ok) location.href = '/reservation/pay/';
         });
     });
 

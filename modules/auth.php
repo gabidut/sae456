@@ -179,7 +179,7 @@ class Authentificator
         $sqlPoints = "UPDATE vik_client SET cli_nb_points_ec = cli_nb_points_ec + :nbpoints, cli_nb_points_tot = cli_nb_points_tot + :nbpoints WHERE cli_num = :num";
 
         $stmtPoints = $this->database->prepareStatement($sqlPoints);
-        $success = $stmtPoints->execute(['num' => $num_utilisateur, 'nbpoints' => $nbpoints]);
+        $success = $stmtPoints->execute(['num' => intval($num_utilisateur), 'nbpoints' => intval($nbpoints)]);
 
         if (!$success) {
             return false;
@@ -187,14 +187,14 @@ class Authentificator
 
         $sqlGetTotal = "SELECT cli_nb_points_tot FROM vik_client WHERE cli_num = :num";
         $stmtGetTotal = $this->database->prepareStatement($sqlGetTotal);
-        $stmtGetTotal->execute(['num' => $num_utilisateur]);
+        $stmtGetTotal->execute(['num' => intval($num_utilisateur)]);
         $client = $stmtGetTotal->fetch();
 
-        $newTotalPoints = $client['cli_nb_points_tot'];
+        $newTotalPoints = $client['CLI_NB_POINTS_TOT'];
 
         $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points <= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE ASC";
         $stmtGetTier = $this->database->prepareStatement($sqlGetTier);
-        $stmtGetTier->execute(['points' => $newTotalPoints]);
+        $stmtGetTier->execute(['points' => intval($newTotalPoints)]);
         $tier = $stmtGetTier->fetch();
 
         if ($tier) {

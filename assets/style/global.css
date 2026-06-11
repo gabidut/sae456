@@ -21,7 +21,7 @@
     /* Noir de fond principal */
     --surface-color: #1a1a1a;
     /* Noir légèrement plus clair pour les cartes/header */
-    --accent-color: #e50914;
+    --accent-color: rgb(229, 9, 20);
     /* Rouge vif Viking */
     --accent-hover: #b20710;
     /* Rouge plus sombre au survol */

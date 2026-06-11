@@ -60,7 +60,6 @@ class Reservation
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // --- À AJOUTER DANS TA CLASSE RESERVATION ---
     private function getInseeCode($nomVille)
     {
         $sql = "SELECT COM_CODE_INSEE FROM VIK_COMMUNE WHERE UPPER(COM_NOM) = UPPER(:nom)";
@@ -75,18 +74,13 @@ class Reservation
         $distanceTotal = 0;
         $etapes = [];
 
-        // 1. Identifier l'utilisateur
         $cliNum = 0;
         if ($this->sessionHelper->isUserLoggedIn()) {
             $client = $this->sessionHelper->getUserSession();
-            $cliNum = $client['cli_num'];
+            $cliNum = $client['CLI_NUM'];
         }
 
         foreach ($reservationArray as $segment) {
-            if (!isset($segment['ligne'], $segment['depart'], $segment['arrivee'])) {
-                continue;
-            }
-
             $ligNum = $segment['ligne'];
 
             $villeDepartCode = $this->getInseeCode($segment['depart']);
@@ -95,19 +89,21 @@ class Reservation
             if (!$villeDepartCode || !$villeArriveeCode) continue;
 
             $courant = $villeDepartCode;
-            $safeguard = 0; 
+            $safeguard = 0;
 
             while ($courant !== $villeArriveeCode && $safeguard < 50) {
                 $sql = "SELECT NOE_DISTANCE_PROCHAIN, COM_CODE_INSEE_SUIVANT, 
-                               TO_CHAR(NOE_HEURE_PASSAGE, 'YYYY-MM-DD HH24:MI:SS') AS NOE_HEURE_FMT 
+                        TO_CHAR(NOE_HEURE_PASSAGE, 'YYYY-MM-DD HH24:MI:SS') AS NOE_HEURE_FMT
                         FROM vik_noeud 
                         WHERE com_code_insee_arret = :courant 
-                          AND lig_num = :ligNum 
-                          AND ROWNUM = 1";
+                        AND lig_num = :ligNum
+                        AND ROWNUM = 1";
 
                 $stmt = $this->database->prepareStatement($sql);
+
                 $stmt->execute(['courant' => $courant, 'ligNum' => $ligNum]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
 
                 if ($result) {
                     $distEtape = isset($result['NOE_DISTANCE_PROCHAIN']) ? (float) str_replace(',', '.', $result['NOE_DISTANCE_PROCHAIN']) : 0;
@@ -123,7 +119,7 @@ class Reservation
                     $distanceTotal += $distEtape;
                     $courant = $result['COM_CODE_INSEE_SUIVANT'];
                 } else {
-                    break; 
+                    break;
                 }
                 $safeguard++;
             }
@@ -132,8 +128,10 @@ class Reservation
         if (empty($etapes)) return;
 
         if ($cliNum !== 0) {
-            $this->authentificator->ajoutPointsApresResa($cliNum, $distanceTotal);
+            $this->authentificator->ajoutPointApresResa($cliNum, $distanceTotal);
         }
+
+
 
         $tarNum = 13;
         if ($distanceTotal < 10) {
@@ -162,6 +160,7 @@ class Reservation
             $tarNum = 12;
         }
 
+
         $sql = "SELECT TAR_PRIX FROM vik_tarif WHERE TAR_NUM_TRANCHE = :tarNum";
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['tarNum' => $tarNum]);
@@ -180,6 +179,8 @@ class Reservation
             }
         }
 
+
+
         $points = floor($distanceTotal) / 10;
 
         $sqlRes = "SELECT NVL(MAX(RES_NUM), 0) + 1 AS NEW_RES FROM vik_reservation WHERE CLI_NUM = :cliNum";
@@ -193,26 +194,34 @@ class Reservation
         $stmtInsert = $this->database->prepareStatement($sqlInsert);
         $stmtInsert->execute([
             'cliNum' => $cliNum,
-            'resNum' => $newResNum,
+            'resNum' => intval($newResNum),
             'tarNum' => $tarNum,
-            'points' => $points,
-            'prix'   => $prix
+            'points' => intval(floor($points)),
+            'prix'   => intval($prix)
         ]);
 
         $sqlInsertEtape = "INSERT INTO VIK_ETAPE (LIG_NUM, CLI_NUM, RES_NUM, COM_CODE_INSEE_DEPART, COM_CODE_INSEE_ARRIVEE, ETA_DISTANCE, ETA_HEURE) 
                            VALUES (:ligNum, :cliNum, :resNum, :dep, :arr, :dist, TO_DATE(:heure, 'YYYY-MM-DD HH24:MI:SS'))";
         $stmtEtape = $this->database->prepareStatement($sqlInsertEtape);
-
         foreach ($etapes as $etape) {
             $stmtEtape->execute([
                 'ligNum' => $etape['ligne'],
-                'cliNum' => $cliNum,
-                'resNum' => $newResNum,
+                'cliNum' => intval($cliNum),
+                'resNum' => intval($newResNum),
                 'dep'    => $etape['depart'],
                 'arr'    => $etape['arrivee'],
-                'dist'   => $etape['dist'],
+                'dist'   => str_replace('.', ',', (string)$etape['dist']),
                 'heure'  => $etape['heure']
             ]);
         }
+
+        return [
+            'reservation_id' => $newResNum,
+            'prix' => $prix,
+            'points' => intval(floor($points)),
+            'distance' => $distanceTotal,
+            'etapes' => $etapes,
+            'cliNum' => $cliNum
+        ];
     }
 }
