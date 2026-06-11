@@ -194,4 +194,18 @@ class Adminitration
 
         return $result;
     }
+
+    public function getListeResEntre($datedebut, $datefin): array
+    {
+        $sql = "SELECT count(*) AS total_res
+            FROM vik_reservation
+            WHERE TRUNC(res_date) BETWEEN TO_DATE(:datedebut, 'DD/MM/YY') AND TO_DATE(:datefin, 'DD/MM/YY')";
+
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['datedebut' => $datedebut, 'datefin' => $datefin]);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
 }
