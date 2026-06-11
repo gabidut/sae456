@@ -1,6 +1,11 @@
 <?php
 $page_active = 'stats'; 
 include_once __DIR__ . '/../../includes/global.php'; 
+
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    header('Location: ../../index.php');
+    exit();
+}
 ?>
 
 <div class="admin-dashboard-layout">
