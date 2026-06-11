@@ -12,19 +12,20 @@ class Ligne
         $this->database = $database;
     }
 
-    public function getLignes()
-    {
-        $sql = $sql =
-            "SELECT DISTINCT REGEXP_REPLACE(LIG_NUM, '[^0-9]', '') AS LIG_NUM
-            FROM VIK_LIGNE
-            ORDER BY TO_NUMBER(REGEXP_REPLACE(LIG_NUM, '[^0-9]', '')) ASC";
-
-        $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
-    }
+    public function getLignes() {
+    $sql = "SELECT 
+                REGEXP_REPLACE(l.LIG_NUM, '[^0-9]', '') AS LIG_NUM,
+                c_debu.COM_NOM AS VILLE_DEB,
+                c_term.COM_NOM AS VILLE_TERM
+            FROM VIK_LIGNE l
+            JOIN VIK_COMMUNE c_debu ON l.COM_CODE_INSEE_DEBU = c_debu.COM_CODE_INSEE
+            JOIN VIK_COMMUNE c_term ON l.COM_CODE_INSEE_TERM = c_term.COM_CODE_INSEE
+            ORDER BY TO_NUMBER(REGEXP_REPLACE(l.LIG_NUM, '[^0-9]', '')) ASC";
+            
+    $stmt = $this->database->prepareStatement($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     public function findAllLinesByCity($cityName)
     {
@@ -41,18 +42,16 @@ class Ligne
         return $result;
     }
 
-    public function getDirections($numeroDeLigne)
-    {
-        $sql = "SELECT LIG_NUM 
-                FROM VIK_LIGNE 
-                WHERE REGEXP_REPLACE(LIG_NUM, '[^0-9]', '') = :numero
-                ORDER BY LIG_NUM ASC";
-
-        $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['numero' => $numeroDeLigne]);
-
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
-    }
+    public function getDirections($numeroDeLigne) {
+    $sql = "SELECT l.LIG_NUM, c.COM_NOM AS VILLE_TERMINUS
+            FROM VIK_LIGNE l
+            JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_TERM = c.COM_CODE_INSEE
+            WHERE REGEXP_REPLACE(l.LIG_NUM, '[^0-9]', '') = :ligne";
+            
+    $stmt = $this->database->prepareStatement($sql);
+    $stmt->execute(['ligne' => $numeroDeLigne]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC); 
+}
 
     public function getHoraire($numeroDeLigne) {
 
