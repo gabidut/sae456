@@ -18,3 +18,9 @@ if (isset($_GET['citiesByDep'])) {
     $cities = $ligneManager->getCitiesByDepartment($department);
     echo json_encode($cities);
 }
+
+if(isset($_GET['citiesAndGPS'])) {
+    $reservationManager = new Reservation($database);
+    $departments = $reservationManager->listCities();
+    echo json_encode($departments);
+}
