@@ -92,7 +92,7 @@ class Database
                 WHERE COM_CODE_INSEE_DEPART = :depart 
                   AND COM_CODE_INSEE_ARRIVEE = :arrivee
                 ORDER BY ETA_HEURE ASC
-                FETCH FIRST 1 ROWS ONLY"; // Use LIMIT 1 for MySQL/PostgreSQL if needed
+                FETCH FIRST 1 ROWS ONLY";
 
         $stmt = $this->prepareStatement($sql);
         $stmt->execute(['depart' => $codeInseeDepart, 'arrivee' => $codeInseeArrivee]);
@@ -104,7 +104,6 @@ class Database
         $cur = $this->conn->query("SELECT * FROM vik_ligne");
         return $cur->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function isUserAllowed($email, $password)
     {
         $sql = "SELECT * FROM vik_client WHERE cli_mail = :email AND cli_password = :password";

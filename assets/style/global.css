@@ -190,133 +190,55 @@ main {
 }
 
 /* --- FOOTER --- */
-footer {
-    background-color: var(--surface-color);
-    border-top: 1px solid var(--border-color);
-    padding: 2rem;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
 
-footer p span {
-    color: var(--accent-color);
-}
-
-/* --- RESPONSIVE (Mobiles) --- */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .hero h2 {
-        font-size: 2rem;
-    }
-}
-
+/* Style du conteneur principal du footer si nécessaire */
 .site-footer {
-    background-color: #121214;
-    /* Fond sombre moderne */
-    color: #ffffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 40px 20px 20px 20px;
-    margin-top: 60px;
-    border-top: 1px solid #232329;
+    width: 100%;
+    background-color: #111111; /* À adapter selon tes couleurs */
+    padding: 20px 0;
 }
 
-/* Alignement du contenu principal */
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 30px;
-}
-
-/* Section Logo */
-.footer-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.footer-logo {
-    max-height: 70px;
-    /* Aligne la taille de ton logo */
-    width: auto;
-    object-fit: contain;
-}
-
-.footer-date {
-    color: #a1a1aa;
-    font-size: 0.9rem;
-}
-
-/* Liens de navigation */
-.footer-nav {
-    display: flex;
-    gap: 60px;
-}
-
-.footer-col h3 {
-    color: #f4f4f5;
-    font-size: 1rem;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.footer-col ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.footer-col li {
-    margin-bottom: 10px;
-}
-
-.footer-col a {
-    color: #a1a1aa;
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-}
-
-.footer-col a:hover {
-    color: #3b82f6;
-    /* Changement de couleur au survol (bleu tech) */
-}
-
-/* Barre de copyright tout en bas */
+/* Alignement des éléments en ligne */
 .footer-bottom {
-    max-width: 1200px;
-    margin: 40px auto 0 auto;
-    padding-top: 20px;
-    border-top: 1px solid #232329;
-    text-align: center;
-    color: #71717a;
-    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between; /* Espace les 3 éléments de manière égale */
+    align-items: center;           /* Aligne verticalement au centre */
+    max-width: 1200px;             /* Largeur max du contenu */
+    margin: 0 auto;                /* Centre le bloc sur la page */
+    padding: 0 20px;               /* Marge de sécurité sur les côtés */
 }
 
-/* Responsive pour les téléphones */
+/* Gestion de la taille du logo */
+.footer-logo {
+    max-height: 60px;              /* Ajuste la hauteur selon ton logo */
+    width: auto;
+}
+
+/* Reset des marges par défaut du paragraphe */
+.footer-copyright {
+    margin: 0;
+    font-size: 14px;
+    color: #585858;
+}
+
+/* Style du lien À propos */
+.footer-link {
+    text-decoration: none;
+    color: #585858;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.footer-link:hover {
+    text-decoration: underline;    /* Effet au survol */
+}
+
+/* Optionnel : Rend le footer responsive sur mobile (les éléments s'empilent) */
 @media (max-width: 768px) {
-    .footer-container {
+    .footer-bottom {
         flex-direction: column;
-        align-items: center;
+        gap: 15px;                 /* Espace entre les éléments empilés */
         text-align: center;
-    }
-
-    .footer-nav {
-        flex-direction: column;
-        gap: 30px;
-    }
-
-    .footer-brand {
-        align-items: center;
     }
 }
 
@@ -327,8 +249,7 @@ footer p span {
     background-color: var(--surface-color);
     border-bottom: 3px solid var(--accent-color);
     padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
+    position: relative; /* Changé de sticky à relative pour éviter les chevauchements */
     z-index: 1000;
 }
 
@@ -339,7 +260,8 @@ footer p span {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
-    position: relative; /* INDISPENSABLE pour calibrer le centrage absolu du titre */
+    position: relative;
+    /* INDISPENSABLE pour calibrer le centrage absolu du titre */
 }
 
 /* Zone Gauche : Image */
@@ -354,10 +276,10 @@ footer p span {
     display: block;
 }
 
-/* Zone Centrale : TITRE ANCRÉ ET CENTRÉ PILE AU MILIEU */
+/* Zone Centrale : TITRE POSITIONNÉ À 1/3 DE LA GAUCHE */
 .header-center {
     position: absolute;
-    left: 50%;
+    left: 33.33%;
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
@@ -366,6 +288,8 @@ footer p span {
 .header-center a {
     text-decoration: none;
     display: block;
+    z-index: 1;
+    pointer-events: none; /* Évite de bloquer les clics autour du titre */
 }
 
 .main-title {
@@ -375,7 +299,7 @@ footer p span {
     font-weight: 800;
     color: var(--text-main);
     margin: 0;
-    white-space: nowrap;
+    white-space: nowrap; /* Empêche le titre de se couper sur deux lignes */
 }
 
 .main-title span {
@@ -388,7 +312,8 @@ footer p span {
     justify-content: flex-end;
     align-items: center;
     gap: 2rem;
-    z-index: 2; /* Reste au-dessus du titre pour pouvoir cliquer sur les liens */
+    z-index: 2;
+    /* Reste au-dessus du titre pour pouvoir cliquer sur les liens */
 }
 
 /* La navBar (B majuscule) */
@@ -431,6 +356,70 @@ footer p span {
 .btn-contact:hover {
     background-color: var(--accent-hover);
     transform: translateY(-2px);
+}
+
+/* ==========================================
+   RESPONSIVE HEADER & NAVIGATION
+   ========================================== */
+@media (max-width: 992px) {
+    .main-header {
+        padding: 1.5rem 1rem;
+    }
+
+    .header-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        height: auto;
+        align-items: center;
+    }
+
+    .header-left {
+        display: none;
+    }
+
+    .header-center {
+        position: static;
+        transform: none;
+        text-align: center;
+        width: 100%;
+    }
+
+    .main-title {
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-right {
+        width: 100%;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .navBar .nav-links {
+        flex-direction: row; /* Aligné horizontalement */
+        flex-wrap: wrap; /* Permet de passer à la ligne si besoin */
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .navBar .nav-links a {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-title {
+        font-size: 1.8rem;
+    }
 }
 
 /* code CSS de la page "À propos" */
@@ -511,7 +500,7 @@ footer p span {
         .team-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            border-color: #3b82f6; /* Lueur bleue au survol */
+            border-color: #ff0000; /* Lueur bleue au survol */
         }
 
         /* Photo du membre */
@@ -521,7 +510,7 @@ footer p span {
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 15px;
-            border: 3px solid #3b82f6;
+            border: 3px solid #ff00009f;
         }
 
         .member-name {
@@ -538,3 +527,166 @@ footer p span {
             letter-spacing: 0.5px;
             margin: 0;
         }
+
+/* ==========================================================================
+   Styles Généraux
+   ========================================================================== */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a1e; /* Fond sombre assorti au footer */
+    color: #ffffff;
+}
+
+/* Conteneur principal automatique basé sur la grille du footer */
+#lig-button-container, #table-horaire-lig {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+h3 {
+    color: #f4f4f5;
+    font-size: 1.4rem;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #232329;
+    margin: 40px 0;
+}
+
+/* ==========================================================================
+   Boutons (Lignes & Directions)
+   ========================================================================== */
+#dir-button-container {
+    margin-top: 15px;
+}
+
+/* Style de base des boutons */
+.button-lig, .button-dir {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 0 10px 15px 0;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+}
+
+/* Boutons des Lignes (Style principal en bleu) */
+.button-lig {
+    background-color: #f63b3b;
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(246, 59, 59, 0.2);
+}
+
+.button-lig:hover {
+    background-color: #eb2525;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(246, 59, 59, 0.3);
+}
+
+/* Boutons des Directions (Style secondaire plus discret) */
+.button-dir {
+    background-color: #292323;
+    color: #e4e4e7;
+    border-color: #3f3f46;
+}
+
+.button-dir:hover {
+    background-color: #2e2e36;
+    color: #ffffff;
+    border-color: #f63b3b; /* Lueur bleue au survol */
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Tableau des Horaires
+   ========================================================================== */
+/* On rend le tableau scrollable horizontalement sur mobile s'il y a trop d'heures */
+#table-horaire-lig {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate; /* Permet d'avoir des arrondis propres */
+    border-spacing: 0;
+    background-color: #232329;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #2e2e36 !important; /* Remplace le border="1" du HTML */
+    margin-bottom: 40px;
+}
+
+/* En-tête du tableau */
+th {
+    background-color: #121214;
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 2px solid #2e2e36;
+}
+
+/* Première colonne (Villes) spécifique pour l'alignement */
+th:first-child, td:first-child {
+    min-width: 200px;
+    font-size: 1rem;
+}
+
+/* Cellules de données */
+td {
+    padding: 14px 20px;
+    color: #e4e4e7;
+    border-bottom: 1px solid #2e2e36;
+    border-right: 1px solid #2e2e36;
+    font-variant-numeric: tabular-nums; /* Aligne parfaitement les chiffres des heures */
+}
+
+/* Supprime la bordure droite sur la dernière colonne */
+td:last-child {
+    border-right: none;
+}
+
+/* Supprime la bordure basse sur la dernière ligne */
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* Effet de survol sur les lignes du tableau pour une meilleure lecture */
+tbody tr:hover {
+    background-color: #2a2a32;
+}
+
+/* Style des heures (les cases d'horaires) */
+td:not(:first-child) {
+    text-align: center;
+    font-weight: 500;
+    color: #ff5454; /* Met en valeur les horaires avec la couleur bleue */
+    background-color: rgba(59, 130, 246, 0.03); /* Léger fond bleuté */
+}
+
+/* ==========================================================================
+   Responsive Mobile
+   ========================================================================== */
+@media (max-width: 600px) {
+    .button-lig, .button-dir {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+        margin-right: 0;
+    }
+}

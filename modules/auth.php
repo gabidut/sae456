@@ -26,7 +26,6 @@ class Authentificator
             throw new AuthExeption("Invalid email or password 1");
         } else {
             if ($this->verify_password($password, $user['CLI_MDP'])) {
-                echo "Password verified";
                 $this->session_helper->setUserSession($user['CLI_NUM']);
                 $this->updateConnexionDate($user['CLI_NUM']);
                 return $user;

@@ -2,13 +2,15 @@
 require __DIR__ . '/session.php';
 require __DIR__ . '/../modules/bdd.php';
 require __DIR__ . '/../modules/auth.php';
+require __DIR__ . '/../modules/ligne.php';
+require __DIR__ . '/../modules/reservation.php';
 
 $env = require_once __DIR__ . '/../env.php';
 
 $database = new Database(
-    $env['db_oracle'],
-    $env['db_username'],
-    $env['db_password']
+        $env['db_oracle'],
+        $env['db_username'],
+        $env['db_password']
 );
 
 $session = new SessionHelper(
@@ -16,10 +18,14 @@ $session = new SessionHelper(
 );
 
 $authentificator = new Authentificator(
-    $database,
-    $env['password_secret'],
+        $database,
+        $env['password_secret'],
     $session
 );
+
+$ligneManager = new Ligne($database);
+$reservationManager = new Reservation($database, $session);
+
 
 include __DIR__ . '/../includes/navBar.php';
 // Démarrage du HTML commun
