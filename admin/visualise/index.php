@@ -202,6 +202,7 @@ function toggleSearchInput(val) {
         input.placeholder = "Entrez votre recherche...";
     }
 }
+// On l'exécute une fois au chargement pour bloquer le champ si "inactifs" était resté sélectionné
 window.onload = function() {
     toggleSearchInput(document.getElementById('search_type').value);
 };

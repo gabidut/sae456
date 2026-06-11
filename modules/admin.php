@@ -78,47 +78,47 @@ class Adminitration
     {
         $sql = "SELECT * FROM vik_client where cli_num LIKE :cliNum";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cliNum' => $cliNum]);
+        $stmt->execute(['cliNum' => $cliNum.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortCourriel($cli_courriel): array
     {
-        $sql = "SELECT * FROM vik_client where cli_courriel like :cli_courriel%";
+        $sql = "SELECT * FROM vik_client where lower(cli_courriel) like lower(:cli_courriel )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_courriel' => $cli_courriel]);
+        $stmt->execute(['cli_courriel' => $cli_courriel.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortRang($typ_num): array
     {
-        $sql = "SELECT * FROM vik_client where typ_num like :typ_num";
+        $sql = "SELECT * FROM vik_client join vik_type_client using (typ_num) where lower(typ_nom) like lower(:typ_nom )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['typ_num' => '%'.$typ_num.'%']);
+        $stmt->execute(['typ_num' => $typ_num.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortPrenom($cli_prenom): array
     {
-        $sql = "SELECT * FROM vik_client where cli_prenom like :cli_prenom";
+        $sql = "SELECT * FROM vik_client where lower(cli_prenom) like lower(:cli_prenom ) ";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_prenom' => '%'.$cli_prenom. '%']);
+        $stmt->execute(['cli_prenom' => $cli_prenom. '%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortNom($cli_nom): array
     {
-        $sql = "SELECT * FROM vik_client where cli_nom like :cli_nom";
+        $sql = "SELECT * FROM vik_client where lower(cli_nom) like lower(:cli_nom )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_nom' =>'%'. $cli_nom.'%']);
+        $stmt->execute(['cli_nom' => $cli_nom.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortVille($cli_ville): array
     {
-        $sql = "SELECT * FROM vik_client where cli_ville like :cli_ville";
+        $sql = "SELECT * FROM vik_client where lower(cli_ville) like lower(:cli_ville )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_ville' =>'%' . $cli_ville . '%']);
+        $stmt->execute(['cli_ville' => $cli_ville . '%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -193,5 +193,13 @@ class Adminitration
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $result;
+    }
+
+    public function clientInactif($clientID): bool{
+        $sql = "select * from vik_client where cli_id = :cli_id AND cli_date_connec < sysdate - (365*2)";
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(["cli_id"=> $clientID]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return !is_null($result);
     }
 }
