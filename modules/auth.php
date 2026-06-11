@@ -149,7 +149,7 @@ class Authentificator
 
     public function ajoutPointApresResa($num_utilisateur, $nbkilometre)
     {
-        $nbpoints = floor($nbkilometre) / 10;
+        $nbpoints = floor($nbkilometre/10) ;
 
         $sqlPoints = "UPDATE vik_client SET cli_nb_points_ec = cli_nb_points_ec + :nbpoints, cli_nb_points_tot = cli_nb_points_tot + :nbpoints WHERE cli_num = :num";
 
@@ -186,7 +186,7 @@ class Authentificator
     public function getReservation($numClient): array
     {
         $sql = 'select cli_prenom, res_num, res_date, res_prix_tot, lig_num, 
-        a.com_nom, b.com_nom, eta_heure 
+        a.com_nom , b.com_nom, eta_heure 
         from vik_reservation 
         join vik_client using (cli_num) 
         join vik_etape using (cli_num, res_num)
