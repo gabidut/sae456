@@ -21,9 +21,9 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
         <div class="header-right" id="nav-menu">
             <nav class="navBar">
                 <ul class="nav-links">
-                    <li><a href="/" class="<?php echo ($current_dir == 'htdocs' && $current_page == 'index.php') ? 'active' : ''; ?>">Accueil</a></li>
+                    <li><a href="/" class="<?php echo (in_array($current_dir, ['', '/', '\\', 'htdocs']) && $current_page == 'index.php') ? 'active' : ''; ?>">Accueil</a></li>
                     <li><a href="/reservation" class="<?php echo ($current_dir == 'reservation') ? 'active' : ''; ?>">Réservation</a></li>
-                    <li><a href="/reseau" class="<?php echo ($current_page == 'reseau') ? 'active' : ''; ?>">Réseau</a></li>
+                    <li><a href="/reseau" class="<?php echo ($current_dir == 'reseau') ? 'active' : ''; ?>">Réseau</a></li>
                     <li><a href="/lignes" class="<?php echo ($current_dir == 'lignes') ? 'active' : ''; ?>">Lignes</a></li>
                 </ul>
             </nav>
