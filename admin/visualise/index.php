@@ -24,39 +24,36 @@ if ($selected_client_id !== null) {
 
     <main class="admin-main-content">
         
-        <div class="container container-users">
-            <h1>Gestion des utilisateurs</h1>
-            <p class="subtitle">Bientôt la liste des users</p>
+        <div class="viking-card container-users">
+            <h1 class="viking-title">Gestion des utilisateurs</h1>
+            <p class="subtitle text-muted">Liste globale des comptes clients enregistrés</p>
             
-            <div class="table-responsive-wrapper layout-bg-white">
-                <table class="admin-table table-collapse-white">
-                    <thead class="sticky-header users-thead-bg">
-                        <tr class="border-bottom-heavy text-left">
-                            <th class="p-12">ID</th>
-                            <th class="p-12">Nom</th>
-                            <th class="p-12">Prénom</th>
-                            <th class="p-12">Email</th>
-                            <th class="p-12 text-center">Actions</th>
+            <div class="table-responsive-wrapper">
+                <table class="admin-table">
+                    <thead class="sticky-header">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!empty($clients)): ?>
                             <?php foreach ($clients as $c): ?>
-                                <tr class="border-bottom-light <?php echo ($selected_client_id !== null && $selected_client_id == $c['CLI_NUM']) ? 'selected-row-highlight' : ''; ?>">
-                                    <td class="p-12 font-weight-bold"><?php echo htmlspecialchars($c['CLI_NUM'] ?? '0'); ?></td>
-                                    <td class="p-12"><?php echo htmlspecialchars($c['CLI_NOM'] ?? ''); ?></td>
-                                    <td class="p-12"><?php echo htmlspecialchars($c['CLI_PRENOM'] ?? ''); ?></td>
-                                    <td class="p-12"><?php echo htmlspecialchars($c['CLI_COURRIEL'] ?? ''); ?></td>
-                                    <td class="p-12 text-center">
-                                        
-                                        <a href="?client_id=<?php echo $c['CLI_NUM']; ?>" class="btn-action-blue">
+                                <tr class="<?php echo ($selected_client_id !== null && $selected_client_id == $c['CLI_NUM']) ? 'selected-row-highlight' : ''; ?>">
+                                    <td class="font-weight-bold text-red"><?php echo htmlspecialchars($c['CLI_NUM'] ?? '0'); ?></td>
+                                    <td><?php echo htmlspecialchars($c['CLI_NOM'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($c['CLI_PRENOM'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($c['CLI_COURRIEL'] ?? ''); ?></td>
+                                    <td class="text-center">
+                                        <a href="?client_id=<?php echo $c['CLI_NUM']; ?>" class="btn-action-red">
                                             Voir Résas
                                         </a>
-
-                                        <button type="button" class="btn-action-gray">
+                                        <button type="button" class="btn-action-outline">
                                             Modifier
                                         </button>
-
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -72,32 +69,32 @@ if ($selected_client_id !== null) {
             </div>
         </div>
 
-        <div class="container container-reservations">
-            <h2>Liste des réservations</h2>
+        <div class="viking-card container-reservations">
+            <h2 class="viking-title">Liste des réservations</h2>
             
             <?php if ($selected_client_id !== null): ?>
-                <p class="subtitle">Réservations pour le client n°<strong><?php echo htmlspecialchars($selected_client_id); ?></strong> :</p>
+                <p class="subtitle text-muted">Réservations pour le client n°<strong class="text-red"><?php echo htmlspecialchars($selected_client_id); ?></strong> :</p>
                 
-                <div class="table-responsive-wrapper layout-bg-white">
-                    <table class="admin-table table-collapse-white">
-                        <thead class="sticky-header resas-thead-bg">
-                            <tr class="border-bottom-heavy text-left">
-                                <th class="p-12">N° Résa</th>
-                                <th class="p-12">Date</th>
-                                <th class="p-12">Départ</th>
-                                <th class="p-12">Arrivée</th>
-                                <th class="p-12">Prix Total</th>
+                <div class="table-responsive-wrapper">
+                    <table class="admin-table">
+                        <thead class="sticky-header">
+                            <tr>
+                                <th>N° Résa</th>
+                                <th>Date</th>
+                                <th>Départ</th>
+                                <th>Arrivée</th>
+                                <th>Prix Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($reservations)): ?>
                                 <?php foreach ($reservations as $r): ?>
-                                    <tr class="border-bottom-light">
-                                        <td class="p-12 font-weight-bold"><?php echo htmlspecialchars($r['RES_NUM'] ?? ''); ?></td>
-                                        <td class="p-12"><?php echo htmlspecialchars($r['RES_DATE'] ?? ''); ?></td>
-                                        <td class="p-12"><?php echo htmlspecialchars($r['DEPART'] ?? ''); ?></td>
-                                        <td class="p-12"><?php echo htmlspecialchars($r['ARRIVE'] ?? ''); ?></td>
-                                        <td class="p-12 text-price font-weight-bold"><?php echo htmlspecialchars($r['RES_PRIX_TOT'] ?? '0'); ?> €</td>
+                                    <tr>
+                                        <td class="font-weight-bold text-red"><?php echo htmlspecialchars($r['RES_NUM'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($r['RES_DATE'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($r['DEPART'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($r['ARRIVE'] ?? ''); ?></td>
+                                        <td class="text-price font-weight-bold"><?php echo htmlspecialchars($r['RES_PRIX_TOT'] ?? '0'); ?> €</td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -113,7 +110,7 @@ if ($selected_client_id !== null) {
 
             <?php else: ?>
                 <p class="placeholder-info-box">
-                    Veuillez cliquer sur le bouton "👁️ Voir Résas" d'un client en haut pour afficher l'historique de ses réservations Oracle.
+                    Veuillez cliquer sur le bouton "Voir Résas" d'un client ci-dessus pour charger son historique depuis Oracle.
                 </p>
             <?php endif; ?>
         </div>
