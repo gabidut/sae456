@@ -26,7 +26,7 @@ try {
         <div class="ticket-info">
             <div class="info-item">
                 <label>N° Réservation</label>
-                <span><?= htmlspecialchars($resr['cliNum']) ?>-<?= htmlspecialchars($resr['reservation_id']) ?></span>
+                <span><?= htmlspecialchars($resr['cliNum']) ?>/<?= htmlspecialchars($resr['reservation_id']) ?></span>
             </div>
             <div class="info-item">
                 <label>Heure de Départ</label>
