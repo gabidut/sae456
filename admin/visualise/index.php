@@ -1,31 +1,44 @@
 <?php
-// 1. On appelle global.php qui gère déjà la session, le CSS global et la navBar
-include_once '../includes/global.php'; 
+// 1. Chargement de l'environnement et des modules de ton projet
+$env = require_once __DIR__ . '/../env.php';
+require_once __DIR__ . '/../modules/bdd.php';
+require_once __DIR__ . '/../modules/auth.php';
+require_once __DIR__ . '/../includes/session.php';
 
-// 2. Vérification de sécurité (L'utilisateur est-il admin ?)
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../index.php'); 
+// 2. Initialisation de la base de données et des helpers
+$database = new Database(
+    $env['db_oracle'],
+    $env['db_username'],
+    $env['db_password']
+);
+$session = new SessionHelper($database);
+$authentificator = new Authentificator($database, $env['password_secret'], $session);
+
+// 3. Vérification de sécurité alternative
+// On vérifie si la session est active ET si le rôle est 'admin'
+if (!isset($_SESSION) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header('Location: ../index.php');
     exit();
 }
 
-// 3. Connexion à la base de données
-$host = 'localhost';
-$dbname = 'votre_base_de_donnees'; // À remplacer par le nom de ta base
-$username = 'root';
-$password = '';
-
+// 4. Récupération des clients (Requête SQL calée sur ta table vik_client)
+$clients = [];
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = $database->getConnection(); 
     
-    // Récupération des utilisateurs qui ont le rôle 'client'
-    $stmt = $pdo->prepare("SELECT id, nom, prenom, email, date_inscription FROM utilisateurs WHERE role = 'client'");
+    // Requête ciblant les colonnes de ta table réelle
+    $query = "SELECT CLI_NUM, CLI_NOM, CLI_PRENOM, CLI_MAIL FROM VIK_CLIENT";
+    
+    $stmt = $pdo->prepare($query);
     $stmt->execute();
     $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-} catch (PDOException $e) {
-    die("Erreur de connexion à la base de données : " . $e->getMessage());
+} catch (Exception $e) {
+    $error_msg = $e->getMessage();
 }
+
+// 5. On appelle global.php pour le CSS global et la navBar
+include_once '../includes/global.php'; 
 ?>
 
 <div class="container">
@@ -36,28 +49,30 @@ try {
     </section>
 
     <section class="admin-content">
-        <?php if (count($clients) > 0): ?>
+        <?php if (isset($error_msg)): ?>
+            <p class="error-message">Erreur lors du chargement : <?php echo htmlspecialchars($error_msg); ?></p>
+        <?php endif; ?>
+
+        <?php if (!empty($clients)): ?>
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>Numéro Client</th>
                         <th>Nom</th>
                         <th>Prénom</th>
                         <th>Email</th>
-                        <th>Inscription</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($clients as $client): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($client['id']); ?></td>
-                            <td><?php echo htmlspecialchars($client['nom']); ?></td>
-                            <td><?php echo htmlspecialchars($client['prenom']); ?></td>
-                            <td><?php echo htmlspecialchars($client['email']); ?></td>
-                            <td><?php echo htmlspecialchars($client['date_inscription']); ?></td>
+                            <td><?php echo htmlspecialchars($client['CLI_NUM']); ?></td>
+                            <td><?php echo htmlspecialchars($client['CLI_NOM']); ?></td>
+                            <td><?php echo htmlspecialchars($client['CLI_PRENOM']); ?></td>
+                            <td><?php echo htmlspecialchars($client['CLI_MAIL']); ?></td>
                             <td>
-                                <a href="modif.php?id=<?php echo $client['id']; ?>" class="btn-modifier">Modifier</a>
+                                <a href="../modif/index.php?id=<?php echo $client['CLI_NUM']; ?>" class="btn-modifier">Modifier</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -71,6 +86,6 @@ try {
 </div>
 
 <?php 
-// 5. Inclusion du footer pour fermer proprement la page
+// 7. Inclusion du footer
 require '../includes/footer.php'; 
 ?>
