@@ -693,18 +693,32 @@ td:not(:first-child) {
     }
 }
 
-/* css de la page ligne */
-body { 
+/* ==========================================================================
+   CSS ligne
+   ========================================================================== */
+/* --- Structure & Thème Sombre Viking --- */
+body, .viking-theme-body { 
     font-family: 'Segoe UI', Arial, sans-serif; 
     background-color: #121212; 
     color: #ffffff; 
     line-height: 1.6;
     scroll-behavior: smooth; 
+    margin: 0;
+    padding: 0;
 }
 
-/* Espacement accru sous les titres et textes d'introduction */
-/* Bloc d'introduction principal */
-.TitreLigne {
+.viking-main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.viking-page-header {
+    margin-bottom: 30px;
+}
+
+/* --- Titres et Introduction --- */
+.viking-title, .TitreLigne {
     font-size: 32px;
     font-weight: 800;
     color: #ffffff;
@@ -713,11 +727,11 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
     position: relative;
-    padding-left: 18px; /* Espace pour la barre rouge */
+    padding-left: 18px; 
 }
 
 /* La barre rouge verticale distinctive à gauche du titre */
-.TitreLigne::before {
+.viking-title::before, .TitreLigne::before {
     content: "";
     position: absolute;
     left: 0;
@@ -728,56 +742,96 @@ body {
     border-radius: 2px;
 }
 
-/* Texte d'instruction en dessous */
-.TexteLigne {
+.subtitle, .TexteLigne {
     font-size: 16px;
-    color: #a0a0a0; /* Gris doux pour le contraste */
-    margin-bottom: 70px; /* Espace fortement augmenté pour détacher le bloc du premier bouton */
+    color: #a0a0a0; 
+    margin-bottom: 70px; /* Espace pour détacher le bloc d'introduction du premier bouton */
     font-style: italic;
 }
 
-/* Boutons de Lignes - Espacement vertical renforcé */
+.text-muted {
+    color: #a0a0a0;
+}
+
+.text-red {
+    color: #ff1818;
+}
+
+/* --- Conteneur Accordéon --- */
+.accordion-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.anchor-offset {
+    scroll-margin-top: 80px; 
+}
+
+/* --- Boutons Principaux (Lignes) --- */
 .button-lig { 
     display: block; 
     padding: 18px 24px; 
-    margin: 25px 0; /* Augmenté à 25px pour bien séparer les boutons principaux entre eux */
+    margin: 25px 0; /* Espace vertical pour séparer les boutons principaux */
     text-decoration: none; 
     border-radius: 8px; 
     font-weight: bold; 
+    font-size: 1.1rem;
     background: #ff0000c9; 
     color: #ffffff; 
     border: 2px solid #ce020267; 
     max-width: 480px; 
     transition: all 0.2s ease-in-out; 
 }
+
 .button-lig:hover { 
     background: #ff0000c9; 
     color: white; 
     transform: translateX(4px); 
 }
-.active-lig { 
+
+.button-lig.active-lig, .active-lig { 
     background: #ff0000c9 !important; 
     color: white !important; 
     box-shadow: 0 6px 15px rgba(255, 0, 0, 0.2); 
 }
 
-/* Zones de déploiement (Conteneur des directions) */
+.line-badge {
+    background-color: #121212;
+    color: #ffffff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-right: 12px;
+    border: 1px solid #ff18188c;
+}
+
+/* --- Zones de Déploiement (Directions) --- */
 .directions-zone { 
-    margin-top: 30px; /* Plus d'espace entre le bouton principal actif et ses options */
+    margin-top: 30px; 
     margin-left: 25px; 
     padding-left: 25px; 
     border-left: 3px dashed #212529; 
-    margin-bottom: 45px; /* Plus d'espace avant le bouton de ligne suivant */
-}
-.directions-zone p {
-    margin-bottom: 20px; /* Plus d'espace sous le texte "Sélectionnez le sens" */
+    margin-bottom: 45px; 
 }
 
-/* Boutons de Directions */
+.direction-prompt {
+    margin-bottom: 20px;
+    color: #a0a0a0;
+}
+
+.directions-buttons-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+/* --- Boutons de Directions --- */
 .button-dir { 
     display: inline-block; 
     padding: 12px 22px; 
-    margin: 10px 12px 10px 0; /* Plus d'espace horizontal et vertical entre les choix de direction */
+    margin: 10px 12px 10px 0; 
     text-decoration: none; 
     border-radius: 6px; 
     font-weight: bold; 
@@ -786,84 +840,141 @@ body {
     border: 2px solid #ff18188c; 
     transition: all 0.2s ease-in-out; 
 }
+
 .button-dir:hover { 
     background: #ff1818; 
     color: white; 
 }
-.active-dir { 
+
+.button-dir.active-dir, .active-dir { 
     background: #ff1818 !important; 
     color: white !important; 
     box-shadow: 0 4px 12px rgba(255, 0, 0, 0.46); 
 }
 
-/* Zone des horaires (Apparaît après le choix d'une direction) */
+/* --- Zone des Horaires --- */
 .horaires-zone { 
-    margin-top: 45px; /* Crée une vraie rupture visuelle avant d'afficher la frise et le tableau */
+    margin-top: 45px; 
     background: #121212; 
-    padding: 30px; /* Plus d'espace interne pour le bloc de résultats */
+    padding: 30px; 
     border-radius: 10px; 
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
     border: 1px solid #dee2e6;
 }
 
-/* Frise Chronologique */
+.terminus-title {
+    font-size: 1.3rem;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+/* --- Frise Chronologique (Timeline) --- */
 .route-timeline { 
     display: flex; 
     align-items: center; 
     flex-wrap: wrap; 
     gap: 15px; 
-    margin: 35px 0; /* Plus d'espace autour de la frise */
+    margin: 35px 0; 
     background: #121212; 
     padding: 20px; 
     border-radius: 6px; 
     border-left: 4px solid #ff0000ad;
 }
+
 .timeline-stop { 
     display: flex; 
     align-items: center; 
+    flex-direction: column;
+    min-width: 100px;
+    text-align: center;
 }
+
 .stop-dot { 
     width: 10px; 
     height: 10px; 
     background: #ff1818; 
     border-radius: 50%; 
     display: inline-block; 
+    margin-bottom: 8px;
 }
+
+.spinning-bus {
+    width: 24px;
+    height: auto;
+    margin-bottom: 4px;
+}
+
 .stop-name { 
-    margin-left: 8px; 
     font-weight: 600; 
     font-size: 14px; 
     color: #ffffff; 
 }
+
 .timeline-line { 
     height: 3px; 
     width: 35px; 
     background: #ff1818; 
     margin: 0 4px; 
     display: inline-block; 
+    align-self: center;
+    margin-bottom: 20px; /* Aligne la ligne avec l'axe des puces */
 }
 
-/* Tableau d'horaires */
-table { 
+/* --- Tableaux d'Horaires --- */
+table, .viking-table { 
     width: 100%; 
     border-collapse: collapse; 
-    margin-top: 35px; /* Éloigne le tableau de la frise chronologique */
+    margin-top: 35px; 
 }
+
 th, td { 
     padding: 16px 18px; 
     text-align: left; 
     border-bottom: 1px solid #dee2e6; 
     font-size: 14px; 
 }
+
 th { 
     background: #212529; 
     color: #ffffff; 
     font-weight: 600;
 }
+
+.cell-station-name {
+    width: 25%;
+    color: #ffffff;
+}
+
 tr:hover { 
     background-color: #1f1f1f; 
 }
 
+.text-center {
+    text-align: center;
+}
+
+/* --- Système d'Heures en Puces (Grid interne) --- */
+.hours-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hour-tag {
+    background-color: #1f1f1f;
+    border: 1px solid #333333;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+/* Responsive Wrapper pour éviter la cassure sur mobile */
+.table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
 /* ==========================================================================
    Styles pour la page visualisation admin
    ========================================================================== */
