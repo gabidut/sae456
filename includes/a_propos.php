@@ -45,13 +45,13 @@ include_once '../includes/global.php';
             <div class="team-card">
                 <img src="../image/victorien.jpg" alt="Photo de Membre 4" class="member-photo">
                 <p class="member-name">Victorien GAIGNE</p>
-                <p class="member-role">Chef de Projet</p>
+                <p class="member-role">Développeur back-end</p>
             </div>
 
             <div class="team-card">
                 <img src="../image/victor.jpg" alt="Photo de Membre 5" class="member-photo">
                 <p class="member-name">Victor ANGER--RENAULT</p>
-                <p class="member-role">Animateur</p>
+                <p class="member-role">Expert BDD</p>
             </div>
 
             <div class="team-card">

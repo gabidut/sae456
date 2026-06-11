@@ -25,10 +25,18 @@ class Authentificator
         if (empty($user)) {
             throw new AuthExeption("Invalid email or password 1");
         } else {
-            if ($this->verify_password($password, $user['CLI_MDP'])) {
+            if ($this->verify_password($password, $user['CLI_MDP']))
+            {
                 $this->session_helper->setUserSession($user['CLI_NUM']);
                 $this->updateConnexionDate($user['CLI_NUM']);
+
+                if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
+                {
+                    $this->session_helper->setAdminUser();
+                }   
+
                 return $user;
+
             }
         }
 
@@ -98,6 +106,18 @@ class Authentificator
 
         return -1;
     }
+
+    public function getIsAdmin($userID)
+{
+    $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
+    $stmt = $this->database->prepareStatement($sql);
+    $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
+
+    $stmt->execute(); 
+
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+}
 
     public function updateConnexionDate($num_utilisateur)
     {
