@@ -83,7 +83,7 @@ class Authentificator
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'0','0',sysdate,:mdp)";
+        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('5',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'0','0',sysdate,:mdp) RETURNING cli_num INTO :new_id";
         $stmt = $this->database->prepareStatement($sql);
 
         $newId = 0;

@@ -44,10 +44,16 @@ class Ligne
 
     public function findAllLinesByCity($cityName)
     {
-        $sql = "SELECT DISTINCT REGEXP_REPLACE(LIG_NUM, '[^0-9]', '') AS LIG_NUM
-                FROM VIK_LIGNE l
-                JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_DEBU = c.COM_CODE_INSEE OR l.COM_CODE_INSEE_TERM = c.COM_CODE_INSEE
-                WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
+        $sql = "SELECT DISTINCT LIG_NUM
+                FROM (
+                    SELECT LIG_NUM FROM VIK_NOEUD n JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_ARRET = c.COM_CODE_INSEE WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
+                    UNION
+                    SELECT LIG_NUM FROM VIK_NOEUD n JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_SUIVANT = c.COM_CODE_INSEE WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
+                    UNION
+                    SELECT LIG_NUM FROM VIK_LIGNE l JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_DEBU = c.COM_CODE_INSEE WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
+                    UNION
+                    SELECT LIG_NUM FROM VIK_LIGNE l JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_TERM = c.COM_CODE_INSEE WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
+                )
                 ORDER BY TO_NUMBER(REGEXP_REPLACE(LIG_NUM, '[^0-9]', '')) ASC";
 
         $stmt = $this->database->prepareStatement($sql);
