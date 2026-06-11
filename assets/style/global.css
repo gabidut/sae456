@@ -364,7 +364,7 @@ main {
 /* ==========================================
    RESPONSIVE HEADER & NAVIGATION
    ========================================== */
-@media (max-width: 1250px) {
+@media (max-width: 1400px) {
     .main-header {
         padding: 1.5rem 1rem;
     }
@@ -563,124 +563,6 @@ hr {
     background: #232329;
     margin: 40px 0;
 }
-
-/* ==========================================================================
-   Boutons (Lignes & Directions)
-   ========================================================================== */
-#dir-button-container {
-    margin-top: 15px;
-}
-
-/* Style de base des boutons */
-.button-lig, .button-dir {
-    display: inline-block;
-    padding: 12px 24px;
-    margin: 0 10px 15px 0;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
-    border: 1px solid transparent;
-}
-
-/* Boutons des Lignes (Style principal en bleu) */
-.button-lig {
-    background-color: #f63b3b;
-    color: #ffffff;
-    box-shadow: 0 4px 6px rgba(246, 59, 59, 0.2);
-}
-
-.button-lig:hover {
-    background-color: #eb2525;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(246, 59, 59, 0.3);
-}
-
-/* Boutons des Directions (Style secondaire plus discret) */
-.button-dir {
-    background-color: #292323;
-    color: #e4e4e7;
-    border-color: #3f3f46;
-}
-
-.button-dir:hover {
-    background-color: #2e2e36;
-    color: #ffffff;
-    border-color: #f63b3b; /* Lueur bleue au survol */
-    transform: translateY(-2px);
-}
-
-/* ==========================================================================
-   Tableau des Horaires
-   ========================================================================== */
-/* On rend le tableau scrollable horizontalement sur mobile s'il y a trop d'heures */
-#table-horaire-lig {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: separate; /* Permet d'avoir des arrondis propres */
-    border-spacing: 0;
-    background-color: #232329;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #2e2e36 !important; /* Remplace le border="1" du HTML */
-    margin-bottom: 40px;
-}
-
-/* En-tête du tableau */
-th {
-    background-color: #121214;
-    color: #ffffff;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    padding: 16px 20px;
-    text-align: left;
-    border-bottom: 2px solid #2e2e36;
-}
-
-/* Première colonne (Villes) spécifique pour l'alignement */
-th:first-child, td:first-child {
-    min-width: 200px;
-    font-size: 1rem;
-}
-
-/* Cellules de données */
-td {
-    padding: 14px 20px;
-    color: #e4e4e7;
-    border-bottom: 1px solid #2e2e36;
-    border-right: 1px solid #2e2e36;
-    font-variant-numeric: tabular-nums; /* Aligne parfaitement les chiffres des heures */
-}
-
-/* Supprime la bordure droite sur la dernière colonne */
-td:last-child {
-    border-right: none;
-}
-
-/* Supprime la bordure basse sur la dernière ligne */
-tr:last-child td {
-    border-bottom: none;
-}
-
-/* Effet de survol sur les lignes du tableau pour une meilleure lecture */
-tbody tr:hover {
-    background-color: #2a2a32;
-}
-
-/* Style des heures (les cases d'horaires) */
-td:not(:first-child) {
-    text-align: center;
-    font-weight: 500;
-    color: #ff5454; /* Met en valeur les horaires avec la couleur bleue */
-    background-color: rgba(59, 130, 246, 0.03); /* Léger fond bleuté */
-}
-
 /* ==========================================================================
    Responsive Mobile
    ========================================================================== */
@@ -694,7 +576,9 @@ td:not(:first-child) {
     }
 }
 
-/* css de la page ligne */
+/* ==========================================================================
+   Boutons (Lignes & Directions)
+   ========================================================================== */
 body { 
     font-family: 'Segoe UI', Arial, sans-serif; 
     background-color: #121212; 
@@ -874,4 +758,232 @@ th {
 }
 tr:hover { 
     background-color: #1f1f1f; 
+}
+
+/* ==========================================================================
+   Styles pour la page visualisation admin
+   ========================================================================== */
+/* --- Structure Générale (Fonds Sombres) --- */
+body {
+    background-color: #0d0d0d; /* Fond très sombre comme sur ta capture */
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+}
+
+.admin-dashboard-layout {
+    display: flex;
+    background-color: #0d0d0d;
+}
+
+.admin-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    flex: 1;
+    padding: 25px;
+}
+
+/* --- Cartes / Blocs (Style Informations Personnelles) --- */
+.viking-card {
+    background-color: #141414; /* Gris très foncé/noir pour les blocs */
+    border: 1px solid #222222;
+    border-radius: 8px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-users {
+    height: 420px;
+}
+
+.container-reservations {
+    height: 420px;
+}
+
+/* --- Titres & Textes --- */
+.viking-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0 0 5px 0;
+    position: relative;
+}
+
+/* Optionnel : petite barre rouge sous le titre comme ton design */
+.viking-title::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 3px;
+    background-color: #da1b23;
+    margin-top: 8px;
+}
+
+.subtitle {
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.text-muted {
+    color: #888888;
+}
+
+.text-red {
+    color: #da1b23;
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+.font-italic {
+    font-style: italic;
+}
+
+/* --- Tableaux Style Futuriste / Sombre --- */
+.table-responsive-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #222222;
+    border-radius: 6px;
+    background-color: #111111;
+}
+
+/* Custom scrollbar pour rester discret */
+.table-responsive-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+.table-responsive-wrapper::-webkit-scrollbar-thumb {
+    background-color: #333333;
+    border-radius: 4px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #181818;
+}
+
+.admin-table th {
+    padding: 14px 16px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #222222;
+}
+
+.admin-table td {
+    padding: 14px 16px;
+    color: #cccccc;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #1f1f1f;
+}
+
+/* Ligne survolée et sélectionnée */
+.admin-table tbody tr:hover {
+    background-color: #161616;
+}
+
+.selected-row-highlight {
+    background-color: #1c1415 !important; /* Teinte subtile de rouge pour la sélection */
+    border-left: 3px solid #da1b23;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-price {
+    color: #16a34a; /* Vert préservé pour les montants positifs */
+}
+
+/* --- Boite d'attente (Placeholder) --- */
+.placeholder-info-box {
+    color: #888888;
+    font-style: italic;
+    background-color: #111111;
+    padding: 30px;
+    border-radius: 6px;
+    border: 1px dashed #333333;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* --- Boutons (Style Enregistrer / Déconnexion) --- */
+.btn-action-red {
+    text-decoration: none;
+    background-color: #da1b23; /* Rouge Viking exact */
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-right: 8px;
+    display: inline-block;
+    transition: background 0.2s;
+    border: none;
+}
+
+.btn-action-red:hover {
+    background-color: #b8141a;
+}
+
+.btn-action-outline {
+    background-color: transparent;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    border: 1px solid #444444;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-action-outline:hover {
+    border-color: #ffffff;
+    background-color: #222222;
+}
+
+/* ==========================================================================
+   Styles pour la page modification admin
+   ========================================================================== */
+
+.admin-form {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-input:disabled {
+    background-color: #e9ecef;
 }

@@ -5,8 +5,8 @@ include 'includes/global.php';
 
 <section class="hero">
     <h2>La puissance du transport <span>Nordique</span></h2>
-    <p>L'entreprise nordique qui vous emmenera là où vous avez besoin d'aller. Nous vous déplacons avec la force et la rigueur des Vikings.</p>
-    <a href="/reservation" class="btn">Réserver</a>
+    <p>Réseau de bus, liaisons Express et voyages en Normandie. Nous guidons vos trajets du quotidien et vos plus belles échappées avec la force et la ponctualité des Vikings.</p>
+    <a href="#services" class="btn">Découvrir nos services</a>
 </section>
 
 <section id="services" class="services">

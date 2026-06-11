@@ -226,4 +226,39 @@ class Reservation
             'cliNum' => $cliNum
         ];
     }
+
+    public function getFinalHoraire($lineId, $codeInseeDepart, $codeInseeArrivee, $horaireDepart)
+    {
+        $duree = 0;
+        $codeInseeDepart = $this->getInseeCode($codeInseeDepart);
+        $codeInseeArrivee = $this->getInseeCode($codeInseeArrivee);
+        $sql = "SELECT NOE_DUREE_PROCHAIN, COM_CODE_INSEE_SUIVANT 
+                FROM VIK_NOEUD 
+                WHERE COM_CODE_INSEE_ARRET = :depart 
+                AND lig_num = :ligne";
+        $stmt = $this->database->prepareStatement($sql);
+
+        $currentDepart = $codeInseeDepart;
+
+        while ($currentDepart !== $codeInseeArrivee) {
+            $stmt->execute([
+                'ligne' => $lineId,
+                'depart' => $currentDepart
+            ]);
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$row) {
+                throw new \Exception("Chemin introuvable ou rupture de la ligne entre $codeInseeDepart et $codeInseeArrivee.");
+            }
+
+            $duree += (int) $row['NOE_DUREE_PROCHAIN'];
+            $currentDepart = $row['COM_CODE_INSEE_SUIVANT'];
+        }
+
+        $datePrevue = new \DateTime($horaireDepart);
+
+        $datePrevue->modify("+$duree minutes");
+        return ['horaires' => [$datePrevue->format('H:i')]];
+    }
 }

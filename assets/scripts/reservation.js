@@ -13,7 +13,6 @@ async function fetchLignes() {
         resolve();
     });
 }
-
 function addStep() {
     // Masquer les boutons de suppression des étapes précédentes
     document.querySelectorAll('.btn-remove-step').forEach(btn => btn.style.display = 'none');
@@ -25,9 +24,14 @@ function addStep() {
     lignesDatalist.id = 'lignes-list-' + stepIndex;
     document.body.appendChild(lignesDatalist);
 
-    const dataList = document.createElement('datalist');
-    dataList.id = `villes-list-${stepIndex}`;
-    document.body.appendChild(dataList);
+    // 1. DEUX datalists séparées pour Départ et Arrivée
+    const departDataList = document.createElement('datalist');
+    departDataList.id = `depart-list-${stepIndex}`;
+    document.body.appendChild(departDataList);
+
+    const arriveeDataList = document.createElement('datalist');
+    arriveeDataList.id = `arrivee-list-${stepIndex}`;
+    document.body.appendChild(arriveeDataList);
 
     const div = document.createElement('div');
     div.classList.add('search-form-horizontal');
@@ -54,7 +58,7 @@ function addStep() {
     departLabel.textContent = 'Départ';
 
     const departInput = document.createElement('input');
-    departInput.setAttribute('list', `villes-list-${stepIndex}`);
+    departInput.setAttribute('list', `depart-list-${stepIndex}`); // Affecté au nouveau datalist
     departInput.setAttribute('placeholder', 'D\'où partez-vous ?');
     departInput.setAttribute('required', '');
     departInput.setAttribute('autocomplete', 'off');
@@ -72,7 +76,7 @@ function addStep() {
     arriveeLabel.textContent = 'Arrivée';
 
     const arriveeInput = document.createElement('input');
-    arriveeInput.setAttribute('list', `villes-list-${stepIndex}`);
+    arriveeInput.setAttribute('list', `arrivee-list-${stepIndex}`); // Affecté au nouveau datalist
     arriveeInput.setAttribute('placeholder', 'Où allez-vous ?');
     arriveeInput.setAttribute('required', '');
     arriveeInput.setAttribute('autocomplete', 'off');
@@ -126,9 +130,8 @@ function addStep() {
         removeBtn.addEventListener('click', () => {
             stepWrapper.remove();
             delete steps[stepIndex];
-            
-            // Réafficher le bouton sur la nouvelle dernière étape
-            const keys = Object.keys(steps).map(Number).sort((a,b) => a-b);
+
+            const keys = Object.keys(steps).map(Number).sort((a, b) => a - b);
             if (keys.length > 1) {
                 const lastKey = keys[keys.length - 1];
                 const lastWrapper = document.querySelector(`.step-wrapper[data-wrapper-step="${lastKey}"]`);
@@ -143,7 +146,10 @@ function addStep() {
 
     document.getElementById('steps').appendChild(stepWrapper);
 
-    // Event listeners
+    // ==========================================
+    // ÉVÉNEMENTS
+    // ==========================================
+
     ligneInput.addEventListener('change', function () {
         const ligneValue = this.value;
         steps[stepIndex].ligne = ligneValue;
@@ -152,24 +158,35 @@ function addStep() {
                 .then(response => response.json())
                 .then(data => {
                     const map = {};
+                    const orderedVilles = []; // 2. On garde l'ordre des arrêts
+
                     data.forEach(item => {
                         const ville = item.VILLE_ARRET;
                         const time = item.HEURE_PASSAGE;
-                        if (!map[ville]) map[ville] = [];
+                        if (!map[ville]) {
+                            map[ville] = [];
+                            orderedVilles.push(ville); // L'ordre de l'API est préservé
+                        }
                         if (time && !map[ville].includes(time)) map[ville].push(time);
                     });
-                    scheduleCache[stepIndex] = map;
-                    const villes = Object.keys(map);
-                    let stepsDatalist = document.getElementById(`villes-list-${stepIndex}`);
-                    stepsDatalist.innerHTML = '';
-                    villes.forEach(ville => {
-                        const option = document.createElement('option');
-                        option.value = ville;
-                        stepsDatalist.appendChild(option);
+
+                    // 3. On sauvegarde la carte ET l'ordre dans le cache
+                    scheduleCache[stepIndex] = { map: map, orderedVilles: orderedVilles };
+
+                    // Remplir les suggestions de départ avec TOUTES les villes
+                    departDataList.innerHTML = '';
+                    arriveeDataList.innerHTML = '';
+                    orderedVilles.forEach(ville => {
+                        const opt = document.createElement('option');
+                        opt.value = ville;
+                        departDataList.appendChild(opt);
+                        arriveeDataList.appendChild(opt.cloneNode(true)); // Par défaut, on met tout
                     });
+
                     const departVal = departInput.value;
                     const prevArrTime = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
                     if (departVal && map[departVal]) populateTimeSelect(departTimeSelect, map[departVal], prevArrTime);
+
                     const arriveeVal = arriveeInput.value;
                     const departSelectedTime = steps[stepIndex].departTime || departTimeSelect.value || null;
                     if (arriveeVal && map[arriveeVal]) populateTimeSelect(arriveeTimeSelect, map[arriveeVal], departSelectedTime);
@@ -177,17 +194,100 @@ function addStep() {
         }
     });
 
+    departInput.addEventListener('change', function () {
+        const departValue = this.value;
+        steps[stepIndex].depart = departValue;
+
+        const cache = scheduleCache[stepIndex] || {};
+        const map = cache.map || {};
+        const orderedVilles = cache.orderedVilles || [];
+
+        // 4. Filtrer la liste d'arrivée en fonction du départ
+        arriveeDataList.innerHTML = '';
+        const departIndex = orderedVilles.indexOf(departValue);
+
+        if (departIndex !== -1) {
+            // N'ajoute que les villes APRES l'index de départ
+            for (let i = departIndex + 1; i < orderedVilles.length; i++) {
+                const option = document.createElement('option');
+                option.value = orderedVilles[i];
+                arriveeDataList.appendChild(option);
+            }
+        }
+
+        // 5. Si l'utilisateur avait déjà sélectionné une arrivée invalide, on la vide
+        const currentArrivee = arriveeInput.value;
+        if (currentArrivee) {
+            const arriveeIndex = orderedVilles.indexOf(currentArrivee);
+            if (arriveeIndex <= departIndex) {
+                arriveeInput.value = '';
+                steps[stepIndex].arrivee = '';
+                arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
+            }
+        }
+
+        const prevArrTime2 = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
+        if (map[departValue]) {
+            populateTimeSelect(departTimeSelect, map[departValue], prevArrTime2);
+        } else {
+            departTimeSelect.innerHTML = '<option value="">Heure</option>';
+        }
+        steps[stepIndex].departTime = '';
+    });
+
     arriveeInput.addEventListener('change', function () {
         const arriveeValue = this.value;
-        steps[stepIndex].arrivee = arriveeValue;
-        const map = scheduleCache[stepIndex] || {};
-        const minForArrive = steps[stepIndex].departTime || null;
-        if (map[arriveeValue]) {
-            populateTimeSelect(arriveeTimeSelect, map[arriveeValue], minForArrive);
-        } else {
-            arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
+        const cache = scheduleCache[stepIndex] || {};
+        const orderedVilles = cache.orderedVilles || [];
+
+        // 6. Sécurité si l'utilisateur force la saisie clavier d'un arrêt précédent
+        if (departInput.value) {
+            const dIndex = orderedVilles.indexOf(departInput.value);
+            const aIndex = orderedVilles.indexOf(arriveeValue);
+
+            if (aIndex !== -1 && dIndex !== -1 && aIndex <= dIndex) {
+                alert("La destination doit se trouver après le point de départ de la ligne.");
+                this.value = '';
+                steps[stepIndex].arrivee = '';
+                return;
+            }
         }
+
+        steps[stepIndex].arrivee = arriveeValue;
+        const minForArrive = steps[stepIndex].departTime || null;
+
+        if (!departTimeSelect.value && minForArrive) {
+            arriveeInput.value = '';
+            steps[stepIndex].arrivee = '';
+            return;
+        }
+
+        fetch(`/api/reservation.php?getFinalHoraire=1&lineId=${steps[stepIndex].ligne}&codeInseeDepart=${encodeURIComponent(steps[stepIndex].depart)}&codeInseeArrivee=${encodeURIComponent(arriveeValue)}&horaireDepart=${encodeURIComponent(minForArrive)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data || !data.horaires) {
+                    arriveeTimeSelect.innerHTML = '<option value="">Aucun horaire disponible</option>';
+                    return;
+                }
+                const times = data.horaires || [];
+                arriveeTimeSelect.innerHTML = '';
+                times.forEach(time => {
+                    const option = document.createElement('option');
+                    option.value = time;
+                    option.textContent = time;
+                    arriveeTimeSelect.appendChild(option);
+                });
+                if (times.length > 0) {
+                    arriveeTimeSelect.value = times[0];
+                    steps[stepIndex].arriveeTime = times[0];
+                }
+            }).catch(error => {
+                console.error('Erreur :', error);
+                arriveeTimeSelect.innerHTML = '<option value="">Aucun horaire disponible</option>';
+            });
+
         steps[stepIndex].arriveeTime = '';
+
         if (stepIndex < Object.keys(steps).length - 1) {
             const nextDepartInput = document.getElementById(`depart-input-${stepIndex + 1}`);
             if (nextDepartInput) {
@@ -198,20 +298,7 @@ function addStep() {
         }
     });
 
-    departInput.addEventListener('change', function () {
-        const departValue = this.value;
-        steps[stepIndex].depart = departValue;
-        const map = scheduleCache[stepIndex] || {};
-        const prevArrTime2 = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
-        if (map[departValue]) {
-            populateTimeSelect(departTimeSelect, map[departValue], prevArrTime2);
-        } else {
-            departTimeSelect.innerHTML = '<option value="">Heure</option>';
-        }
-        steps[stepIndex].departTime = '';
-    });
-
-    departTimeSelect.addEventListener('change', function() {
+    departTimeSelect.addEventListener('change', function () {
         const selected = this.value;
         const prevArr = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
         if (prevArr && selected && selected < prevArr) {
@@ -221,8 +308,32 @@ function addStep() {
             return;
         }
         steps[stepIndex].departTime = selected;
-        const map = scheduleCache[stepIndex] || {};
+        const cache = scheduleCache[stepIndex] || {};
+        const map = cache.map || {}; // Récupération mise à jour
         const arriveeValLocal = arriveeInput.value;
+        fetch(`/api/reservation.php?getFinalHoraire=1&lineId=${steps[stepIndex].ligne}&codeInseeDepart=${encodeURIComponent(steps[stepIndex].depart)}&codeInseeArrivee=${encodeURIComponent(arriveeValue)}&horaireDepart=${encodeURIComponent(minForArrive)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data || !data.horaires) {
+                    arriveeTimeSelect.innerHTML = '<option value="">Aucun horaire disponible</option>';
+                    return;
+                }
+                const times = data.horaires || [];
+                arriveeTimeSelect.innerHTML = '';
+                times.forEach(time => {
+                    const option = document.createElement('option');
+                    option.value = time;
+                    option.textContent = time;
+                    arriveeTimeSelect.appendChild(option);
+                });
+                if (times.length > 0) {
+                    arriveeTimeSelect.value = times[0];
+                    steps[stepIndex].arriveeTime = times[0];
+                }
+            }).catch(error => {
+                console.error('Erreur :', error);
+                arriveeTimeSelect.innerHTML = '<option value="">Aucun horaire disponible</option>';
+            });
         if (arriveeValLocal && map[arriveeValLocal]) {
             populateTimeSelect(arriveeTimeSelect, map[arriveeValLocal], selected);
             if (steps[stepIndex].arriveeTime && steps[stepIndex].arriveeTime < selected) {
@@ -232,7 +343,7 @@ function addStep() {
         }
     });
 
-    arriveeTimeSelect.addEventListener('change', function() {
+    arriveeTimeSelect.addEventListener('change', function () {
         const selected = this.value;
         const departSel = steps[stepIndex].departTime || null;
         if (departSel && selected && selected < departSel) {
@@ -245,7 +356,8 @@ function addStep() {
         const nextIndex = stepIndex + 1;
         const nextDepartSelect = document.getElementById(`depart-time-${nextIndex}`);
         if (nextDepartSelect) {
-            const nextMap = scheduleCache[nextIndex] || {};
+            const nextCache = scheduleCache[nextIndex] || {};
+            const nextMap = nextCache.map || {}; // Récupération mise à jour
             const nextDepartStation = steps[nextIndex] && steps[nextIndex].depart ? steps[nextIndex].depart : null;
             if (nextMap && nextDepartStation && nextMap[nextDepartStation]) {
                 populateTimeSelect(nextDepartSelect, nextMap[nextDepartStation], selected);
@@ -356,6 +468,7 @@ function confirm() {
         const reservationData = new FormData();
         reservationData.append('setTripDetails', JSON.stringify(steps));
         
+
         fetch('/api/reservation.php', {
             method: 'POST',
             headers: {
@@ -363,7 +476,7 @@ function confirm() {
             },
             body: new URLSearchParams(reservationData).toString()
         }).then(response => {
-             if (response.ok) location.href = '/reservation/pay/';
+            if (response.ok) location.href = '/reservation/pay/';
         });
     });
 

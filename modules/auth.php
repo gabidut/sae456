@@ -25,10 +25,18 @@ class Authentificator
         if (empty($user)) {
             throw new AuthExeption("Invalid email or password 1");
         } else {
-            if ($this->verify_password($password, $user['CLI_MDP'])) {
+            if ($this->verify_password($password, $user['CLI_MDP']))
+            {
                 $this->session_helper->setUserSession($user['CLI_NUM']);
                 $this->updateConnexionDate($user['CLI_NUM']);
+
+                if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
+                {
+                    $this->session_helper->setAdminUser();
+                }   
+
                 return $user;
+
             }
         }
 
@@ -75,13 +83,7 @@ class Authentificator
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $checkSql = "SELECT * FROM vik_client WHERE CLI_COURRIEL = :email";
-        $checkStmt = $this->database->prepareStatement($checkSql);
-        $checkStmt->execute(['email' => $mail]);
-        if ($checkStmt->rowCount() > 0) {
-            throw new Exception("Cet email est déjà utilisé");
-        }
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('1',:dep,:nom,:prenom,:ville,:tel,:mail,'10','10',sysdate,:mdp) RETURNING CLI_NUM INTO :new_id";
+        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'0','0',sysdate,:mdp)";
         $stmt = $this->database->prepareStatement($sql);
 
         $newId = 0;
@@ -104,6 +106,18 @@ class Authentificator
 
         return -1;
     }
+
+    public function getIsAdmin($userID)
+{
+    $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
+    $stmt = $this->database->prepareStatement($sql);
+    $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
+
+    $stmt->execute(); 
+
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+}
 
     public function updateConnexionDate($num_utilisateur)
     {
@@ -133,14 +147,14 @@ class Authentificator
 
     public function changeNom($num_utilisateur, $newNom)
     {
-        $sql = "update vik_client set cli_nom = :newNom where cli_num = :num";
+        $sql = "update vik_client set cli_nom = upper(:newNom) where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newNom' => $newNom]);
     }
 
     public function changePrenom($num_utilisateur, $newPrenom)
     {
-        $sql = "update vik_client set cli_prenom = :newPrenom where cli_num = :num";
+        $sql = "update vik_client set cli_prenom = initcap(:newPrenom) where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newPrenom' => $newPrenom]);
     }
@@ -174,7 +188,7 @@ class Authentificator
 
     public function ajoutPointApresResa($num_utilisateur, $nbkilometre)
     {
-        $nbpoints = floor($nbkilometre) / 10;
+        $nbpoints = floor($nbkilometre/10) ;
 
         $sqlPoints = "UPDATE vik_client SET cli_nb_points_ec = cli_nb_points_ec + :nbpoints, cli_nb_points_tot = cli_nb_points_tot + :nbpoints WHERE cli_num = :num";
 
@@ -210,22 +224,38 @@ class Authentificator
 
     public function getReservation($numClient): array
     {
-        $sql = 'select cli_prenom, res_num, res_date, res_prix_tot, lig_num, 
-        a.com_nom AS DEPART, b.com_nom AS ARRIVE, eta_heure 
-        from vik_reservation 
-        join vik_client using (cli_num) 
-        join vik_etape using (cli_num, res_num)
-        join vik_commune a on a.com_code_insee = vik_etape.com_code_insee_depart
-        join vik_commune b on b.com_code_insee = vik_etape.com_code_insee_arrivee
-        where cli_num = :numClient
-        order by res_date';
+        $sql = "
+            SELECT 
+                c.cli_nom, 
+                r.res_num, 
+                r.res_date, 
+                r.res_prix_tot, 
+                e_deb.lig_num, 
+                c_deb.com_nom AS DEPART, 
+                c_fin.com_nom AS ARRIVE, 
+                TO_CHAR(e_deb.eta_heure, 'HH24:MI') AS HEURE_DEPART
+            FROM vik_reservation r
+            -- Remplacement du USING par un ON --
+            JOIN vik_client c ON r.cli_num = c.cli_num
+            
+            JOIN vik_etape e_deb ON r.res_num = e_deb.res_num AND r.cli_num = e_deb.cli_num
+            JOIN vik_commune c_deb ON c_deb.com_code_insee = e_deb.com_code_insee_depart
+            
+            JOIN vik_etape e_fin ON r.res_num = e_fin.res_num AND r.cli_num = e_fin.cli_num
+            JOIN vik_commune c_fin ON c_fin.com_code_insee = e_fin.com_code_insee_arrivee
+            
+            WHERE r.cli_num = :numClient
+            AND e_deb.eta_heure = (SELECT MIN(eta_heure) FROM vik_etape WHERE res_num = r.res_num AND cli_num = r.cli_num)
+            AND e_fin.eta_heure = (SELECT MAX(eta_heure) FROM vik_etape WHERE res_num = r.res_num AND cli_num = r.cli_num)
+            
+            ORDER BY r.res_date ASC
+        ";
+
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['numClient' => $numClient]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (count($result) > 0) {
-            return $result;
-        }
-        return [];
+
+        return (count($result) > 0) ? $result : [];
     }
 }
 

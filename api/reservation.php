@@ -61,6 +61,17 @@ if (isset($_GET['findAllLignesFromCity'])) {
     }
 }
 
+if (isset($_GET['getFinalHoraire']) && isset($_GET['lineId']) && isset($_GET['codeInseeDepart']) && isset($_GET['codeInseeArrivee']) && isset($_GET['horaireDepart'])) {
+    try {
+        $lignes = $reservationManager->getFinalHoraire($_GET['lineId'], $_GET['codeInseeDepart'], $_GET['codeInseeArrivee'], $_GET['horaireDepart']);
+        echo json_encode($lignes);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+
 
 if (isset($_POST['setTripDetails'])) {
     try {
