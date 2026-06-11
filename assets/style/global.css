@@ -696,7 +696,6 @@ td:not(:first-child) {
 /* css de la page ligne */
 body { 
     font-family: 'Segoe UI', Arial, sans-serif; 
-    padding: 40px; 
     background-color: #121212; 
     color: #ffffff; 
     line-height: 1.6;

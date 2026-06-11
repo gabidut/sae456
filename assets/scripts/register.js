@@ -3,7 +3,7 @@ document.getElementById('departement-input').addEventListener('input', function 
     const datalist = document.getElementById('villes');
 
     datalist.innerHTML = '';
-    fetch(`http://localhost/api/cities.php?citiesByDep=${input}`)
+    fetch(`/api/cities.php?citiesByDep=${input}`)
         .then(response => response.json())
         .then(data => {
             data.forEach(city => {
