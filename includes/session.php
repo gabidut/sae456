@@ -57,6 +57,8 @@ class SessionHelper
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+
+
     public function setCurrentTripDetails($tripDetails)
     {
         $_SESSION['current_trip'] = $tripDetails;
@@ -65,5 +67,10 @@ class SessionHelper
     public function getCurrentTripDetails()
     {
         return $_SESSION['current_trip'] ?? null;
+    }
+
+    public function setAdminUser()
+    {
+        $_SESSION['is_admin'] = true;
     }
 }
