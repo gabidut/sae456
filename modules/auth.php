@@ -210,22 +210,37 @@ class Authentificator
 
     public function getReservation($numClient): array
     {
-        $sql = 'select cli_prenom, res_num, res_date, res_prix_tot, lig_num, 
-        a.com_nom AS DEPART, b.com_nom AS ARRIVE, eta_heure 
-        from vik_reservation 
-        join vik_client using (cli_num) 
-        join vik_etape using (cli_num, res_num)
-        join vik_commune a on a.com_code_insee = vik_etape.com_code_insee_depart
-        join vik_commune b on b.com_code_insee = vik_etape.com_code_insee_arrivee
-        where cli_num = :numClient
-        order by res_date';
+        $sql = "
+            SELECT 
+                c.cli_nom, 
+                r.res_num, 
+                r.res_date, 
+                r.res_prix_tot, 
+                e_deb.lig_num, 
+                c_deb.com_nom AS DEPART, 
+                c_fin.com_nom AS ARRIVE, 
+                TO_CHAR(e_deb.eta_heure, 'HH24:MI') AS HEURE_DEPART
+            FROM vik_reservation r
+            JOIN vik_client c USING (cli_num)
+            
+            JOIN vik_etape e_deb ON r.res_num = e_deb.res_num AND r.cli_num = e_deb.cli_num
+            JOIN vik_commune c_deb ON c_deb.com_code_insee = e_deb.com_code_insee_depart
+            
+            JOIN vik_etape e_fin ON r.res_num = e_fin.res_num AND r.cli_num = e_fin.cli_num
+            JOIN vik_commune c_fin ON c_fin.com_code_insee = e_fin.com_code_insee_arrivee
+            
+            WHERE r.cli_num = :numClient
+            AND e_deb.eta_heure = (SELECT MIN(eta_heure) FROM vik_etape WHERE res_num = r.res_num AND cli_num = r.cli_num)
+            AND e_fin.eta_heure = (SELECT MAX(eta_heure) FROM vik_etape WHERE res_num = r.res_num AND cli_num = r.cli_num)
+            
+            ORDER BY r.res_date ASC
+        ";
+
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['numClient' => $numClient]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (count($result) > 0) {
-            return $result;
-        }
-        return [];
+
+        return (count($result) > 0) ? $result : [];
     }
 }
 
