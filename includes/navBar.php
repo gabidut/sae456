@@ -1,15 +1,6 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
 $current_dir = basename(dirname($_SERVER['PHP_SELF']));
-
-// Fonction pour déterminer si un lien est actif
-function is_active($page, $dir = '') {
-    global $current_page, $current_dir;
-    if ($dir != '') {
-        return ($current_dir == $dir && $current_page == $page) ? 'active' : '';
-    }
-    return ($current_page == $page) ? 'active' : '';
-}
 ?>
 
 <header class="main-header">
@@ -26,12 +17,6 @@ function is_active($page, $dir = '') {
                 <h1 class="main-title">Viking<span>Transport</span></h1>
             </a>
         </div>
-
-        <button class="burger-menu" id="burger" aria-label="Ouvrir le menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </button>
 
         <div class="header-right" id="nav-menu">
             <nav class="navBar">
@@ -53,13 +38,3 @@ function is_active($page, $dir = '') {
 
     </div>
 </header>
-
-<script>
-    const burger = document.getElementById('burger');
-    const navMenu = document.getElementById('nav-menu');
-
-    burger.addEventListener('click', () => {
-        burger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
-</script>

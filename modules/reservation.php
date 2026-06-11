@@ -3,12 +3,15 @@
 class Reservation
 {
     private $database;
+    private $sessionHelper;
     /**
      * Summary of __construct
      * @param Database $database
+     * @param SessionHelper $sessionHelper
      */
-    public function __construct($database)
+    public function __construct($database, $sessionHelper)
     {
+        $this->sessionHelper = $sessionHelper;
         $this->database = $database;
     }
 
@@ -34,5 +37,13 @@ class Reservation
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['ligne' => $lineId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function createReservation($reservation)
+    {
+        //TODO
+        if ($this->sessionHelper->isUserLoggedIn()) {
+        } else {
+        }
     }
 }
