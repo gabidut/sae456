@@ -146,8 +146,8 @@ class Adminitration
 
 
     public function lignesLesPlusUtilisees($datedebut, $datefin): array
-{
-    $sql = "SELECT 
+    {
+        $sql = "SELECT 
         e.LIG_NUM, 
         COUNT(*) AS TOTAL_UTILISATIONS
         FROM VIK_ETAPE e
@@ -158,27 +158,40 @@ class Adminitration
         GROUP BY e.LIG_NUM
         ORDER BY e.LIG_NUM";
 
-    $stmt = $this->database->prepareStatement($sql);
-    $stmt->execute(['datedebut' => $datedebut, 'datefin' => $datefin]);
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['datedebut' => $datedebut, 'datefin' => $datefin]);
 
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $total = 0;
+        $total = 0;
 
-    foreach ($result as $ligne) {
-        $total += $ligne['TOTAL_UTILISATIONS']; 
-    }
-    
-    if ($total > 0) {
-        foreach ($result as $index => $ligne) {
-            $pourcentage = ($ligne['TOTAL_UTILISATIONS'] / $total) * 100;
-            
-            $result[$index]['POURCENTAGE'] = round($pourcentage, 2);
+        foreach ($result as $ligne) {
+            $total += $ligne['TOTAL_UTILISATIONS'];
         }
+
+        if ($total > 0) {
+            foreach ($result as $index => $ligne) {
+                $pourcentage = ($ligne['TOTAL_UTILISATIONS'] / $total) * 100;
+
+                $result[$index]['POURCENTAGE'] = round($pourcentage, 2);
+            }
+        }
+
+        return ['usages' => $result, 'total' => $total];
     }
 
-    return ['usages' => $result, 'total' => $total];
-}
+    public function top10BestUsers(): array
+    {
+        $sql = "select cli_num from (select cli_num, count(*) as tot from vik_reservation
+                group by cli_num 
+                order by tot desc
+                fetch first 11 rows only) where cli_num != 0";
 
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute();
 
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
 }
