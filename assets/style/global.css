@@ -752,53 +752,150 @@ tr:hover {
    Styles pour la page visualisation admin
    ========================================================================== */
 
-.admin-header {
-    text-align: center;
-    margin-bottom: 30px;
+/* --- Structure & Layout --- */
+.admin-dashboard-layout {
+    display: flex;
+}
+
+.admin-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    flex: 1;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-users {
+    height: 380px;
+}
+
+.container-reservations {
+    border-top: 2px dashed #cbd5e1;
+    padding-top: 20px;
+    height: 380px;
+}
+
+.layout-bg-white {
+    background: white;
+}
+
+/* --- Tableaux Éléments --- */
+.table-responsive-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
 }
 
 .admin-table {
     width: 100%;
+}
+
+.table-collapse-white {
     border-collapse: collapse;
-    margin-top: 20px;
-    background: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background: rgb(20, 20, 20);
 }
 
-.admin-table th, 
-.admin-table td {
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.users-thead-bg {
+    background-color: #f1f5f9;
+}
+
+.resas-thead-bg {
+    background-color: #f8fafc;
+}
+
+/* --- Bordures & Espacements --- */
+.border-bottom-heavy {
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.border-bottom-light {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.p-12 {
     padding: 12px;
+}
+
+.p-20 {
+    padding: 20px;
+}
+
+/* --- Styles de Textes --- */
+.subtitle {
+    margin-bottom: 10px;
+}
+
+.text-left {
     text-align: left;
-    border-bottom: 1px solid #dddddd;
 }
 
-.admin-table th {
-    background-color: #333333;
-    color: #ffffff;
-}
-
-.admin-table tr:hover {
-    background-color: #f5f5f5;
-}
-
-.btn-modifier {
-    display: inline-block;
-    padding: 6px 12px;
-    background-color: #28a745;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 4px;
+.text-center {
     text-align: center;
 }
 
-.btn-modifier:hover {
-    background-color: #218838;
+.font-weight-bold {
+    font-weight: bold;
 }
 
-.no-data {
-    text-align: center;
-    color: #666666;
+.font-italic {
     font-style: italic;
+}
+
+.text-muted {
+    color: #94a3b8;
+}
+
+.text-price {
+    color: #16a34a;
+}
+
+/* --- Interactions & États --- */
+.selected-row-highlight {
+    background-color: #161718;
+}
+
+.placeholder-info-box {
+    color: #94a3b8;
+    font-style: italic;
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px dashed #e2e8f0;
+    margin-top: 10px;
+}
+
+/* --- Boutons --- */
+.btn-action-blue {
+    text-decoration: none;
+    background-color: #3b82f6;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.btn-action-gray {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
 }
 
 /* ==========================================================================
