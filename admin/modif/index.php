@@ -17,7 +17,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // 3. Vérification de sécurité (Admin uniquement)
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
     header('Location: ../../index.php');
     exit();
 }
@@ -32,7 +32,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $cli_num = $_GET['id'];
     
     try {
-        $stmt = $pdo->prepare("SELECT CLI_NUM, CLI_NOM, CLI_PRENOM, CLI_MAIL FROM VIK_CLIENT WHERE CLI_NUM = :id");
+        $stmt = $pdo->prepare("SELECT CLI_NUM, CLI_NOM, CLI_PRENOM, CLI_COURRIEL FROM VIK_CLIENT WHERE CLI_NUM = :id");
         $stmt->execute(['id' => $cli_num]);
         $client = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -49,12 +49,12 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 // 5. ACTION : MODIFICATION DU COMPTE (Formulaire soumis)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_update'])) {
     try {
-        $query = "UPDATE VIK_CLIENT SET CLI_NOM = :nom, CLI_PRENOM = :prenom, CLI_MAIL = :mail WHERE CLI_NUM = :id";
+        $query = "UPDATE VIK_CLIENT SET CLI_NOM = :nom, CLI_PRENOM = :prenom, CLI_COURRIEL = :mail WHERE CLI_NUM = :id";
         $stmt = $pdo->prepare($query);
         $stmt->execute([
             'nom' => $_POST['cli_nom'],
             'prenom' => $_POST['cli_prenom'],
-            'mail' => $_POST['cli_mail'],
+            'mail' => $_POST['CLI_COURRIEL'],
             'id' => $cli_num
         ]);
         
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_update'])) {
         // On rafraîchit les données locales pour l'affichage
         $client['CLI_NOM'] = $_POST['cli_nom'];
         $client['CLI_PRENOM'] = $_POST['cli_prenom'];
-        $client['CLI_MAIL'] = $_POST['cli_mail'];
+        $client['CLI_COURRIEL'] = $_POST['CLI_COURRIEL'];
     } catch (Exception $e) {
         $error_msg = "Erreur lors de la modification : " . $e->getMessage();
     }
@@ -122,8 +122,8 @@ include_once __DIR__ . '/../../includes/global.php';
                 </div>
 
                 <div class="form-group">
-                    <label for="cli_mail">Email :</label>
-                    <input type="email" id="cli_mail" name="cli_mail" value="<?php echo htmlspecialchars($client['CLI_MAIL']); ?>" required class="form-input">
+                    <label for="CLI_COURRIEL">Email :</label>
+                    <input type="email" id="CLI_COURRIEL" name="CLI_COURRIEL" value="<?php echo htmlspecialchars($client['CLI_COURRIEL']); ?>" required class="form-input">
                 </div>
 
                 <div class="form-actions" style="margin-top: 20px;">
