@@ -1,8 +1,8 @@
 <?php
-include 'includes/global.php'; 
+include '../../includes/global.php'; 
 ?>
 
-<link rel="stylesheet" href="assets/style/login_register.css">
+<link rel="stylesheet" href="/assets/style/login_register.css">
 
 <main class="login-main">
     <div class="login-container register-wide">
@@ -26,7 +26,7 @@ include 'includes/global.php';
 
                     <div class="form-group">
                         <label for="phone">Numéro de téléphone</label>
-                        <input type="tel" id="phone" name="phone" placeholder="Ex: 07 80 39 44 67" required>
+                        <input type="tel" id="phone" name="phone" placeholder="Ex: 06 20 74 58 80" required>
                     </div>
                 </div>
 
@@ -58,11 +58,11 @@ include 'includes/global.php';
         </form>
 
         <div class="login-footer-links">
-            <p>Déjà inscrit ? <a href="login.php">Se connecter</a></p>
+            <p>Déjà inscrit ? <a href="../login/">Se connecter</a></p>
         </div>
     </div>
 </main>
 
 <?php
-require 'includes/footer.php'; 
+require '../../includes/footer.php'; 
 ?>
