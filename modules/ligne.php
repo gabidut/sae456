@@ -41,7 +41,6 @@ class Ligne
         return $result;
     }
 
-    // Ajoute cette fonction dans ta classe Ligne, juste en dessous de getLignes()
     public function getDirections($numeroDeLigne)
     {
         $sql = "SELECT LIG_NUM 

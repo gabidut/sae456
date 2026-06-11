@@ -5,7 +5,6 @@ $reservation = $session->getCurrentTripDetails();
 $reservationManager->createReservation($reservation);
 ?>
 
-<!-- Style spécifique à la page de réservation -->
 <div class="reservation-hero" style="background-color: black !important; padding: 20px;">
     <h2>Merci <?= $session->isUserLoggedIn() ? $session->getUserSession()['CLI_PRENOM'] : '' ?> pour votre réservation !</h2>
     <?php
