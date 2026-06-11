@@ -41,16 +41,6 @@ if(isset($_GET['direction']))
 
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lignes</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    
     <h2 class="TitreLigne">Consulter les Horaires Viking</h2>
     <p class="TexteLigne">Sélectionnez une ligne pour déployer ses options.</p>
 
@@ -94,7 +84,11 @@ if(isset($_GET['direction']))
                                 <div class="route-timeline">
                                     <?php foreach ($ordreDesVilles as $index => $v) : ?>
                                         <div class="timeline-stop">
-                                            <span class="stop-dot"></span>
+                                            <?php if ($index === 0): ?>
+                                                <img src="/image/car_vikingTransport.png" class="spinning-bus" alt="Bus">
+                                            <?php else: ?>
+                                                <span class="stop-dot"></span>
+                                            <?php endif; ?>
                                             <span class="stop-name"><?= htmlspecialchars($v) ?></span>
                                         </div>
                                         <?php if ($index < count($ordreDesVilles) - 1): ?>
@@ -132,7 +126,9 @@ if(isset($_GET['direction']))
 
     </div>
 
-</body>
-</html>
+    </main>
 
 <?php require '../includes/footer.php'; ?>
+
+</body>
+</html>
