@@ -1,5 +1,29 @@
 <?php
-include '../../includes/global.php'; 
+include '../../includes/global.php';
+$error_message = '';
+
+if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['phone']) && isset($_POST['departement']) && isset($_POST['ville'])) {
+    try {
+        if ($session->isUserLoggedIn()) {
+            throw new Exception("Vous êtes déjà connecté");
+        }
+        $user = $authentificator->insertUser(
+            $_POST['departement'],
+            $_POST['ville'],
+            $_POST['nom'],
+            $_POST['prenom'],
+            $authentificator->hash_password($_POST['password']),
+            $_POST['email'],
+            $_POST['phone'],
+        );
+        var_dump($user);
+        $session->setUserSession($user);
+        header('Location: /auth/profile/');
+        exit();
+    } catch (Exception $e) {
+        $error_message = $e->getMessage();
+    }
+}
 ?>
 
 <link rel="stylesheet" href="/assets/style/login_register.css">
@@ -9,10 +33,10 @@ include '../../includes/global.php';
         <h2>Inscription <span>Viking</span></h2>
         <p class="login-subtitle">Créez votre compte pour rejoindre le réseau</p>
 
-        <form action="traitement_inscription.php" method="POST" class="login-form">
-            
+        <form method="POST" class="login-form">
+
             <div class="form-grid">
-    
+
                 <div class="form-column">
                     <div class="form-group">
                         <label for="nom">Nom</label>
@@ -52,6 +76,12 @@ include '../../includes/global.php';
                     <input type="email" id="email" name="email" placeholder="Ex: Passoni@ergonomie.fr" required>
                 </div>
 
+                <? if (isset($error_message)) { ?>
+                    <div class="form-group form-group-full">
+                        <p class="error-message"><?php echo htmlspecialchars($error_message); ?></p>
+                    </div>
+                <? } ?>
+
             </div>
 
             <button type="submit" class="btn-login">Créer mon compte</button>
@@ -64,5 +94,5 @@ include '../../includes/global.php';
 </main>
 
 <?php
-require '../../includes/footer.php'; 
+require '../../includes/footer.php';
 ?>
