@@ -245,3 +245,39 @@
         display: none;
     }
 }
+
+/* --- STEP WRAPPER --- */
+.step-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.step-wrapper .search-form-horizontal {
+    flex: 1;
+}
+
+/* --- REMOVE BUTTON --- */
+.btn-remove-step {
+    background-color: #fff;
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 300;
+    flex-shrink: 0;
+}
+
+.btn-remove-step:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+    transform: rotate(90deg);
+}

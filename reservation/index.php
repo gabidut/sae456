@@ -7,8 +7,8 @@ $lignes = $ligneManager->getLignes();
 ?>
 
 <!-- Style spécifique à la page de réservation -->
-<link rel="stylesheet" href="/assets/style/reservation.css">
-<script src="/assets/scripts/reservation.js" defer></script>
+<link rel="stylesheet" href="/assets/style/reservation.css?v=<?php echo time(); ?>">
+<script src="/assets/scripts/reservation.js?v=<?php echo time(); ?>" defer></script>
 <div class="reservation-hero">
     <div class="hero-bg-top"></div>
     <div class="hero-bg-bottom"></div>

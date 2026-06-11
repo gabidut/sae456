@@ -15,6 +15,9 @@ async function fetchLignes() {
 }
 
 function addStep() {
+    // Masquer les boutons de suppression des étapes précédentes
+    document.querySelectorAll('.btn-remove-step').forEach(btn => btn.style.display = 'none');
+
     const stepIndex = Object.keys(steps).length;
     steps[stepIndex] = {};
 
@@ -111,7 +114,37 @@ function addStep() {
     div.appendChild(buildDivider());
     div.appendChild(arriveeGroup);
 
-    document.getElementById('steps').appendChild(div);
+    const stepWrapper = document.createElement('div');
+    stepWrapper.classList.add('step-wrapper');
+    stepWrapper.dataset.wrapperStep = stepIndex;
+    stepWrapper.appendChild(div);
+
+    // -- REMOVE BUTTON --
+    if (stepIndex > 0) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.classList.add('btn-remove-step');
+        removeBtn.innerHTML = '&times;';
+        removeBtn.title = 'Supprimer cette étape';
+        removeBtn.addEventListener('click', () => {
+            stepWrapper.remove();
+            delete steps[stepIndex];
+            
+            // Réafficher le bouton sur la nouvelle dernière étape
+            const keys = Object.keys(steps).map(Number).sort((a,b) => a-b);
+            if (keys.length > 1) {
+                const lastKey = keys[keys.length - 1];
+                const lastWrapper = document.querySelector(`.step-wrapper[data-wrapper-step="${lastKey}"]`);
+                if (lastWrapper) {
+                    const lastBtn = lastWrapper.querySelector('.btn-remove-step');
+                    if (lastBtn) lastBtn.style.display = 'flex';
+                }
+            }
+        });
+        stepWrapper.appendChild(removeBtn);
+    }
+
+    document.getElementById('steps').appendChild(stepWrapper);
 
     // Event listeners
     ligneInput.addEventListener('change', function () {
