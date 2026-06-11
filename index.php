@@ -5,7 +5,7 @@ include 'includes/global.php';
 
 <section class="hero">
     <h2>La puissance du transport <span>Nordique</span></h2>
-    <p>Logistique lourde, fret routier et solutions de transport express. Nous déplaçons vos marchandises avec la force et la rigueur des Vikings.</p>
+    <p>Réseau de bus, liaisons Express et voyages en Normandie. Nous guidons vos trajets du quotidien et vos plus belles échappées avec la force et la ponctualité des Vikings.</p>
     <a href="#services" class="btn">Découvrir nos services</a>
 </section>
 
