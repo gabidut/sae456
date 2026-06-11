@@ -6,11 +6,20 @@ $villes = $reservationManager->listCities();
 $lignes = $ligneManager->getLignes();
 ?>
 
-<link rel="stylesheet" href="/assets/style/reservation.css">
-<script src="/assets/scripts/reservation.js" defer></script>
+<!-- Style spécifique à la page de réservation -->
+<link rel="stylesheet" href="/assets/style/reservation.css?v=<?php echo time(); ?>">
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<script src="/assets/scripts/reservation.js?v=<?php echo time(); ?>" defer></script>
 <div class="reservation-hero">
     <div class="hero-bg-top"></div>
     <div class="hero-bg-bottom"></div>
+
+    <!-- Bus 3D Animation Container -->
+    <div id="bus-animation-container" class="bus-container">
+        <model-viewer src="/Bus.glb" autoplay animation-name="Squash" shadow-intensity="1" camera-orbit="0deg 90deg auto" interaction-prompt="none" loading="eager">
+            <div slot="progress-bar" style="display: none;"></div>
+        </model-viewer>
+    </div>
 
     <div class="search-bar-container">
         <div class="search-main-layout">

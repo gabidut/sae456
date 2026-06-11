@@ -17,7 +17,7 @@ include 'includes/global.php';
             <h4>Réservation de trajet</h4>
             <p>Ce service vous permet de planifier votre itinéraire à l'avance et de bloquer votre place à bord. Que ce soit pour un trajet régulier ou un transport à la demande, il vous suffit d'indiquer votre point de départ, votre destination et l'heure souhaitée pour voyager l'esprit tranquille.</p>
         </div>
-        
+    
         <div class="service-card">
             <h4>Carte du réseau</h4>
             <p>La carte du réseau est l'outil idéal pour visualiser l'ensemble des lignes de transport en un coup d'œil. Elle vous permet de repérer facilement les correspondances, les arrêts principaux et les itinéraires possibles pour vous déplacer efficacement dans toute la région.</p>

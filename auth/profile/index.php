@@ -33,10 +33,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newNum = trim($_POST['telephone']);
 
         if (!empty($newMail) && !empty($newNum)) {
-            $authentificator->changeTel($cliId, $newNum);
-            $authentificator->changeMail($cliId, $newMail);
-            $messageSucces = "Coordonnées de contact mises à jour.";
-            $infoClient = $session->getClientInfoFromId($cliId); // Refresh data
+            if (!filter_var($newMail, FILTER_VALIDATE_EMAIL)) {
+                $messageErreur = "L'adresse email n'est pas valide.";
+            } else {
+                $clean_phone = str_replace([' ', '.', '-', '+'], '', $newNum);
+                if (!preg_match('/^[0-9]{10}$/', $clean_phone)) {
+                    $messageErreur = "Le numéro de téléphone n'est pas valide. Il doit contenir 10 chiffres.";
+                } else {
+                    try {
+                        $authentificator->changeTel($cliId, $newNum);
+                        $authentificator->changeMail($cliId, $newMail);
+                        $messageSucces = "Coordonnées de contact mises à jour.";
+                        $infoClient = $session->getClientInfoFromId($cliId); // Refresh data
+                    } catch (Exception $e) {
+                        $messageErreur = "Cette adresse email est peut-être déjà utilisée.";
+                    }
+                }
+            }
         } else {
             $messageErreur = "Tous les champs sont obligatoires.";
         }
@@ -177,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <td>Ligne <?= htmlspecialchars($resa['LIG_NUM']) ?></td>
                                 <td><?= htmlspecialchars($resa['DEPART']) ?></td>
                                 <td><?= htmlspecialchars($resa['ARRIVE']) ?></td>
-                                <td><?= htmlspecialchars($resa['ETA_HEURE']) ?></td>
+                                <td><?= htmlspecialchars($resa['HEURE_DEPART']) ?></td>
                                 <td><?= number_format($resa['RES_PRIX_TOT'], 2, ',', ' ') ?> €</td>
                             </tr>
                         <?php endforeach; ?>
