@@ -1,6 +1,7 @@
 let steps = {};
 let lignes = [];
 let scheduleCache = {};
+
 async function fetchLignes() {
     return new Promise(async (resolve, reject) => {
         const response = await fetch('/api/reservation.php?lignes');
@@ -9,7 +10,6 @@ async function fetchLignes() {
             return;
         }
         lignes = await response.json();
-
         resolve();
     });
 }
@@ -26,55 +26,62 @@ function addStep() {
     dataList.id = `villes-list-${stepIndex}`;
     document.body.appendChild(dataList);
 
-    // DIV BASE
-
     const div = document.createElement('div');
     div.classList.add('search-form-horizontal');
+    div.dataset.step = stepIndex;
 
     // -- LINE GROUP --
     const ligneGroup = document.createElement('div');
     ligneGroup.classList.add('input-group');
 
     const ligneLabel = document.createElement('label');
-    ligneLabel.setAttribute('for', 'ligne');
     ligneLabel.textContent = 'Ligne';
 
     const ligneInput = document.createElement('input');
     ligneInput.setAttribute('list', 'lignes-list-' + stepIndex);
-    ligneInput.setAttribute('name', 'ligne');
-    ligneInput.setAttribute('placeholder', 'Sélectionnez une ligne');
+    ligneInput.setAttribute('placeholder', 'Ligne');
     ligneInput.setAttribute('required', '');
     ligneInput.setAttribute('autocomplete', 'off');
-
 
     // -- DEPART GROUP --
     const departGroup = document.createElement('div');
     departGroup.classList.add('input-group');
 
     const departLabel = document.createElement('label');
-    departLabel.setAttribute('for', 'depart');
     departLabel.textContent = 'Départ';
 
     const departInput = document.createElement('input');
     departInput.setAttribute('list', `villes-list-${stepIndex}`);
-    departInput.setAttribute('name', 'depart');
     departInput.setAttribute('placeholder', 'D\'où partez-vous ?');
     departInput.setAttribute('required', '');
     departInput.setAttribute('autocomplete', 'off');
     departInput.setAttribute('id', `depart-input-${stepIndex}`);
 
-    // -- DEPART TIME SELECT --
     const departTimeSelect = document.createElement('select');
     departTimeSelect.setAttribute('id', `depart-time-${stepIndex}`);
-    departTimeSelect.setAttribute('name', 'depart_time');
-    departTimeSelect.innerHTML = '<option value="">Heure départ</option>';
+    departTimeSelect.innerHTML = '<option value="">Heure</option>';
+
+    // -- ARRIVEE GROUP --
+    const arriveeGroup = document.createElement('div');
+    arriveeGroup.classList.add('input-group');
+
+    const arriveeLabel = document.createElement('label');
+    arriveeLabel.textContent = 'Arrivée';
+
+    const arriveeInput = document.createElement('input');
+    arriveeInput.setAttribute('list', `villes-list-${stepIndex}`);
+    arriveeInput.setAttribute('placeholder', 'Où allez-vous ?');
+    arriveeInput.setAttribute('required', '');
+    arriveeInput.setAttribute('autocomplete', 'off');
+
+    const arriveeTimeSelect = document.createElement('select');
+    arriveeTimeSelect.setAttribute('id', `arrivee-time-${stepIndex}`);
+    arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
 
     if (stepIndex > 0) {
-
         departInput.value = steps[stepIndex - 1].arrivee || '';
         departInput.setAttribute('readonly', '');
         steps[stepIndex].depart = departInput.value;
-
         computeLineForStep(stepIndex);
     } else {
         lignes.forEach(ligne => {
@@ -84,28 +91,6 @@ function addStep() {
         });
     }
 
-    // -- ARRIVEE GROUP --
-    const arriveeGroup = document.createElement('div');
-    arriveeGroup.classList.add('input-group');
-
-    const arriveeLabel = document.createElement('label');
-    arriveeLabel.setAttribute('for', 'arrivee');
-    arriveeLabel.textContent = 'Arrivée';
-
-    const arriveeInput = document.createElement('input');
-    arriveeInput.setAttribute('list', `villes-list-${stepIndex}`);
-    arriveeInput.setAttribute('name', 'arrivee');
-    arriveeInput.setAttribute('placeholder', 'Où allez-vous ?');
-    arriveeInput.setAttribute('required', '');
-    arriveeInput.setAttribute('autocomplete', 'off');
-
-    // -- ARRIVEE TIME SELECT --
-    const arriveeTimeSelect = document.createElement('select');
-    arriveeTimeSelect.setAttribute('id', `arrivee-time-${stepIndex}`);
-    arriveeTimeSelect.setAttribute('name', 'arrivee_time');
-    arriveeTimeSelect.innerHTML = '<option value="">Heure arrivée</option>';
-
-    // -- APPEND GROUPS --
     ligneGroup.appendChild(ligneLabel);
     ligneGroup.appendChild(ligneInput);
 
@@ -122,33 +107,13 @@ function addStep() {
     div.appendChild(departGroup);
     div.appendChild(buildDivider());
     div.appendChild(arriveeGroup);
-    div.appendChild(buildDivider());
-
-    const plusButton = document.createElement('button');
-    plusButton.type = 'button';
-    plusButton.classList.add('btn-search');
-    plusButton.textContent = '+';
-    plusButton.addEventListener('click', () => {
-        if (!steps[stepIndex].ligne || !steps[stepIndex].depart || !steps[stepIndex].arrivee || !steps[stepIndex].departTime || !steps[stepIndex].arriveeTime) {
-            div.classList.add('errored');
-            setTimeout(() => {
-                div.classList.remove('errored');
-            }, 2000);
-            return;
-        } else {
-            addStep();
-        }
-    });
-
-    div.appendChild(plusButton);
 
     document.getElementById('steps').appendChild(div);
 
-
+    // Event listeners
     ligneInput.addEventListener('change', function () {
         const ligneValue = this.value;
         steps[stepIndex].ligne = ligneValue;
-
         if (ligneValue) {
             fetch(`/api/reservation.php?ligne=${encodeURIComponent(ligneValue)}`)
                 .then(response => response.json())
@@ -160,45 +125,36 @@ function addStep() {
                         if (!map[ville]) map[ville] = [];
                         if (time && !map[ville].includes(time)) map[ville].push(time);
                     });
-
                     scheduleCache[stepIndex] = map;
-
                     const villes = Object.keys(map);
                     let stepsDatalist = document.getElementById(`villes-list-${stepIndex}`);
                     stepsDatalist.innerHTML = '';
-
                     villes.forEach(ville => {
                         const option = document.createElement('option');
                         option.value = ville;
                         stepsDatalist.appendChild(option);
                     });
-
                     const departVal = departInput.value;
                     const prevArrTime = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
                     if (departVal && map[departVal]) populateTimeSelect(departTimeSelect, map[departVal], prevArrTime);
                     const arriveeVal = arriveeInput.value;
                     const departSelectedTime = steps[stepIndex].departTime || departTimeSelect.value || null;
                     if (arriveeVal && map[arriveeVal]) populateTimeSelect(arriveeTimeSelect, map[arriveeVal], departSelectedTime);
-                })
-                .catch(error => console.error('Erreur:', error));
+                });
         }
     });
 
     arriveeInput.addEventListener('change', function () {
         const arriveeValue = this.value;
         steps[stepIndex].arrivee = arriveeValue;
-        console.log("Changing arrive : " + arriveeValue);
-
         const map = scheduleCache[stepIndex] || {};
         const minForArrive = steps[stepIndex].departTime || null;
         if (map[arriveeValue]) {
             populateTimeSelect(arriveeTimeSelect, map[arriveeValue], minForArrive);
         } else {
-            arriveeTimeSelect.innerHTML = '<option value="">Heure arrivée</option>';
+            arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
         }
-
         steps[stepIndex].arriveeTime = '';
-
         if (stepIndex < Object.keys(steps).length - 1) {
             const nextDepartInput = document.getElementById(`depart-input-${stepIndex + 1}`);
             if (nextDepartInput) {
@@ -217,7 +173,7 @@ function addStep() {
         if (map[departValue]) {
             populateTimeSelect(departTimeSelect, map[departValue], prevArrTime2);
         } else {
-            departTimeSelect.innerHTML = '<option value="">Heure départ</option>';
+            departTimeSelect.innerHTML = '<option value="">Heure</option>';
         }
         steps[stepIndex].departTime = '';
     });
@@ -232,7 +188,6 @@ function addStep() {
             return;
         }
         steps[stepIndex].departTime = selected;
-
         const map = scheduleCache[stepIndex] || {};
         const arriveeValLocal = arriveeInput.value;
         if (arriveeValLocal && map[arriveeValLocal]) {
@@ -254,7 +209,6 @@ function addStep() {
             return;
         }
         steps[stepIndex].arriveeTime = selected;
-
         const nextIndex = stepIndex + 1;
         const nextDepartSelect = document.getElementById(`depart-time-${nextIndex}`);
         if (nextDepartSelect) {
@@ -278,86 +232,104 @@ function buildDivider() {
 }
 
 function computeLineForStep(step) {
-
-    fetch('/api/reservation.php?findAllLignesFromCity=' + steps[step - 1].arrivee.toLowerCase() || '')
+    fetch('/api/reservation.php?findAllLignesFromCity=' + (steps[step - 1].arrivee ? steps[step - 1].arrivee.toLowerCase() : ''))
         .then(response => response.json())
         .then(data => {
             let stepsDatalist = document.getElementById(`lignes-list-${step}`);
+            if (!stepsDatalist) return;
             stepsDatalist.innerHTML = '';
             const lineNumber = steps[step - 1].ligne ? steps[step - 1].ligne.slice(0, -1) : null;
-
             data.forEach(ville => {
                 if (lineNumber && ville.LIG_NUM === lineNumber) return;
                 const option = document.createElement('option');
                 option.value = ville.LIG_NUM;
                 stepsDatalist.appendChild(option);
             });
-        })
-        .catch(error => console.error('Erreur:', error));
+        });
 }
 
 function confirm() {
-    document.getElementById('steps').innerHTML = '';
-    const div = document.createElement('div');
-    div.classList.add('search-form-horizontal');
+    const lastStepIndex = Object.keys(steps).length - 1;
+    const lastStep = steps[lastStepIndex];
+    if (!lastStep.ligne || !lastStep.depart || !lastStep.arrivee || !lastStep.departTime || !lastStep.arriveeTime) {
+        const lastRow = document.querySelector(`.search-form-horizontal[data-step="${lastStepIndex}"]`);
+        lastRow.classList.add('errored');
+        setTimeout(() => lastRow.classList.remove('errored'), 2000);
+        return;
+    }
 
-    div.innerHTML = '<h5>Confirmation : </h5>';
+    document.getElementById('steps').innerHTML = '';
+    document.querySelector('.search-actions').style.display = 'none';
+
+    const div = document.createElement('div');
+    div.classList.add('confirmation-view');
+    div.innerHTML = '<h3 style="color: #000; margin-bottom: 20px;">Récapitulatif de votre trajet</h3>';
+
     Object.keys(steps).forEach(step => {
         const stepData = steps[step];
         const stepDiv = document.createElement('div');
-        stepDiv.classList.add('input-group');
+        stepDiv.classList.add('conf-step');
         const departTime = stepData.departTime || '-';
         const arriveeTime = stepData.arriveeTime || '-';
-        stepDiv.innerHTML = `<strong>Etape ${parseInt(step) + 1} :</strong> Ligne ${stepData.ligne}, de ${stepData.depart} (${departTime}) à ${stepData.arrivee} (${arriveeTime})`;
+        stepDiv.innerHTML = `
+            <div class="conf-step-header">Étape ${parseInt(step) + 1} : Ligne ${stepData.ligne}</div>
+            <div class="conf-step-body">
+                <span>De <strong>${stepData.depart}</strong> (${departTime})</span>
+                <span class="arrow">→</span>
+                <span>À <strong>${stepData.arrivee}</strong> (${arriveeTime})</span>
+            </div>
+        `;
         div.appendChild(stepDiv);
     });
 
     const payButton = document.createElement('button');
     payButton.type = 'button';
-    payButton.classList.add('btn-search');
-    payButton.textContent = 'Payer';
-
-    div.appendChild(payButton);
-
+    payButton.classList.add('btn-search', 'btn-pay');
+    payButton.textContent = 'Confirmer et Payer';
     payButton.addEventListener('click', () => {
         const reservationData = new FormData();
         reservationData.append('setTripDetails', JSON.stringify(steps));
         fetch('/api/reservation.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
             body: new URLSearchParams(reservationData).toString()
         }).then(response => {
-            if (response.ok) {
-                location.href = '/reservation/pay/';
-            }
-        })
+            if (response.ok) location.href = '/reservation/pay/';
+        });
     });
+
+    div.appendChild(payButton);
     document.getElementById('steps').appendChild(div);
 }
-
-(() => {
-    fetchLignes().then(() => {
-        addStep();
-    });
-})();
 
 function populateTimeSelect(selectElement, times, minTime) {
     if (!selectElement) return;
     selectElement.innerHTML = '';
     const empty = document.createElement('option');
     empty.value = '';
-    empty.textContent = 'Choisir l\'heure';
+    empty.textContent = 'Heure';
     selectElement.appendChild(empty);
     times.sort();
     times.forEach(t => {
         const opt = document.createElement('option');
         opt.value = t;
         opt.textContent = t;
-        if (minTime && t < minTime) {
-            opt.disabled = true;
-        }
+        if (minTime && t < minTime) opt.disabled = true;
         selectElement.appendChild(opt);
     });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchLignes().then(() => addStep());
+
+    document.getElementById('add-step-btn').addEventListener('click', () => {
+        const lastStepIndex = Object.keys(steps).length - 1;
+        const lastStep = steps[lastStepIndex];
+        if (!lastStep.ligne || !lastStep.depart || !lastStep.arrivee || !lastStep.departTime || !lastStep.arriveeTime) {
+            const lastRow = document.querySelector(`.search-form-horizontal[data-step="${lastStepIndex}"]`);
+            lastRow.classList.add('errored');
+            setTimeout(() => lastRow.classList.remove('errored'), 2000);
+            return;
+        }
+        addStep();
+    });
+});
