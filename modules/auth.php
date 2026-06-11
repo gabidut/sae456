@@ -151,6 +151,12 @@ class Authentificator
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newTel' => $newTel]);
     }
+    public function changeVille($num_utilisateur, $newVille)
+    {
+        $sql = "update vik_client set cli_ville = :newVille where cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute(['num' => $num_utilisateur, 'newVille' => $newVille]);
+    }
 
     public function updatePointTot($num_utilisateur, $point)
     {
@@ -204,12 +210,20 @@ class Authentificator
 
     public function getReservation($numClient): array
     {
-        $sql = 'SELECT * FROM vik_reservation WHERE cli_num = :numClient';
+        $sql = 'select cli_prenom, res_num, res_date, res_prix_tot, lig_num, 
+        a.com_nom, b.com_nom, eta_heure 
+        from vik_reservation 
+        join vik_client using (cli_num) 
+        join vik_etape using (cli_num, res_num)
+        join vik_commune a on a.com_code_insee = vik_etape.com_code_insee_depart
+        join vik_commune b on b.com_code_insee = vik_etape.com_code_insee_arrivee
+        where cli_num = :numClient
+        order by res_date';
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['numClient' => $numClient]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (count($result) > 0) {
-            return $result[0];
+            return $result;
         }
         return [];
     }
