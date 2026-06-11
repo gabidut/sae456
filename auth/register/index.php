@@ -33,7 +33,7 @@ include '../../includes/global.php';
                 <div class="form-column">
                     <div class="form-group">
                         <label for="departement">Département</label>
-                        <input type="text" id="departement" name="departement" placeholder="Ex: Orne" required>
+                        <input type="text" id="departement" name="departement" placeholder="Ex: 61" required>
                     </div>
 
                     <div class="form-group">
@@ -43,7 +43,7 @@ include '../../includes/global.php';
 
                     <div class="form-group">
                         <label for="password">Mot de passe</label>
-                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                        <input type="password" id="password" name="password" placeholder="********" required>
                     </div>
                 </div>
 
