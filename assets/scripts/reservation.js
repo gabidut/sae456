@@ -393,6 +393,8 @@ function computeLineForStep(step) {
         });
 }
 
+let originalFormHTML = '';
+
 function confirm() {
     const lastStepIndex = Object.keys(steps).length - 1;
     const lastStep = steps[lastStepIndex];
@@ -403,8 +405,26 @@ function confirm() {
         return;
     }
 
-    document.getElementById('steps').innerHTML = '';
-    document.querySelector('.search-actions').style.display = 'none';
+    // Lancer l'animation du bus au moment de la réservation
+    const busContainer = document.getElementById('bus-animation-container');
+    if (busContainer) {
+        busContainer.classList.remove('animate-bus');
+        void busContainer.offsetWidth; // Force reflow
+        busContainer.classList.add('animate-bus');
+    }
+
+    // Sauvegarder l'état actuel pour pouvoir annuler
+    const stepsContainer = document.getElementById('steps');
+    const searchActions = document.querySelector('.search-actions');
+
+    // Masquer le formulaire plutôt que de le vider
+    stepsContainer.style.display = 'none';
+    searchActions.style.display = 'none';
+
+    // Créer un conteneur pour la vue confirmation
+    const confContainer = document.createElement('div');
+    confContainer.id = 'confirmation-view-container';
+    stepsContainer.parentNode.insertBefore(confContainer, stepsContainer.nextSibling);
 
     const div = document.createElement('div');
     div.classList.add('confirmation-view');
@@ -427,14 +447,19 @@ function confirm() {
         div.appendChild(stepDiv);
     });
 
+    const actionsDiv = document.createElement('div');
+    actionsDiv.style.display = 'flex';
+    actionsDiv.style.gap = '15px';
+    actionsDiv.style.marginTop = '20px';
+
     const payButton = document.createElement('button');
     payButton.type = 'button';
-    payButton.classList.add('btn-search', 'btn-pay');
+    payButton.classList.add('btn-pay');
     payButton.textContent = 'Confirmer et Payer';
     payButton.addEventListener('click', () => {
         const reservationData = new FormData();
         reservationData.append('setTripDetails', JSON.stringify(steps));
-        console.log(steps);
+        
 
         fetch('/api/reservation.php', {
             method: 'POST',
@@ -447,8 +472,23 @@ function confirm() {
         });
     });
 
-    div.appendChild(payButton);
-    document.getElementById('steps').appendChild(div);
+    const cancelButton = document.createElement('button');
+    cancelButton.type = 'button';
+    cancelButton.classList.add('btn-cancel');
+    cancelButton.textContent = 'Annuler';
+    cancelButton.style.marginTop = '0';
+    cancelButton.addEventListener('click', () => {
+        // Supprimer la vue confirmation
+        confContainer.remove();
+        // Réafficher le formulaire original (les données sont préservées dans l'objet 'steps' et dans le DOM)
+        stepsContainer.style.display = 'flex';
+        searchActions.style.display = 'flex';
+    });
+
+    actionsDiv.appendChild(payButton);
+    actionsDiv.appendChild(cancelButton);
+    div.appendChild(actionsDiv);
+    confContainer.appendChild(div);
 }
 
 function populateTimeSelect(selectElement, times, minTime) {
@@ -480,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => lastRow.classList.remove('errored'), 2000);
             return;
         }
+        
         addStep();
     });
 });

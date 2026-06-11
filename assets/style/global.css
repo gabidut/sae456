@@ -194,8 +194,9 @@ main {
 /* Style du conteneur principal du footer si nécessaire */
 .site-footer {
     width: 100%;
-    background-color: #0c0c0c; /* À adapter selon tes couleurs */
+    background-color: #111111; /* À adapter selon tes couleurs */
     padding: 20px 0;
+    margin-top: auto;
 }
 
 /* Alignement des éléments en ligne */
@@ -712,6 +713,17 @@ body {
     background: #ff1818; 
     border-radius: 50%; 
     display: inline-block; 
+}
+.spinning-bus {
+    width: 50px;
+    height: auto;
+    animation: rotate-bus 4s linear infinite;
+    z-index: 5;
+}
+
+@keyframes rotate-bus {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 .stop-name { 
     margin-left: 8px; 
