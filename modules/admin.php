@@ -3,6 +3,7 @@
 class Adminitration
 {
     private $database;
+
     private $password_secret;
     private $session_helper;
     /**
@@ -17,9 +18,7 @@ class Adminitration
         $this->password_secret = $password_secret;
         $this->session_helper = $session_helper;
     }
-
     
-
 
 
 
