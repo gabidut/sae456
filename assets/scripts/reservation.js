@@ -149,10 +149,41 @@ function addStep() {
         steps[stepIndex].arrivee = arriveeValue;
         const map = scheduleCache[stepIndex] || {};
         const minForArrive = steps[stepIndex].departTime || null;
+
+        if(!departTimeSelect.value && minForArrive) {
+            arriveeInput.value = '';
+            steps[stepIndex].arrivee = '';
+            return;
+        }
+        fetch(`/api/reservation.php?getFinalHoraire=1&lineId=${steps[stepIndex].ligne}&codeInseeDepart=${encodeURIComponent(steps[stepIndex].depart)}&codeInseeArrivee=${encodeURIComponent(arriveeValue)}&horaireDepart=${encodeURIComponent(minForArrive)}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+
+                if (!data || !data.horaires) {
+                    arriveeTimeSelect.innerHTML = '<option value="">Aucun horaire disponible</option>';
+                    return;
+                }
+                const times = data.horaires || [];
+                arriveeTimeSelect.innerHTML = '';
+                times.forEach(time => {
+                    const option = document.createElement('option');
+                    option.value = time;
+                    option.textContent = time;
+                    arriveeTimeSelect.appendChild(option);
+                });
+                if(times > 0) {
+                    arriveeTimeSelect.value = times[1];
+                    steps[stepIndex].arriveeTime = times[1];
+                }
+            }).catch(error => {
+                console.error('Erreur lors de la récupération des horaires d\'arrivée :', error);
+                arriveeTimeSelect.innerHTML = '<option value="">Aucun horaire disponible</option>';
+            });
         if (map[arriveeValue]) {
-            populateTimeSelect(arriveeTimeSelect, map[arriveeValue], minForArrive);
+
         } else {
-            arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
+            arriveeTimeSelect.innerHTML = '<option value="">Aucun horaire disponible</option>';
         }
         steps[stepIndex].arriveeTime = '';
         if (stepIndex < Object.keys(steps).length - 1) {
@@ -178,7 +209,7 @@ function addStep() {
         steps[stepIndex].departTime = '';
     });
 
-    departTimeSelect.addEventListener('change', function() {
+    departTimeSelect.addEventListener('change', function () {
         const selected = this.value;
         const prevArr = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
         if (prevArr && selected && selected < prevArr) {
@@ -199,7 +230,7 @@ function addStep() {
         }
     });
 
-    arriveeTimeSelect.addEventListener('change', function() {
+    arriveeTimeSelect.addEventListener('change', function () {
         const selected = this.value;
         const departSel = steps[stepIndex].departTime || null;
         if (departSel && selected && selected < departSel) {
@@ -290,7 +321,7 @@ function confirm() {
         const reservationData = new FormData();
         reservationData.append('setTripDetails', JSON.stringify(steps));
         console.log(steps);
-        
+
         fetch('/api/reservation.php', {
             method: 'POST',
             headers: {
@@ -298,7 +329,7 @@ function confirm() {
             },
             body: new URLSearchParams(reservationData).toString()
         }).then(response => {
-             if (response.ok) location.href = '/reservation/pay/';
+            if (response.ok) location.href = '/reservation/pay/';
         });
     });
 
