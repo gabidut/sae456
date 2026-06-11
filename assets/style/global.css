@@ -194,7 +194,7 @@ main {
 /* Style du conteneur principal du footer si nécessaire */
 .site-footer {
     width: 100%;
-    background-color: #111111; /* À adapter selon tes couleurs */
+    background-color: #0c0c0c; /* À adapter selon tes couleurs */
     padding: 20px 0;
 }
 
@@ -703,19 +703,45 @@ body {
     scroll-behavior: smooth; 
 }
 
-h2 {
-    margin-bottom: 10px;
+/* Espacement accru sous les titres et textes d'introduction */
+/* Bloc d'introduction principal */
+.TitreLigne {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    padding-left: 18px; /* Espace pour la barre rouge */
 }
 
-p {
-    margin-bottom: 25px;
+/* La barre rouge verticale distinctive à gauche du titre */
+.TitreLigne::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10%;
+    height: 80%;
+    width: 4px;
+    background-color: #ff1818;
+    border-radius: 2px;
 }
 
-/* Boutons de Lignes - Plus grands et espacés */
+/* Texte d'instruction en dessous */
+.TexteLigne {
+    font-size: 16px;
+    color: #a0a0a0; /* Gris doux pour le contraste */
+    margin-bottom: 70px; /* Espace fortement augmenté pour détacher le bloc du premier bouton */
+    font-style: italic;
+}
+
+/* Boutons de Lignes - Espacement vertical renforcé */
 .button-lig { 
     display: block; 
     padding: 18px 24px; 
-    margin: 16px 0; 
+    margin: 25px 0; /* Augmenté à 25px pour bien séparer les boutons principaux entre eux */
     text-decoration: none; 
     border-radius: 8px; 
     font-weight: bold; 
@@ -728,7 +754,7 @@ p {
 .button-lig:hover { 
     background: #ff0000c9; 
     color: white; 
-    transform: translateX(4px); /* Léger décalage pour effet visuel fluide */
+    transform: translateX(4px); 
 }
 .active-lig { 
     background: #ff0000c9 !important; 
@@ -736,11 +762,23 @@ p {
     box-shadow: 0 6px 15px rgba(255, 0, 0, 0.2); 
 }
 
-/* Boutons de Directions - Moins compacts */
+/* Zones de déploiement (Conteneur des directions) */
+.directions-zone { 
+    margin-top: 30px; /* Plus d'espace entre le bouton principal actif et ses options */
+    margin-left: 25px; 
+    padding-left: 25px; 
+    border-left: 3px dashed #212529; 
+    margin-bottom: 45px; /* Plus d'espace avant le bouton de ligne suivant */
+}
+.directions-zone p {
+    margin-bottom: 20px; /* Plus d'espace sous le texte "Sélectionnez le sens" */
+}
+
+/* Boutons de Directions */
 .button-dir { 
     display: inline-block; 
     padding: 12px 22px; 
-    margin: 8px 8px 8px 0; 
+    margin: 10px 12px 10px 0; /* Plus d'espace horizontal et vertical entre les choix de direction */
     text-decoration: none; 
     border-radius: 6px; 
     font-weight: bold; 
@@ -759,34 +797,27 @@ p {
     box-shadow: 0 4px 12px rgba(255, 0, 0, 0.46); 
 }
 
-/* Zones de déploiement mieux séparées */
-.directions-zone { 
-    margin-top: 15px;
-    margin-left: 25px; 
-    padding-left: 25px; 
-    border-left: 3px dashed #212529; 
-    margin-bottom: 35px; 
-}
+/* Zone des horaires (Apparaît après le choix d'une direction) */
 .horaires-zone { 
-    margin-top: 35px; 
+    margin-top: 45px; /* Crée une vraie rupture visuelle avant d'afficher la frise et le tableau */
     background: #121212; 
-    padding: 25px; 
+    padding: 30px; /* Plus d'espace interne pour le bloc de résultats */
     border-radius: 10px; 
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
     border: 1px solid #dee2e6;
 }
 
-/* Frise Chronologique avec plus d'espace */
+/* Frise Chronologique */
 .route-timeline { 
     display: flex; 
     align-items: center; 
     flex-wrap: wrap; 
-    gap: 15px; /* Espace automatique entre les arrêts */
-    margin: 30px 0; 
+    gap: 15px; 
+    margin: 35px 0; /* Plus d'espace autour de la frise */
     background: #121212; 
     padding: 20px; 
     border-radius: 6px; 
-    border-left: 4px solid #ff1818;
+    border-left: 4px solid #ff0000ad;
 }
 .timeline-stop { 
     display: flex; 
@@ -813,14 +844,14 @@ p {
     display: inline-block; 
 }
 
-/* Tableau d'horaires aéré */
+/* Tableau d'horaires */
 table { 
     width: 100%; 
     border-collapse: collapse; 
-    margin-top: 25px; 
+    margin-top: 35px; /* Éloigne le tableau de la frise chronologique */
 }
 th, td { 
-    padding: 14px 16px; /* Plus d'espace interne pour respirer */
+    padding: 16px 18px; 
     text-align: left; 
     border-bottom: 1px solid #dee2e6; 
     font-size: 14px; 

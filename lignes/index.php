@@ -51,8 +51,8 @@ if(isset($_GET['direction']))
 </head>
 <body>
     
-    <h2>Consulter les Horaires Viking</h2>
-    <p>Sélectionnez une ligne pour déployer ses options.</p>
+    <h2 class="TitreLigne">Consulter les Horaires Viking</h2>
+    <p class="TexteLigne">Sélectionnez une ligne pour déployer ses options.</p>
 
     <div id="reseau-accordeon">
         
@@ -89,7 +89,7 @@ if(isset($_GET['direction']))
                     <?php if (isset($_GET['direction'])): ?>
                         <?php if (!empty($grille)): ?>
                             <div class="horaires-zone">
-                                <h3>Direction finale : <span style="color: #28a745;"><?= htmlspecialchars($villeTerminus) ?></span></h3>
+                                <h3>Direction finale : <span style="color: #ff1b1bff;"><?= htmlspecialchars($villeTerminus) ?></span></h3>
                                 
                                 <div class="route-timeline">
                                     <?php foreach ($ordreDesVilles as $index => $v) : ?>
