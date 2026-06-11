@@ -1,5 +1,5 @@
 <?php
-// 1. Chargement de l'environnement et des modules (on remonte de deux dossiers via ../../)
+// 1. Chargement de l'environnement et des modules
 $env = require_once __DIR__ . '/../../env.php';
 require_once __DIR__ . '/../../modules/bdd.php';
 require_once __DIR__ . '/../../modules/auth.php';
@@ -11,12 +11,23 @@ $database = new Database(
     $env['db_username'],
     $env['db_password']
 );
+
+// ATTENTION : Si SessionHelper ou global.php ne fait pas de session_start(), 
+// on le force ici pour être sûr que PHP puisse lire la session.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $session = new SessionHelper($database);
 $authentificator = new Authentificator($database, $env['password_secret'], $session);
 
-// 3. Vérification de sécurité alternative
-if (!isset($_SESSION) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../../index.php'); // Corrigé aussi pour pointer vers la racine
+// 3. Vérification de sécurité modifiée
+// On vérifie d'abord si l'utilisateur est bien connecté selon ton module auth
+// SI ÇA BLOQUE TOUJOURS : Tu peux commenter temporairement ce bloc 'if' pour tester si le reste fonctionne.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Si tu es renvoyé ici, c'est que $_SESSION['role'] n'est pas égal à 'admin'.
+    // Tu peux faire un : var_dump($_SESSION); die(); ici pour inspecter ta session si besoin.
+    header('Location: ../../index.php');
     exit();
 }
 

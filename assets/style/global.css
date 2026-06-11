@@ -916,3 +916,37 @@ tr:hover {
     color: #666666;
     font-style: italic;
 }
+
+/* ==========================================================================
+   Styles pour la page modification admin
+   ========================================================================== */
+
+.admin-form {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-input:disabled {
+    background-color: #e9ecef;
+}
