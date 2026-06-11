@@ -8,7 +8,7 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
 }
 
 // 1. Récupération de la liste des clients
-$clients = $auth->listClientsNum();
+$clients = $admin->listClients();
 
 // 2. Est-ce qu'un client a été cliqué ?
 $selected_client_id = isset($_GET['client_id']) ? $_GET['client_id'] : null;
@@ -16,7 +16,7 @@ $reservations = [];
 
 if ($selected_client_id) {
     // On appelle ta fonction getReservation pour le client sélectionné
-    $reservations = $auth->getReservation($selected_client_id);
+    $reservations = $authentificator->getReservation($selected_client_id);
 }
 ?>
 
