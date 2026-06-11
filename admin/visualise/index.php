@@ -53,11 +53,11 @@ if ($selected_client_id !== null) {
                                     <td style="padding: 12px; text-align: center;">
                                         
                                         <a href="?client_id=<?php echo $c['CLI_NUM']; ?>" style="text-decoration: none; background-color: #3b82f6; color: white; padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; margin-right: 5px;">
-                                            👁️ Voir Résas
+                                            Voir Résas
                                         </a>
 
                                         <button type="button" style="background-color: #f1f5f9; color: #1e293b; padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; border: 1px solid #cbd5e1; cursor: pointer;">
-                                            ✏️ Modifier
+                                            Modifier
                                         </button>
 
                                     </td>
