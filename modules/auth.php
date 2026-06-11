@@ -83,13 +83,7 @@ class Authentificator
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $checkSql = "SELECT * FROM vik_client WHERE CLI_COURRIEL = :email";
-        $checkStmt = $this->database->prepareStatement($checkSql);
-        $checkStmt->execute(['email' => $mail]);
-        if ($checkStmt->rowCount() > 0) {
-            throw new Exception("Cet email est déjà utilisé");
-        }
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('1',:dep,:nom,:prenom,:ville,:tel,:mail,'10','10',sysdate,:mdp) RETURNING CLI_NUM INTO :new_id";
+        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'0','0',sysdate,:mdp)";
         $stmt = $this->database->prepareStatement($sql);
 
         $newId = 0;
@@ -153,14 +147,14 @@ class Authentificator
 
     public function changeNom($num_utilisateur, $newNom)
     {
-        $sql = "update vik_client set cli_nom = :newNom where cli_num = :num";
+        $sql = "update vik_client set cli_nom = upper(:newNom) where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newNom' => $newNom]);
     }
 
     public function changePrenom($num_utilisateur, $newPrenom)
     {
-        $sql = "update vik_client set cli_prenom = :newPrenom where cli_num = :num";
+        $sql = "update vik_client set cli_prenom = initcap(:newPrenom) where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newPrenom' => $newPrenom]);
     }
@@ -194,7 +188,7 @@ class Authentificator
 
     public function ajoutPointApresResa($num_utilisateur, $nbkilometre)
     {
-        $nbpoints = floor($nbkilometre) / 10;
+        $nbpoints = floor($nbkilometre/10) ;
 
         $sqlPoints = "UPDATE vik_client SET cli_nb_points_ec = cli_nb_points_ec + :nbpoints, cli_nb_points_tot = cli_nb_points_tot + :nbpoints WHERE cli_num = :num";
 
