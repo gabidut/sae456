@@ -1,14 +1,11 @@
 <?php
 
-
-require_once '../includes/global.php';
+// Utilisation du chemin absolu basé sur la racine du serveur web
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/global.php';
 
 $lignes = $ligneManager->getLignes();
-
 $directions = [];
-
 $horaires = [];
-
 $grille = [];
 
 if(isset($_GET['ligne']))
@@ -28,7 +25,6 @@ if(isset($_GET['direction']))
         $grille[$ville][] = $heure;
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -98,5 +94,5 @@ if(isset($_GET['direction']))
 </body>
 </html>
 <?php
-require '../includes/footer.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php';
 ?>
