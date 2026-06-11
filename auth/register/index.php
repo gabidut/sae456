@@ -16,12 +16,11 @@ if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['email']) &&
             $_POST['email'],
             $_POST['phone'],
         );
-        var_dump($user);
         $session->setUserSession($user);
         header('Location: /auth/profile/');
         exit();
     } catch (Exception $e) {
-        $error_message = $e->getMessage();
+        $error_message = "Une erreur est survenue lors de l'inscription.";
     }
 }
 ?>
@@ -56,13 +55,13 @@ if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['email']) &&
 
                 <div class="form-column">
                     <div class="form-group">
-                        <label for="departement">Département</label>
-                        <input type="text" id="departement" name="departement" placeholder="Ex: Orne" required>
+                        <label for="departement-input">Département</label>
+                        <input type="text" list="department" id="departement-input" name="departement" placeholder="Ex: Orne" required>
                     </div>
 
                     <div class="form-group">
                         <label for="ville">Ville</label>
-                        <input type="text" id="ville" name="ville" placeholder="Ex: Argentan" required>
+                        <input type="text" list="villes" id="ville" name="ville" placeholder="Ex: Argentan" required>
                     </div>
 
                     <div class="form-group">
@@ -91,6 +90,22 @@ if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['email']) &&
             <p>Déjà inscrit ? <a href="../login/">Se connecter</a></p>
         </div>
     </div>
+
+
+    <script src="/assets/scripts/register.js"></script>
+    <datalist id="villes">
+        <?php foreach ($reservationManager->listCities() as $ville) : ?>
+            <option value="<?php echo htmlspecialchars($ville['COM_NOM']); ?>"/>
+        <?php endforeach; ?>
+    </datalist>
+
+    <datalist id="department">
+        <?php foreach ($reservationManager->listDepartments() as $department) : ?>
+            <option value="<?php echo htmlspecialchars($department['DEP_NUM']); ?>">
+                <?php echo htmlspecialchars($department['DEP_NOM']); ?>
+            </option>
+        <?php endforeach; ?>
+    </datalist>
 </main>
 
 <?php
