@@ -1,91 +1,109 @@
 <?php
-// 1. On charge global.php en premier.
-include_once __DIR__ . '/../../includes/global.php'; 
+// 1. Chargement de l'environnement et de la session
+$env = require_once __DIR__ . '/../../env.php';
+require_once __DIR__ . '/../../modules/bdd.php';
+require_once __DIR__ . '/../../includes/session.php';
 
-// 2. Récupération sécurisée de la configuration et de la base de données
-if (!isset($database) && isset($env)) {
-    $database = new Database(
-        $env['db_oracle'],
-        $env['db_username'],
-        $env['db_password']
-    );
+// 2. Initialisation de la base de données
+$database = new Database(
+    $env['db_oracle'],
+    $env['db_username'],
+    $env['db_password']
+);
+$pdo = $database->getConnection();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-// 3. Vérification de sécurité
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+// 3. Vérification de sécurité (Admin uniquement)
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: ../../index.php');
     exit();
 }
 
-// 4. Récupération des clients 
+// 4. Variables d'affichage
+$page_active = 'clients'; // Pour allumer le bouton "Gestion Clients" dans la sidebar
 $clients = [];
 $error_msg = null;
 
-if (isset($database) && $database->getConnection() !== null) {
-    try {
-        $pdo = $database->getConnection(); 
-        
-        // CORRECTION : On tente CLI_EMAIL au lieu de CLI_MAIL
-        $query = "SELECT CLI_NUM, CLI_NOM, CLI_PRENOM, CLI_COURRIEL FROM VIK_CLIENT";
-        
-        $stmt = $pdo->prepare($query);
-        $stmt->execute();
-        $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
-        $error_msg = "Erreur SQL : " . $e->getMessage();
-    }
-} else {
-    $error_msg = "Impossible de se connecter à la base de données.";
+// 5. Requête SQL (Placeholder fonctionnel pour lister les clients)
+try {
+    // On récupère les clients de la base Oracle
+    $sql = "SELECT CLI_NUM, CLI_NOM, CLI_PRENOM, CLI_COURRIEL FROM VIK_CLIENT ORDER BY CLI_NOM ASC";
+    $stmt = $pdo->query($sql);
+    $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $error_msg = "Impossible de récupérer la liste des clients : " . $e->getMessage();
 }
+
+// 6. Inclusion du header global (CSS commun)
+include_once __DIR__ . '/../../includes/global.php'; 
 ?>
 
-<div class="container">
-    
-    <section class="admin-header">
-        <h1>Espace Administration</h1>
-        <p>Gestion et visualisation des comptes clients</p>
-    </section>
+<div class="admin-dashboard-layout">
 
-    <section class="admin-content">
-        <?php if ($error_msg): ?>
-            <p class="error-message" style="color: red; font-weight: bold; background: #fff2f2; padding: 10px; border-radius: 4px; border: 1px solid #ffcccc;">
-                <?php echo htmlspecialchars($error_msg); ?>
-            </p>
-        <?php endif; ?>
+    <?php include_once __DIR__ . '/../../includes/admin_sidebar.php'; ?>
 
-        <?php if (!empty($clients)): ?>
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Numéro Client</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Email</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($clients as $client): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($client['CLI_NUM']); ?></td>
-                            <td><?php echo htmlspecialchars($client['CLI_NOM']); ?></td>
-                            <td><?php echo htmlspecialchars($client['CLI_PRENOM']); ?></td>
-                            <td><?php echo htmlspecialchars($client['CLI_COURRIEL'] ?? $client['CLI_COURRIEL'] ?? ''); ?></td>
-                            <td>
-                                <a href="../modif/index.php?id=<?php echo $client['CLI_NUM']; ?>" class="btn-modifier">Modifier</a>
-                            </td>
+    <main class="admin-main-content">
+        <div class="container">
+            
+            <section class="admin-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h1>Gestion des Clients</h1>
+                    <p>Liste complète des utilisateurs enregistrés sur le serveur Oracle</p>
+                </div>
+                <button style="padding: 10px 15px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                    + Ajouter un client
+                </button>
+            </section>
+
+            <?php if ($error_msg): ?>
+                <p style="color: red; font-weight: bold; background: #fee2e2; padding: 15px; border-radius: 4px;"><?php echo htmlspecialchars($error_msg); ?></p>
+            <?php endif; ?>
+
+            <div style="background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background-color: #f1f5f9; border-bottom: 2px solid #e2e8f0;">
+                            <th style="padding: 15px;">ID</th>
+                            <th style="padding: 15px;">Nom</th>
+                            <th style="padding: 15px;">Prénom</th>
+                            <th style="padding: 15px;">Email</th>
+                            <th style="padding: 15px; text-align: center;">Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php else: ?>
-            <p class="no-data">Aucun compte client n'est enregistré pour le moment.</p>
-        <?php endif; ?>
-    </section>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($clients)): ?>
+                            <?php foreach ($clients as $c): ?>
+                                <tr style="border-bottom: 1px solid #e2e8f0;">
+                                    <td style="padding: 15px; font-weight: bold; color: #64748b;"><?php echo htmlspecialchars($c['CLI_NUM']); ?></td>
+                                    <td style="padding: 15px;"><?php echo htmlspecialchars($c['CLI_NOM']); ?></td>
+                                    <td style="padding: 15px;"><?php echo htmlspecialchars($c['CLI_PRENOM']); ?></td>
+                                    <td style="padding: 15px; color: #0284c7;"><?php echo htmlspecialchars($c['CLI_COURRIEL']); ?></td>
+                                    <td style="padding: 15px; text-align: center;">
+                                        <a href="../client/modifier.php?id=<?php echo $c['CLI_NUM']; ?>" style="text-decoration: none; background-color: #f1f5f9; color: #1e293b; padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; font-weight: 500; border: 1px solid #cbd5e1;">
+                                            ✏️ Modifier
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" style="padding: 30px; text-align: center; color: #94a3b8;">
+                                    Aucun client trouvé dans la base de données.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
 
+        </div>
+    </main>
 </div>
 
 <?php 
-// 6. Inclusion du footer
+// 7. Inclusion du footer
 require __DIR__ . '/../../includes/footer.php'; 
 ?>
