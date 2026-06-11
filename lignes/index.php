@@ -1,14 +1,22 @@
 <?php
 
-
 require_once '../includes/global.php';
 
-$lignes = $ligneManager->getLignes();
+// 1. Récupération et filtrage des lignes
+$lignesBrutes = $ligneManager->getLignes();
+$lignes = [];
+foreach ($lignesBrutes as $l) {
+    $num = $l['LIG_NUM'];
+    if (!isset($lignes[$num])) {
+        $lignes[$num] = [
+            'NUM' => $num,
+            'LABEL' => "Ligne " . $num . " (" . $l['VILLE_DEB'] . " ➔ " . $l['VILLE_TERM'] . ")"
+        ];
+    }
+}
 
 $directions = [];
-
 $horaires = [];
-
 $grille = [];
 
 if(isset($_GET['ligne']))
@@ -24,9 +32,11 @@ if(isset($_GET['direction']))
     {
         $ville = $h['VILLE_ARRET'];
         $heure = $h['HEURE_PASSAGE'];
-
         $grille[$ville][] = $heure;
     }
+    
+    $ordreDesVilles = array_keys($grille); 
+    $villeTerminus = !empty($ordreDesVilles) ? end($ordreDesVilles) : '';
 }
 
 ?>
@@ -37,66 +47,92 @@ if(isset($_GET['direction']))
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lignes</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="lig-button-container">
     
-    <?php foreach( $lignes as $ligne ) : ?>
-        <?php 
-            $numLigne = htmlspecialchars($ligne['LIG_NUM']);    
-        ?>
-        <a href="?ligne=<?= $numLigne ?>" class="button-lig"> 
-            Ligne <?= $numLigne ?> 
-        </a>
-    <?php endforeach;?>
+    <h2 class="TitreLigne">Consulter les Horaires Viking</h2>
+    <p class="TexteLigne">Sélectionnez une ligne pour déployer ses options.</p>
 
-    <?php if(!empty($directions)): ?>
+    <div id="reseau-accordeon">
         
-        <h3>Choisissez votre direction pour la ligne <?= htmlspecialchars($_GET['ligne']) ?></h3>
-        
-        <div id="dir-button-container">
-            <?php foreach( $directions as $dir ) : ?>
-                <?php $numDir = htmlspecialchars($dir); ?>
+        <?php foreach( $lignes as $item ) : ?>
+            <?php 
+                $numLigne = htmlspecialchars($item['NUM']); 
+                $labelLigne = htmlspecialchars($item['LABEL']); 
+                $isLineActive = (isset($_GET['ligne']) && $_GET['ligne'] === $numLigne);
                 
-                <a href="?ligne=<?= htmlspecialchars($_GET['ligne']) ?>&direction=<?= $numDir ?>" class="button-dir"> 
-                    Ligne <?= $numDir ?> 
-                </a>
-                
-            <?php endforeach;?>
-        </div>
+                $ancreLigne = "ligne-" . $numLigne;
+            ?>
+            
+            <div id="<?= $ancreLigne ?>"></div>
 
-    <?php endif;?>
+            <a href="?ligne=<?= $numLigne ?>#<?= $ancreLigne ?>" class="button-lig <?= $isLineActive ? 'active-lig' : '' ?>"> 
+                <?= $labelLigne ?> 
+            </a>
+
+            <?php if ($isLineActive && !empty($directions)): ?>
+                <div class="directions-zone">
+                    <p><em>Sélectionnez le sens de circulation :</em></p>
+                    
+                    <?php foreach( $directions as $dir ) : ?>
+                        <?php 
+                            $numDir = htmlspecialchars($dir['LIG_NUM']); // Ex: 1A
+                            $nomTerminus = htmlspecialchars($dir['VILLE_TERMINUS']); // Ex: Cherbourg
+                            $isDirActive = (isset($_GET['direction']) && $_GET['direction'] === $numDir);
+                        ?>
+                        <a href="?ligne=<?= $numLigne ?>&direction=<?= $numDir ?>#<?= $ancreLigne ?>" class="button-dir <?= $isDirActive ? 'active-dir' : '' ?>"> 
+                            Sens : <?= $nomTerminus ?> 
+                        </a>
+                    <?php endforeach; ?> 
+
+                    <?php if (isset($_GET['direction'])): ?>
+                        <?php if (!empty($grille)): ?>
+                            <div class="horaires-zone">
+                                <h3>Direction finale : <span style="color: #ff1b1bff;"><?= htmlspecialchars($villeTerminus) ?></span></h3>
+                                
+                                <div class="route-timeline">
+                                    <?php foreach ($ordreDesVilles as $index => $v) : ?>
+                                        <div class="timeline-stop">
+                                            <span class="stop-dot"></span>
+                                            <span class="stop-name"><?= htmlspecialchars($v) ?></span>
+                                        </div>
+                                        <?php if ($index < count($ordreDesVilles) - 1): ?>
+                                            <span class="timeline-line"></span>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Arrêt</th>
+                                            <th colspan="25">Passages programmés</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($grille as $nomVille => $listeHeures): ?> 
+                                            <tr>
+                                                <td><strong><?= htmlspecialchars($nomVille) ?></strong></td>
+                                                <?php foreach ($listeHeures as $heure): ?>
+                                                    <td><?= htmlspecialchars($heure) ?></td>
+                                                <?php endforeach; ?>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                </div>
+            <?php endif; ?>
+
+        <?php endforeach;?>
 
     </div>
 
-    <div id="table-horaire-lig">
-    <?php if(!empty($grille)): ?>
-        <hr>
-        <h3>Grille horaire pour la direction <?= htmlspecialchars($_GET['direction']) ?></h3>
-        
-        <table border="1" style="border-collapse: collapse; cellpadding: 10px;">
-            <thead>
-                <tr>
-                    <th>Ville / Arrêt</th>
-                    <th colspan="20">Horaires de passage (Toute la journée)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($grille as $nomVille => $listeHeures): ?> 
-                    <tr>
-                        <td><strong><?= htmlspecialchars($nomVille) ?></strong></td>
-                        
-                        <?php foreach ($listeHeures as $heure): ?>
-                            <td><?= htmlspecialchars($heure) ?></td>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
-</div>
 </body>
 </html>
-<?php
-require '../includes/footer.php';
-?>
+
+<?php require '../includes/footer.php'; ?>

@@ -77,7 +77,26 @@ class Authentificator
     {
         $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'0','0',sysdate,:mdp)";
         $stmt = $this->database->prepareStatement($sql);
-        return $stmt->execute(['dep' => $dep, 'ville' => $ville, 'nom' => $nom, 'prenom' => $prenom, 'mdp' => $mdp, 'mail' => $mail, 'tel' => $tel]);
+
+        $newId = 0;
+
+        $stmt->bindParam(':new_id', $newId, PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT, 32);
+
+        $stmt->bindParam(':dep', $dep);
+        $stmt->bindParam(':nom', $nom);
+        $stmt->bindParam(':prenom', $prenom);
+        $stmt->bindParam(':ville', $ville);
+        $stmt->bindParam(':tel', $tel);
+        $stmt->bindParam(':mail', $mail);
+        $stmt->bindParam(':mdp', $mdp);
+
+        $success = $stmt->execute();
+
+        if ($success && $newId) {
+            return $newId;
+        }
+
+        return -1;
     }
 
     public function updateConnexionDate($num_utilisateur)
@@ -186,7 +205,7 @@ class Authentificator
     public function getReservation($numClient): array
     {
         $sql = 'select cli_prenom, res_num, res_date, res_prix_tot, lig_num, 
-        a.com_nom , b.com_nom, eta_heure 
+        a.com_nom AS DEPART, b.com_nom AS ARRIVE, eta_heure 
         from vik_reservation 
         join vik_client using (cli_num) 
         join vik_etape using (cli_num, res_num)

@@ -3,6 +3,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $current_dir = basename(dirname($_SERVER['PHP_SELF']));
 ?>
 
+<?php
+if (!isset($_GET['BYPASS_DECO'])) {
+?>
+
 <header class="main-header">
     <div class="header-container">
         
@@ -23,7 +27,7 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
                 <ul class="nav-links">
                     <li><a href="/" class="<?php echo ($current_dir == 'htdocs' && $current_page == 'index.php') ? 'active' : ''; ?>">Accueil</a></li>
                     <li><a href="/reservation" class="<?php echo ($current_dir == 'reservation') ? 'active' : ''; ?>">Réservation</a></li>
-                    <li><a href="/carte.php" class="<?php echo ($current_page == 'carte.php') ? 'active' : ''; ?>">Réseau</a></li>
+                    <li><a href="/reseau" class="<?php echo ($current_page == 'reseau') ? 'active' : ''; ?>">Réseau</a></li>
                     <li><a href="/lignes" class="<?php echo ($current_dir == 'lignes') ? 'active' : ''; ?>">Lignes</a></li>
                 </ul>
             </nav>
@@ -38,3 +42,7 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
 
     </div>
 </header>
+
+<?php
+}
+?>

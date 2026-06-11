@@ -1,7 +1,5 @@
 <?php
 
-use LDAP\Result;
-
 class Reservation
 {
     private $database;
@@ -21,7 +19,26 @@ class Reservation
 
     public function listCities(): array
     {
-        $sql = "SELECT DISTINCT COM_NOM FROM vik_commune ORDER BY COM_NOM ASC";
+        $sql = "SELECT DISTINCT COM_NOM, COM_CODE_INSEE, COM_LAT, COM_LONG FROM vik_commune ORDER BY COM_NOM ASC";
+        $stmt = $this->database->getConnection()->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listCitiesAndTheirSteps(): array
+    {
+        $sql = "SELECT com1.com_code_insee as depart, com2.com_code_insee as arrivee, lig_num as ligne
+        from vik_noeud noe
+        join vik_commune com1 on noe.com_code_insee_arret=com1.com_code_insee
+        join vik_commune com2 on noe.com_code_insee_suivant=com2.com_code_insee
+        group by com1.com_code_insee, com2.com_code_insee, noe_heure_passage, lig_num
+        order by min(noe_heure_passage)";
+        $stmt = $this->database->getConnection()->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listDepartments(): array
+    {
+        $sql = "SELECT DISTINCT DEP_NUM, DEP_NOM FROM vik_departement ORDER BY DEP_NOM ASC";
         $stmt = $this->database->getConnection()->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -43,172 +60,158 @@ class Reservation
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createReservation($reservation)
+    // --- À AJOUTER DANS TA CLASSE RESERVATION ---
+    private function getInseeCode($nomVille)
     {
-        $distance = 0;
-        $minutes = 0;
-        $villeDepart = $reservation['ville_depart'];
-        $villeArrivee = $reservation['ville_arrivee'];
+        $sql = "SELECT COM_CODE_INSEE FROM VIK_COMMUNE WHERE UPPER(COM_NOM) = UPPER(:nom)";
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['nom' => $nomVille]);
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $res ? $res['COM_CODE_INSEE'] : null;
+    }
+
+    public function createReservation($reservationArray)
+    {
+        $distanceTotal = 0;
+        $etapes = [];
+
+        // 1. Identifier l'utilisateur
+        $cliNum = 0;
         if ($this->sessionHelper->isUserLoggedIn()) {
             $client = $this->sessionHelper->getUserSession();
             $cliNum = $client['cli_num'];
-            while ($villeDepart !== $villeArrivee) {
-                $sql = "select noe_distance_prochain, noe_duree_prochain, com_code_insee_suivant from vik_noeud where com_code_insee_arret = :villeDepart and lig_num = :ligNum";
+        }
+
+        foreach ($reservationArray as $segment) {
+            if (!isset($segment['ligne'], $segment['depart'], $segment['arrivee'])) {
+                continue;
+            }
+
+            $ligNum = $segment['ligne'];
+
+            $villeDepartCode = $this->getInseeCode($segment['depart']);
+            $villeArriveeCode = $this->getInseeCode($segment['arrivee']);
+
+            if (!$villeDepartCode || !$villeArriveeCode) continue;
+
+            $courant = $villeDepartCode;
+            $safeguard = 0; 
+
+            while ($courant !== $villeArriveeCode && $safeguard < 50) {
+                $sql = "SELECT NOE_DISTANCE_PROCHAIN, COM_CODE_INSEE_SUIVANT, 
+                               TO_CHAR(NOE_HEURE_PASSAGE, 'YYYY-MM-DD HH24:MI:SS') AS NOE_HEURE_FMT 
+                        FROM vik_noeud 
+                        WHERE com_code_insee_arret = :courant 
+                          AND lig_num = :ligNum 
+                          AND ROWNUM = 1";
+
                 $stmt = $this->database->prepareStatement($sql);
-                $stmt->execute(['villeDepart' => $villeDepart, 'ligNum' => $reservation['ligne']]);
+                $stmt->execute(['courant' => $courant, 'ligNum' => $ligNum]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
                 if ($result) {
-                    $distance += $result['ETA_DISTANCE'];
-                    $minutes += $result['ETA_DUREE_PROCHAIN'];
-                    $villeDepart = $result['COM_CODE_INSEE_SUIVANT'];
+                    $distEtape = isset($result['NOE_DISTANCE_PROCHAIN']) ? (float) str_replace(',', '.', $result['NOE_DISTANCE_PROCHAIN']) : 0;
+
+                    $etapes[] = [
+                        'ligne'   => $ligNum,
+                        'depart'  => $courant,
+                        'arrivee' => $result['COM_CODE_INSEE_SUIVANT'],
+                        'dist'    => $distEtape,
+                        'heure'   => $result['NOE_HEURE_FMT']
+                    ];
+
+                    $distanceTotal += $distEtape;
+                    $courant = $result['COM_CODE_INSEE_SUIVANT'];
+                } else {
+                    break; 
                 }
+                $safeguard++;
             }
-            $this->authentificator->ajoutPointsApresResa($cliNum, $distance);
+        }
 
-            if ($distance < 10){
-                $tarNum = 1;
-            }else if($distance < 20){
-                $tarNum = 2;
+        if (empty($etapes)) return;
 
-            }else if($distance < 30){
-                $tarNum = 3;
-                
-            }else if($distance < 40){
-                $tarNum = 4;
-                
-            }else if( $distance < 50){
-                $tarNum = 5;
-                
-            }else if($distance < 60){
-                $tarNum = 6;
-                
-            }else if($distance < 80){
-                $tarNum = 7;
-                
-            }else if($distance < 100){
-                $tarNum = 8;
-                
-            }else if($distance < 140){
-                $tarNum = 9;
-                
-            }else if($distance < 160){
-                $tarNum = 10;
-                
-            }else if($distance < 200){
-                $tarNum = 11;
-                
-            }else if($distance < 300){
-                $tarNum = 12;
-                
-            }else if($distance <500){
-                $tarNum = 13;
-                
-            }else {
-                $tarNum = 13;
-            }
+        if ($cliNum !== 0) {
+            $this->authentificator->ajoutPointsApresResa($cliNum, $distanceTotal);
+        }
 
-            $sql = "select tar_prix from vik_tarif where tar_num = :tarNum";
-            $stmt = $this->database->prepareStatement($sql);
-            $stmt->execute(['tarNum' => $tarNum]);
-            $result1 = $stmt->fetch(PDO::FETCH_ASSOC);
+        $tarNum = 13;
+        if ($distanceTotal < 10) {
+            $tarNum = 1;
+        } else if ($distanceTotal < 20) {
+            $tarNum = 2;
+        } else if ($distanceTotal < 30) {
+            $tarNum = 3;
+        } else if ($distanceTotal < 40) {
+            $tarNum = 4;
+        } else if ($distanceTotal < 50) {
+            $tarNum = 5;
+        } else if ($distanceTotal < 60) {
+            $tarNum = 6;
+        } else if ($distanceTotal < 80) {
+            $tarNum = 7;
+        } else if ($distanceTotal < 100) {
+            $tarNum = 8;
+        } else if ($distanceTotal < 140) {
+            $tarNum = 9;
+        } else if ($distanceTotal < 160) {
+            $tarNum = 10;
+        } else if ($distanceTotal < 200) {
+            $tarNum = 11;
+        } else if ($distanceTotal < 300) {
+            $tarNum = 12;
+        }
 
-            $sql = "select typ_reduc from vik_type_client where typ_num = (select typ_num from vik_client where cli_num = :cliNum)";
+        $sql = "SELECT TAR_PRIX FROM vik_tarif WHERE TAR_NUM_TRANCHE = :tarNum";
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['tarNum' => $tarNum]);
+        $result1 = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $prix = $result1['TAR_PRIX'];
+
+        if ($cliNum !== 0) {
+            $sql = "SELECT TYP_REDUC FROM vik_type_client WHERE typ_num = (SELECT typ_num FROM vik_client WHERE cli_num = :cliNum)";
             $stmt = $this->database->prepareStatement($sql);
             $stmt->execute(['cliNum' => $cliNum]);
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $resultClient = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $prix = $result1['TAR_PRIX'] * $result['TYP_REDUC'] / 100;
+            if ($resultClient) {
+                $prix = $prix * $resultClient['TYP_REDUC'] / 100;
+            }
+        }
 
-            $sqlInsert = "INSERT INTO VIK_RESERVATION (CLI_NUM, res_num, tar_num_tranche,res_date, res_nb_points, res_prix_tot) 
-                        VALUES (:cliNum, (select max(res_num)+1 as res from vik_reservation
-                        where cli_num=:cliNum), :tarNum, SYSDATE, :points, :prix)";
-            $stmtInsert = $this->database->prepareStatement($sqlInsert);
-            $stmtInsert->execute([
+        $points = floor($distanceTotal) / 10;
+
+        $sqlRes = "SELECT NVL(MAX(RES_NUM), 0) + 1 AS NEW_RES FROM vik_reservation WHERE CLI_NUM = :cliNum";
+        $stmtRes = $this->database->prepareStatement($sqlRes);
+        $stmtRes->execute(['cliNum' => $cliNum]);
+        $rowRes = $stmtRes->fetch(PDO::FETCH_ASSOC);
+        $newResNum = $rowRes['NEW_RES'];
+
+        $sqlInsert = "INSERT INTO VIK_RESERVATION (CLI_NUM, RES_NUM, TAR_NUM_TRANCHE, RES_DATE, RES_NB_POINTS, RES_PRIX_TOT) 
+                      VALUES (:cliNum, :resNum, :tarNum, SYSDATE, :points, :prix)";
+        $stmtInsert = $this->database->prepareStatement($sqlInsert);
+        $stmtInsert->execute([
+            'cliNum' => $cliNum,
+            'resNum' => $newResNum,
+            'tarNum' => $tarNum,
+            'points' => $points,
+            'prix'   => $prix
+        ]);
+
+        $sqlInsertEtape = "INSERT INTO VIK_ETAPE (LIG_NUM, CLI_NUM, RES_NUM, COM_CODE_INSEE_DEPART, COM_CODE_INSEE_ARRIVEE, ETA_DISTANCE, ETA_HEURE) 
+                           VALUES (:ligNum, :cliNum, :resNum, :dep, :arr, :dist, TO_DATE(:heure, 'YYYY-MM-DD HH24:MI:SS'))";
+        $stmtEtape = $this->database->prepareStatement($sqlInsertEtape);
+
+        foreach ($etapes as $etape) {
+            $stmtEtape->execute([
+                'ligNum' => $etape['ligne'],
                 'cliNum' => $cliNum,
-                'tarNum' => $tarNum,
-                'villeDepart' => $reservation['ville_depart'],
-                'villeArrivee' => $villeArrivee,
-                'distance' => $distance,
-                'duree' => $minutes,
-                'points' => floor($distance) / 10,
-                'prix' => $prix
-            ]);
-        } else {
-            $cliNum = 0;
-            while ($villeDepart !== $villeArrivee) {
-                $sql = "select noe_distance_prochain, noe_duree_prochain, com_code_insee_suivant from vik_noeud where com_code_insee_arret = :villeDepart and lig_num = :ligNum";
-                $stmt = $this->database->prepareStatement($sql);
-                $stmt->execute(['villeDepart' => $villeDepart, 'ligNum' => $reservation['ligne']]);
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($result) {
-                    $distance += $result['ETA_DISTANCE'];
-                    $minutes += $result['ETA_DUREE_PROCHAIN'];
-                    $villeDepart = $result['COM_CODE_INSEE_SUIVANT'];
-                }
-            }
-            if ($distance < 10){
-                $tarNum = 1;
-            }else if($distance < 20){
-                $tarNum = 2;
-
-            }else if($distance < 30){
-                $tarNum = 3;
-                
-            }else if($distance < 40){
-                $tarNum = 4;
-                
-            }else if( $distance < 50){
-                $tarNum = 5;
-                
-            }else if($distance < 60){
-                $tarNum = 6;
-                
-            }else if($distance < 80){
-                $tarNum = 7;
-                
-            }else if($distance < 100){
-                $tarNum = 8;
-                
-            }else if($distance < 140){
-                $tarNum = 9;
-                
-            }else if($distance < 160){
-                $tarNum = 10;
-                
-            }else if($distance < 200){
-                $tarNum = 11;
-                
-            }else if($distance < 300){
-                $tarNum = 12;
-                
-            }else if($distance <500){
-                $tarNum = 13;
-                
-            }else {
-                $tarNum = 13;
-            }
-
-            $sql = "select tar_prix from vik_tarif where tar_num = :tarNum";
-            $stmt = $this->database->prepareStatement($sql);
-            $stmt->execute(['tarNum' => $tarNum]);
-            $result1 = $stmt->fetch(PDO::FETCH_ASSOC);
-
-
-            $prix = $result1['TAR_PRIX'];
-
-            $sqlInsert = "INSERT INTO VIK_RESERVATION (CLI_NUM, res_num, tar_num_tranche,res_date, res_nb_points, res_prix_tot) 
-                        VALUES (:cliNum, (select max(res_num)+1 as res from vik_reservation
-                        where cli_num=:cliNum), :tarNum, SYSDATE, :points, :prix)";
-            $stmtInsert = $this->database->prepareStatement($sqlInsert);
-            $stmtInsert->execute([
-                'cliNum' => 0,
-                'tarNum' => $tarNum,
-                'villeDepart' => $reservation['ville_depart'],
-                'villeArrivee' => $villeArrivee,
-                'distance' => $distance,
-                'duree' => $minutes,
-                'points' => floor($distance) / 10,
-                'prix' => $prix
+                'resNum' => $newResNum,
+                'dep'    => $etape['depart'],
+                'arr'    => $etape['arrivee'],
+                'dist'   => $etape['dist'],
+                'heure'  => $etape['heure']
             ]);
         }
     }
