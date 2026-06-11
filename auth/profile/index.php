@@ -84,15 +84,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <div class="stats-grid">
-        <div class="stat-card">
+        <div class="stat-card status-card-<?= strtolower(preg_replace('/[^a-zA-Z0-0]/', '', $infoClient['TYP_NOM'])) ?>">
             <h3>Statut Membre</h3>
             <div class="stat-value"><?= htmlspecialchars($infoClient['TYP_NOM']) ?></div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card status-card-<?= strtolower(preg_replace('/[^a-zA-Z0-0]/', '', $infoClient['TYP_NOM'])) ?>">
             <h3>Points Fidélité (Total)</h3>
             <div class="stat-value"><?= intval($infoClient['CLI_NB_POINTS_TOT']) ?> pts</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card status-card-<?= strtolower(preg_replace('/[^a-zA-Z0-0]/', '', $infoClient['TYP_NOM'])) ?>">
             <h3>Points Utilisables</h3>
             <div class="stat-value"><?= intval($infoClient['CLI_NB_POINTS_EC']) ?> pts</div>
         </div>
