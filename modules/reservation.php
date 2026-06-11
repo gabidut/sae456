@@ -22,6 +22,18 @@ class Reservation
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function listCitiesAndTheirSteps(): array
+    {
+        $sql = "SELECT com1.com_code_insee as depart, com2.com_code_insee as arrivee, lig_num as ligne
+        from vik_noeud noe
+        join vik_commune com1 on noe.com_code_insee_arret=com1.com_code_insee
+        join vik_commune com2 on noe.com_code_insee_suivant=com2.com_code_insee
+        group by com1.com_code_insee, com2.com_code_insee, noe_heure_passage, lig_num
+        order by min(noe_heure_passage)";
+        $stmt = $this->database->getConnection()->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function listDepartments(): array
     {
         $sql = "SELECT DISTINCT DEP_NUM, DEP_NOM FROM vik_departement ORDER BY DEP_NOM ASC";
