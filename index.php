@@ -6,7 +6,7 @@ include 'includes/global.php';
 <section class="hero">
     <h2>La puissance du transport <span>Nordique</span></h2>
     <p>L'entreprise nordique qui vous emmenera là où vous avez besoin d'aller. Nous vous déplacons avec la force et la rigueur des Vikings.</p>
-    <a href="#services" class="btn">Découvrir nos services</a>
+    <a href="/reservation" class="btn">Réserver</a>
 </section>
 
 <section id="services" class="services">
