@@ -1,10 +1,10 @@
 <?php
+require_once __DIR__ . '/../includes/session.php';
 $env = require_once __DIR__ . '/../env.php';
 require_once __DIR__ . '/../modules/bdd.php';
 require_once __DIR__ . '/../modules/auth.php';
 require_once __DIR__ . '/../modules/reservation.php';
 require_once __DIR__ . '/../modules/ligne.php';
-require_once __DIR__ . '/../includes/session.php';
 
 $database = new Database(
     $env['db_oracle'],
