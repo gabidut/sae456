@@ -11,10 +11,9 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
+    background-color: #121212; /* Fond de secours si l'image ne couvre pas tout en hauteur */
+    background-position: center;
+    overflow: hidden;
 }
 
 /* Fallback si l'image ne charge pas */
@@ -39,14 +38,18 @@
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    color: #000;
 }
 
 .search-form-horizontal {
+    margin: 20px;
+    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 15px;
     flex-wrap: nowrap;
+    color:#000;
 }
 
 .input-group {
@@ -83,8 +86,10 @@
     background-color: var(--accent-color);
     color: white;
     border: none;
-    padding: 14px 30px;
-    border-radius: 6px;
+    padding: 12px 30px;
+    /* Moins haut */
+    border-radius: 4px;
+    font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
     cursor: pointer;
@@ -107,19 +112,25 @@
         align-items: stretch;
     }
 
+
     .divider {
         display: none;
     }
-    
+
     .search-bar-container {
-        padding: 25px;
+        position: relative;
+        top: 0;
+        left: 0;
+        transform: none;
+        width: 95%;
+        margin: -100px auto 40px auto;
+    }
+
+    .reservation-hero {
+        height: 300px;
     }
 }
 
-/* Résultats */
-.results-section {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
-    text-align: center;
+.errored {
+    border-left: solid 5px red;
 }
