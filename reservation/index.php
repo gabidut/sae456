@@ -10,9 +10,6 @@ $lignes = $ligneManager->getLignes();
 <link rel="stylesheet" href="/assets/style/reservation.css">
 
 <div class="reservation-hero">
-    <div class="hero-bg-top"></div>
-    <div class="hero-bg-bottom"></div>
-    
     <div class="search-bar-container">
         <form action="index.php" method="GET" class="search-form-horizontal">
 
