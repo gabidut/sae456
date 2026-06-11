@@ -76,7 +76,7 @@ class Authentificator
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,:nom,:prenom,:ville,:tel,:mail,'0','0',sysdate,:mdp)";
+        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'0','0',sysdate,:mdp)";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['dep' => $dep, 'ville' => $ville, 'nom' => $nom, 'prenom' => $prenom, 'mdp' => $mdp, 'mail' => $mail, 'tel' => $tel]);
     }
@@ -109,14 +109,14 @@ class Authentificator
 
     public function changeNom($num_utilisateur, $newNom)
     {
-        $sql = "update vik_client set cli_nom = :newNom where cli_num = :num";
+        $sql = "update vik_client set cli_nom = upper(:newNom) where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newNom' => $newNom]);
     }
 
     public function changePrenom($num_utilisateur, $newPrenom)
     {
-        $sql = "update vik_client set cli_prenom = :newPrenom where cli_num = :num";
+        $sql = "update vik_client set cli_prenom = initcap(:newPrenom) where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute(['num' => $num_utilisateur, 'newPrenom' => $newPrenom]);
     }
