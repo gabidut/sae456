@@ -1,6 +1,8 @@
 <?php
 $env = require_once __DIR__ . '/../env.php';
 require_once __DIR__ . '/../modules/bdd.php';
+require_once __DIR__ . '/../modules/auth.php';
+
 require_once __DIR__ . '/../modules/reservation.php';
 require_once __DIR__ . '/../modules/ligne.php';
 require_once __DIR__ . '/../includes/session.php';
@@ -11,7 +13,8 @@ $database = new Database(
 );
 $ligneManager = new Ligne($database);
 $session = new SessionHelper($database);
-$reservationManager = new Reservation($database, $session);
+$authentificator = new Authentificator($database, $env['password_secret'], $session);
+$reservationManager = new Reservation($database, $session, $authentificator);
 
 
 header('Content-Type: application/json');
