@@ -56,7 +56,7 @@ if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['email']) &&
                 <div class="form-column">
                     <div class="form-group">
                         <label for="departement-input">Département</label>
-                        <input type="text" list="department" id="departement-input" name="departement" placeholder="Ex: Orne" required>
+                        <input type="text" list="department" id="departement-input" name="departement" placeholder="Ex: 61" required>
                     </div>
 
                     <div class="form-group">
