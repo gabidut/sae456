@@ -75,9 +75,34 @@ class Authentificator
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,:nom,:prenom,:ville,:tel,:mail,'0','0',sysdate,:mdp)";
+        $checkSql = "SELECT * FROM vik_client WHERE CLI_COURRIEL = :email";
+        $checkStmt = $this->database->prepareStatement($checkSql);
+        $checkStmt->execute(['email' => $mail]);
+        if ($checkStmt->rowCount() > 0) {
+            throw new Exception("Cet email est déjà utilisé");
+        }
+        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('1',:dep,:nom,:prenom,:ville,:tel,:mail,'10','10',sysdate,:mdp) RETURNING CLI_NUM INTO :new_id";
         $stmt = $this->database->prepareStatement($sql);
-        return $stmt->execute(['dep' => $dep, 'ville' => $ville, 'nom' => $nom, 'prenom' => $prenom, 'mdp' => $mdp, 'mail' => $mail, 'tel' => $tel]);
+
+        $newId = 0;
+
+        $stmt->bindParam(':new_id', $newId, PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT, 32);
+
+        $stmt->bindParam(':dep', $dep);
+        $stmt->bindParam(':nom', $nom);
+        $stmt->bindParam(':prenom', $prenom);
+        $stmt->bindParam(':ville', $ville);
+        $stmt->bindParam(':tel', $tel);
+        $stmt->bindParam(':mail', $mail);
+        $stmt->bindParam(':mdp', $mdp);
+
+        $success = $stmt->execute();
+
+        if ($success && $newId) {
+            return $newId;
+        }
+
+        return -1;
     }
 
     public function updateConnexionDate($num_utilisateur)
@@ -117,7 +142,7 @@ class Authentificator
     {
         $sql = "update vik_client set cli_prenom = :newPrenom where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
-        return $stmt->execute(['num' => $num_utilisateur, 'newPrenom' =>$newPrenom]);
+        return $stmt->execute(['num' => $num_utilisateur, 'newPrenom' => $newPrenom]);
     }
 
     public function changeTel($num_utilisateur, $newTel)
@@ -131,7 +156,7 @@ class Authentificator
     {
         $sql = "update vik_client set cli_nb_points_tot = :point where cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
-        return $stmt->execute(['num' => $num_utilisateur, 'point' =>$point]);
+        return $stmt->execute(['num' => $num_utilisateur, 'point' => $point]);
     }
 
     public function updatePointEC($num_utilisateur, $point)
@@ -160,7 +185,7 @@ class Authentificator
         $client = $stmtGetTotal->fetch();
 
         $newTotalPoints = $client['cli_nb_points_tot'];
-        
+
         $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points <= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE ASC";
         $stmtGetTier = $this->database->prepareStatement($sqlGetTier);
         $stmtGetTier->execute(['points' => $newTotalPoints]);

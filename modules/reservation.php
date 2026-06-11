@@ -14,7 +14,14 @@ class Reservation
 
     public function listCities(): array
     {
-        $sql = "SELECT DISTINCT COM_NOM FROM vik_commune ORDER BY COM_NOM ASC";
+        $sql = "SELECT DISTINCT COM_NOM, COM_CODE_INSEE FROM vik_commune ORDER BY COM_NOM ASC";
+        $stmt = $this->database->getConnection()->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listDepartments(): array
+    {
+        $sql = "SELECT DISTINCT DEP_NUM, DEP_NOM FROM vik_departement ORDER BY DEP_NOM ASC";
         $stmt = $this->database->getConnection()->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
