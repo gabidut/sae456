@@ -11,10 +11,12 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
 $clients = $admin->listClients();
 
 // 2. Est-ce qu'un client a été cliqué ?
+// Piège pour l'user 0 : en PHP, isset() est vrai pour 0, mais empty() aurait posé problème. 
+// Ici, isset() est parfait pour capter l'ID 0.
 $selected_client_id = isset($_GET['client_id']) ? $_GET['client_id'] : null;
 $reservations = [];
 
-if ($selected_client_id) {
+if ($selected_client_id !== null) {
     // On appelle ta fonction getReservation pour le client sélectionné
     $reservations = $authentificator->getReservation($selected_client_id);
 }
@@ -43,11 +45,11 @@ if ($selected_client_id) {
                     <tbody>
                         <?php if (!empty($clients)): ?>
                             <?php foreach ($clients as $c): ?>
-                                <tr style="border-bottom: 1px solid #e2e8f0; <?php echo ($selected_client_id == $c['CLI_NUM']) ? 'background-color: #e0f2fe;' : ''; ?>">
-                                    <td style="padding: 12px; font-weight: bold;"><?php echo htmlspecialchars($c['CLI_NUM']); ?></td>
-                                    <td style="padding: 12px;"><?php echo htmlspecialchars($c['CLI_NOM']); ?></td>
-                                    <td style="padding: 12px;"><?php echo htmlspecialchars($c['CLI_PRENOM']); ?></td>
-                                    <td style="padding: 12px;"><?php echo htmlspecialchars($c['CLI_COURRIEL']); ?></td>
+                                <tr style="border-bottom: 1px solid #e2e8f0; <?php echo ($selected_client_id !== null && $selected_client_id == $c['CLI_NUM']) ? 'background-color: #e0f2fe;' : ''; ?>">
+                                    <td style="padding: 12px; font-weight: bold;"><?php echo htmlspecialchars($c['CLI_NUM'] ?? '0'); ?></td>
+                                    <td style="padding: 12px;"><?php echo htmlspecialchars($c['CLI_NOM'] ?? ''); ?></td>
+                                    <td style="padding: 12px;"><?php echo htmlspecialchars($c['CLI_PRENOM'] ?? ''); ?></td>
+                                    <td style="padding: 12px;"><?php echo htmlspecialchars($c['CLI_COURRIEL'] ?? ''); ?></td>
                                     <td style="padding: 12px; text-align: center;">
                                         
                                         <a href="?client_id=<?php echo $c['CLI_NUM']; ?>" style="text-decoration: none; background-color: #3b82f6; color: white; padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; margin-right: 5px;">
@@ -76,7 +78,7 @@ if ($selected_client_id) {
         <div class="container" style="border-top: 2px dashed #cbd5e1; padding-top: 20px; height: 380px; display: flex; flex-direction: column;">
             <h2>Liste des réservations</h2>
             
-            <?php if ($selected_client_id): ?>
+            <?php if ($selected_client_id !== null): ?>
                 <p style="margin-bottom: 10px;">Réservations pour le client n°<strong><?php echo htmlspecialchars($selected_client_id); ?></strong> :</p>
                 
                 <div style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; background: white;">
@@ -94,11 +96,11 @@ if ($selected_client_id) {
                             <?php if (!empty($reservations)): ?>
                                 <?php foreach ($reservations as $r): ?>
                                     <tr style="border-bottom: 1px solid #e2e8f0;">
-                                        <td style="padding: 12px; font-weight: bold;"><?php echo htmlspecialchars($r['RES_NUM']); ?></td>
-                                        <td style="padding: 12px;"><?php echo htmlspecialchars($r['RES_DATE']); ?></td>
-                                        <td style="padding: 12px;"><?php echo htmlspecialchars($r['DEPART']); ?></td>
-                                        <td style="padding: 12px;"><?php echo htmlspecialchars($r['ARRIVE']); ?></td>
-                                        <td style="padding: 12px; color: #16a34a; font-weight: bold;"><?php echo htmlspecialchars($r['RES_PRIX_TOT']); ?> €</td>
+                                        <td style="padding: 12px; font-weight: bold;"><?php echo htmlspecialchars($r['RES_NUM'] ?? ''); ?></td>
+                                        <td style="padding: 12px;"><?php echo htmlspecialchars($r['RES_DATE'] ?? ''); ?></td>
+                                        <td style="padding: 12px;"><?php echo htmlspecialchars($r['DEPART'] ?? ''); ?></td>
+                                        <td style="padding: 12px;"><?php echo htmlspecialchars($r['ARRIVE'] ?? ''); ?></td>
+                                        <td style="padding: 12px; color: #16a34a; font-weight: bold;"><?php echo htmlspecialchars($r['RES_PRIX_TOT'] ?? '0'); ?> €</td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
