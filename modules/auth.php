@@ -30,15 +30,10 @@ class Authentificator
                 $this->session_helper->setUserSession($user['CLI_NUM']);
                 $this->updateConnexionDate($user['CLI_NUM']);
 
-                $isAdmin = $this->getIsAdmin($user['CLI_NUM']);
-
-                if(!empty($isAdmin))
+                if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
                 {
-                    if($isAdmin['CLI_ROLE'] === 1)
-                    {
-                        $this->session_helper->setAdminUser();
-                    }
-                }
+                    $this->session_helper->setAdminUser();
+                }   
 
                 return $user;
 
@@ -119,16 +114,16 @@ class Authentificator
     }
 
     public function getIsAdmin($userID)
-    {
-        $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
+{
+    $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
+    $stmt = $this->database->prepareStatement($sql);
+    $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
 
-        $stmt = $this->database->prepareStatement($sql);
-        $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
+    $stmt->execute(); 
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
-    }
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+}
 
     public function updateConnexionDate($num_utilisateur)
     {
