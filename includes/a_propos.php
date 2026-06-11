@@ -12,10 +12,10 @@ include_once '../includes/global.php';
 
     <section class="about-intro">
         <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+            De jeunes développeurs ont monté une start-up de développement web, et obtiennent une commande de la part de leurs premiers clients : “Viking Transports", un devis pour la réalisation d’un site web.
         </p>
         <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+           Tous les membres de cette entreprise étant de grands fans de l’artiste Orelsan, ont voulu lui rendre hommage au travers du nom de cette entreprise et du logo y faisant subtilement référence.
         </p>
     </section>
 

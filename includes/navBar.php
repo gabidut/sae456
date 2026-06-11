@@ -3,6 +3,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $current_dir = basename(dirname($_SERVER['PHP_SELF']));
 ?>
 
+<?php
+if (!isset($_GET['BYPASS_DECO'])) {
+?>
+
 <header class="main-header">
     <div class="header-container">
         
@@ -38,3 +42,7 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
 
     </div>
 </header>
+
+<?php
+}
+?>

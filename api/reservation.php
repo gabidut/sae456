@@ -1,6 +1,8 @@
 <?php
 $env = require_once __DIR__ . '/../env.php';
 require_once __DIR__ . '/../modules/bdd.php';
+require_once __DIR__ . '/../modules/auth.php';
+
 require_once __DIR__ . '/../modules/reservation.php';
 require_once __DIR__ . '/../modules/ligne.php';
 require_once __DIR__ . '/../includes/session.php';
@@ -11,7 +13,8 @@ $database = new Database(
 );
 $ligneManager = new Ligne($database);
 $session = new SessionHelper($database);
-$reservationManager = new Reservation($database, $session);
+$authentificator = new Authentificator($database, $env['password_secret'], $session);
+$reservationManager = new Reservation($database, $session, $authentificator);
 
 
 header('Content-Type: application/json');
@@ -40,7 +43,7 @@ if (isset($_GET['ligne'])) {
 
 if (isset($_GET['lignes'])) {
     try {
-        $lignes = $ligneManager->getLignes();
+        $lignes = $ligneManager->getLignes2();
         echo json_encode($lignes);
     } catch (Exception $e) {
         http_response_code(500);

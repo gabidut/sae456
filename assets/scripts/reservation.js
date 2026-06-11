@@ -89,11 +89,8 @@ function addStep() {
     } else {
         lignes.forEach(ligne => {
             const optionA = document.createElement('option');
-            optionA.value = ligne.LIG_NUM + "A";
+            optionA.value = ligne.LIG_NUM;
             lignesDatalist.appendChild(optionA);
-            const optionB = document.createElement('option');
-            optionB.value = ligne.LIG_NUM + "B";
-            lignesDatalist.appendChild(optionB);
         });
     }
 
@@ -278,11 +275,8 @@ function computeLineForStep(step) {
             data.forEach(ville => {
                 if (lineNumber && ville.LIG_NUM === lineNumber) return;
                 const option = document.createElement('option');
-                option.value = ville.LIG_NUM + "A";
+                option.value = ville.LIG_NUM;
                 stepsDatalist.appendChild(option);
-                const option2 = document.createElement('option');
-                option2.value = ville.LIG_NUM + "B";
-                stepsDatalist.appendChild(option2);
             });
         });
 }
@@ -372,3 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
         addStep();
     });
 });
+
+function hideMap() {
+    document.querySelector('.map-container').style.display = 'none';
+}
+
+function showMap() {
+    document.querySelector('.map-container').style.display = 'block';
+}   
