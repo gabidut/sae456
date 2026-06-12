@@ -1138,3 +1138,76 @@ body {
 .form-input:disabled {
     background-color: #e9ecef;
 }
+
+/* ==========================================================================
+   Conteneur principal de la sidebar (Thème Sombre Viking Correct)
+   ========================================================================== */
+.admin-sidebar {
+    width: 260px;
+    height: 100vh;
+    background-color: #141414; /* Même noir que tes cartes viking-card */
+    color: #ffffff;
+    padding: 24px;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-right: 1px solid #222222; /* Bordure discrète */
+}
+
+/* --- Titre du menu --- */
+.sidebar-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #a0a0a0; /* Gris muted */
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* --- Menu de navigation --- */
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* --- Style de base des liens --- */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    color: #cccccc; /* Texte clair */
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+/* --- État au survol (Hover) --- */
+.sidebar-link:hover {
+    background-color: #1f1f1f; /* Survol sombre comme tes lignes de tableau */
+    color: #ffffff;
+}
+
+/* --- État Actif (Rouge Viking !) --- */
+.sidebar-link.active {
+    background-color: #da1b23; /* Rouge exact de tes boutons filtrer/résas */
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* --- Espace pour les icônes --- */
+.sidebar-link .icon {
+    margin-right: 10px;
+}
+
+/* --- Ajustement de la page globale --- */
+.admin-dashboard-layout {
+    display: flex;
+    padding-left: 260px; /* Décale tout le contenu pour laisser la place à la sidebar fixe */
+    background-color: #0d0d0d;
+    min-height: 100vh;
+}

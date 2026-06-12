@@ -49,16 +49,6 @@ if ($selected_client_id !== null) {
 ?>
 
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Utilisateurs - Admin</title>
-    
-    <link rel="stylesheet" href="/assets/style/sidebar.css">
-    <link rel="stylesheet" href="/assets/style/admin.css"> </head>
-<body>
 
 <div class="admin-dashboard-layout">
     <?php include_once __DIR__ . '/../../includes/admin_sidebar.php'; ?>
@@ -258,6 +248,5 @@ window.onload = function() {
 
 <?php include_once __DIR__ . '/../../includes/footer.php'; ?>
 
-</body>
-</html>
+
 
