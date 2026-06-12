@@ -21,26 +21,23 @@ class Authentificator
     public function processAuth($email, $password): array
     {
         $user = $this->getClientFromMail($email);
-        var_dump($user);
         if (empty($user)) {
-            throw new AuthExeption("Invalid email or password 1");
-        } else {
-            if ($this->verify_password($password, $user['CLI_MDP']))
-            {
-                $this->session_helper->setUserSession($user['CLI_NUM']);
-                $this->updateConnexionDate($user['CLI_NUM']);
-
-                if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
-                {
-                    $this->session_helper->setAdminUser();
-                }   
-
-                return $user;
-
-            }
+            throw new AuthException("Aucun compte n'est associé à cette adresse email.");
         }
 
-        throw new AuthExeption("Invalid email or password 2");
+        if (!$this->verify_password($password, $user['CLI_MDP'])) {
+            throw new AuthException("Le mot de passe est incorrect.");
+        }
+
+        $this->session_helper->setUserSession($user['CLI_NUM']);
+        $this->updateConnexionDate($user['CLI_NUM']);
+
+        if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
+        {
+            $this->session_helper->setAdminUser();
+        }   
+
+        return $user;
     }
     public function logout()
     {
@@ -83,7 +80,7 @@ class Authentificator
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('10',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'0','0',sysdate,:mdp)";
+        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('1',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'10','10',sysdate,:mdp) RETURNING cli_num INTO :new_id";
         $stmt = $this->database->prepareStatement($sql);
 
         $newId = 0;
@@ -206,7 +203,7 @@ class Authentificator
 
         $newTotalPoints = $client['CLI_NB_POINTS_TOT'];
 
-        $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points <= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE ASC";
+        $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points >= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE desc fetch first 1 rows only";
         $stmtGetTier = $this->database->prepareStatement($sqlGetTier);
         $stmtGetTier->execute(['points' => intval($newTotalPoints)]);
         $tier = $stmtGetTier->fetch();
@@ -214,7 +211,7 @@ class Authentificator
         if ($tier) {
             $newType = $tier['TYP_NUM'];
         } else {
-            $newType = 5;
+            $newType = 1;
         }
         $sqlUpgrade = "UPDATE vik_client SET typ_num = :newType WHERE cli_num = :num";
         $stmtUpgrade = $this->database->prepareStatement($sqlUpgrade);
@@ -259,7 +256,7 @@ class Authentificator
     }
 }
 
-class AuthExeption extends Exception
+class AuthException extends Exception
 {
     public function __construct($message = '', $code = 0, ?Throwable $previous = null)
     {

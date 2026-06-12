@@ -74,10 +74,11 @@ if (isset($_GET['getFinalHoraire']) && isset($_GET['lineId']) && isset($_GET['co
 
 
 
-if (isset($_POST['setTripDetails'])) {
+if (isset($_POST['setTripDetails']) && isset($_GET['tripDepartureTime'])) {
     try {
         $tripDetails = json_decode($_POST['setTripDetails'], true);
         $session->setCurrentTripDetails($tripDetails);
+        $session->setTripDepartureTime($_GET['tripDepartureTime'] ?? null);
         echo json_encode(['success' => true]);
     } catch (Exception $e) {
         http_response_code(500);
