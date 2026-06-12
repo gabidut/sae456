@@ -388,118 +388,188 @@ function triggerValidationAndPrice() {
 
 let originalFormHTML = '';
 
-function confirm() {
-    const lastStepIndex = Object.keys(steps).length - 1;
-    const lastStep = steps[lastStepIndex];
-    if (!lastStep.ligne || !lastStep.depart || !lastStep.arrivee || !lastStep.departTime || !lastStep.arriveeTime) {
-        const lastRow = document.querySelector(`.search-form-horizontal[data-step="${lastStepIndex}"]`);
-        lastRow.classList.add('errored');
-        setTimeout(() => lastRow.classList.remove('errored'), 2000);
-        return;
-    }
+// Fonction principale pour ouvrir le récapitulatif
+window.ouvrirRecapitulatif = function() {
+    try {
+        const lastStepIndex = Object.keys(steps).length - 1;
+        if (lastStepIndex < 0) return;
 
-    const busContainer = document.getElementById('bus-animation-container');
-    if (busContainer) {
-        const currentLeft = window.getComputedStyle(busContainer).left;
-        let startRot = '0deg';
-        if (busContainer.classList.contains('animate-bus-return')) {
-            startRot = '180deg';
+        const lastStep = steps[lastStepIndex];
+        if (!lastStep || !lastStep.ligne || !lastStep.depart || !lastStep.arrivee || !lastStep.departTime || !lastStep.arriveeTime) {
+            const lastRow = document.querySelector(`.search-form-horizontal[data-step="${lastStepIndex}"]`);
+            if (lastRow) {
+                lastRow.classList.add('errored');
+                setTimeout(() => lastRow.classList.remove('errored'), 2000);
+            }
+            return;
         }
-        busContainer.style.setProperty('--start-left-forward', currentLeft);
-        busContainer.style.setProperty('--start-rot-forward', startRot);
 
-        busContainer.classList.remove('animate-bus', 'animate-bus-return');
-        void busContainer.offsetWidth; // Force reflow
-        busContainer.classList.add('animate-bus');
-    }
+        // Extraction du prix (on ne garde que les chiffres et le point)
+        const priceDisplay = document.getElementById('dynamic-price');
+        const rawText = priceDisplay ? priceDisplay.textContent : "0";
+        const initialPrice = parseFloat(rawText.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+        
+        let selectedDiscount = 0;
+        let selectedPoints = 0;
 
-    const stepsContainer = document.getElementById('steps');
-    const searchActions = document.querySelector('.search-actions');
+        // Masquage du formulaire
+        const stepsContainer = document.getElementById('steps');
+        const searchActions = document.querySelector('.search-actions');
 
-    stepsContainer.style.display = 'none';
-    searchActions.style.display = 'none';
-
-    const confContainer = document.createElement('div');
-    confContainer.id = 'confirmation-view-container';
-    stepsContainer.parentNode.insertBefore(confContainer, stepsContainer.nextSibling);
-
-    const div = document.createElement('div');
-    div.classList.add('confirmation-view');
-    div.innerHTML = '<h3 style="color: #000; margin-bottom: 20px;">Récapitulatif de votre trajet</h3>';
-
-    Object.keys(steps).forEach(step => {
-        const stepData = steps[step];
-        const stepDiv = document.createElement('div');
-        stepDiv.classList.add('conf-step');
-        const departTime = stepData.departTime || '-';
-        const arriveeTime = stepData.arriveeTime || '-';
-        stepDiv.innerHTML = `
-            <div class="conf-step-header">Étape ${parseInt(step) + 1} : Ligne ${stepData.ligne}</div>
-            <div class="conf-step-body">
-                <span>De <strong>${stepData.depart}</strong> (${departTime})</span>
-                <span class="arrow">→</span>
-                <span>À <strong>${stepData.arrivee}</strong> (${arriveeTime})</span>
-            </div>
-        `;
-        div.appendChild(stepDiv);
-    });
-
-    const actionsDiv = document.createElement('div');
-    actionsDiv.style.display = 'flex';
-    actionsDiv.style.gap = '15px';
-    actionsDiv.style.marginTop = '20px';
-
-    const payButton = document.createElement('button');
-    payButton.type = 'button';
-    payButton.classList.add('btn-pay');
-    payButton.textContent = 'Confirmer et Payer';
-    payButton.addEventListener('click', () => {
-        const reservationData = new FormData();
-        reservationData.append('setTripDetails', JSON.stringify(steps));
-
-
-        fetch('/api/reservation.php?tripDepartureTime=' + (tripData.dateTime ? new Date(tripData.dateTime).toISOString() : ''), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams(reservationData).toString()
-        }).then(response => {
-            if (response.ok) location.href = '/reservation/pay/';
-        });
-    });
-
-    const cancelButton = document.createElement('button');
-    cancelButton.type = 'button';
-    cancelButton.classList.add('btn-cancel');
-    cancelButton.textContent = 'Annuler';
-    cancelButton.style.marginTop = '0';
-    cancelButton.addEventListener('click', () => {
-        confContainer.remove();
-        stepsContainer.style.display = 'flex';
-        searchActions.style.display = 'flex';
-
+        // Animation du bus
         const busContainer = document.getElementById('bus-animation-container');
         if (busContainer) {
             const currentLeft = window.getComputedStyle(busContainer).left;
-            let startRot = '180deg';
-            if (busContainer.classList.contains('animate-bus')) {
-                startRot = '0deg';
-            }
-            busContainer.style.setProperty('--start-left-return', currentLeft);
-            busContainer.style.setProperty('--start-rot-return', startRot);
-
+            let startRot = busContainer.classList.contains('animate-bus-return') ? '180deg' : '0deg';
+            busContainer.style.setProperty('--start-left-forward', currentLeft);
+            busContainer.style.setProperty('--start-rot-forward', startRot);
             busContainer.classList.remove('animate-bus', 'animate-bus-return');
-            void busContainer.offsetWidth; // Force reflow
-            busContainer.classList.add('animate-bus-return');
+            void busContainer.offsetWidth; 
+            busContainer.classList.add('animate-bus');
         }
-    });
 
-    actionsDiv.appendChild(payButton);
-    actionsDiv.appendChild(cancelButton);
-    div.appendChild(actionsDiv);
-    confContainer.appendChild(div);
-}
+        if (stepsContainer) stepsContainer.style.display = 'none';
+        if (searchActions) searchActions.style.display = 'none';
+
+        // Création du conteneur de récapitulatif
+        const oldConf = document.getElementById('confirmation-view-container');
+        if (oldConf) oldConf.remove();
+
+        const confContainer = document.createElement('div');
+        confContainer.id = 'confirmation-view-container';
+        stepsContainer.parentNode.insertBefore(confContainer, stepsContainer.nextSibling);
+
+        const div = document.createElement('div');
+        div.classList.add('confirmation-view');
+        
+        let html = '<h3 style="color: #000; margin-bottom: 20px;">Récapitulatif de votre trajet</h3>';
+        
+        // Liste des étapes
+        Object.keys(steps).forEach(step => {
+            const s = steps[step];
+            html += `
+                <div class="conf-step">
+                    <div class="conf-step-header">Étape ${parseInt(step) + 1} : Ligne ${s.ligne}</div>
+                    <div class="conf-step-body">
+                        <span>De <strong>${s.depart}</strong> (${s.departTime})</span>
+                        <span class="arrow">→</span>
+                        <span>À <strong>${s.arrivee}</strong> (${s.arriveeTime})</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        div.innerHTML = html;
+
+        // SECTION POINTS (Visible dès que l'utilisateur est connecté)
+        if (window.userPoints !== undefined) {
+            const pts = window.userPoints;
+            const loyaltyDiv = document.createElement('div');
+            loyaltyDiv.classList.add('loyalty-section');
+            loyaltyDiv.innerHTML = `
+                <div class="loyalty-header">
+                    <h4>Utiliser mes points de fidélité</h4>
+                    <span class="points-count">${pts} pts disponibles</span>
+                </div>
+                <div class="points-options">
+                    <div class="points-option ${pts < 100 ? 'disabled' : ''}" data-pts="100" data-reduc="1">
+                        <span class="pts">100 pts</span>
+                        <span class="reduc">-1.00 €</span>
+                    </div>
+                    <div class="points-option ${pts < 500 ? 'disabled' : ''}" data-pts="500" data-reduc="7">
+                        <span class="pts">500 pts</span>
+                        <span class="reduc">-7.00 €</span>
+                    </div>
+                    <div class="points-option ${pts < 1000 ? 'disabled' : ''}" data-pts="1000" data-reduc="15">
+                        <span class="pts">1000 pts</span>
+                        <span class="reduc">-15.00 €</span>
+                    </div>
+                </div>
+                <div class="price-summary">
+                    <span class="original-price" style="display:none"></span>
+                    <span class="final-price">Total à payer : ${initialPrice.toFixed(2)} €</span>
+                </div>
+            `;
+            div.appendChild(loyaltyDiv);
+
+            // Gestion des clics
+            const options = loyaltyDiv.querySelectorAll('.points-option:not(.disabled)');
+            const finalPriceSpan = loyaltyDiv.querySelector('.final-price');
+            const originalPriceSpan = loyaltyDiv.querySelector('.original-price');
+
+            options.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const wasSelected = opt.classList.contains('selected');
+                    options.forEach(o => o.classList.remove('selected'));
+
+                    if (wasSelected) {
+                        selectedDiscount = 0;
+                        selectedPoints = 0;
+                        originalPriceSpan.style.display = 'none';
+                    } else {
+                        opt.classList.add('selected');
+                        selectedDiscount = parseFloat(opt.dataset.reduc);
+                        selectedPoints = parseInt(opt.dataset.pts);
+                        originalPriceSpan.style.display = 'inline';
+                        originalPriceSpan.textContent = initialPrice.toFixed(2) + ' €';
+                    }
+                    const total = Math.max(0, initialPrice - selectedDiscount);
+                    finalPriceSpan.textContent = `Total à payer : ${total.toFixed(2)} €`;
+                });
+            });
+        }
+
+        // Boutons d'action
+        const actionsDiv = document.createElement('div');
+        actionsDiv.style.display = 'flex';
+        actionsDiv.style.gap = '15px';
+        actionsDiv.style.marginTop = '20px';
+
+        const btnPay = document.createElement('button');
+        btnPay.className = 'btn-pay';
+        btnPay.textContent = 'Confirmer et Payer';
+        btnPay.onclick = function() {
+            const data = new FormData();
+            data.append('setTripDetails', JSON.stringify(steps));
+            if (selectedPoints > 0) data.append('pointsUsed', selectedPoints);
+
+            const startTime = steps[0] ? steps[0].departTime : '';
+            fetch(`/api/reservation.php?tripDepartureTime=${encodeURIComponent(startTime)}`, {
+                method: 'POST',
+                body: data
+            }).then(() => window.location.href = '/reservation/pay/');
+        };
+
+        const btnCancel = document.createElement('button');
+        btnCancel.className = 'btn-cancel';
+        btnCancel.textContent = 'Annuler';
+        btnCancel.onclick = function() {
+            confContainer.remove();
+            if (stepsContainer) stepsContainer.style.display = 'flex';
+            if (searchActions) searchActions.style.display = 'flex';
+            
+            // Animation de retour du bus
+            if (busContainer) {
+                const currentLeft = window.getComputedStyle(busContainer).left;
+                let startRot = busContainer.classList.contains('animate-bus') ? '0deg' : '180deg';
+                busContainer.style.setProperty('--start-left-return', currentLeft);
+                busContainer.style.setProperty('--start-rot-return', startRot);
+                busContainer.classList.remove('animate-bus', 'animate-bus-return');
+                void busContainer.offsetWidth;
+                busContainer.classList.add('animate-bus-return');
+            }
+        };
+
+        actionsDiv.appendChild(btnPay);
+        actionsDiv.appendChild(btnCancel);
+        div.appendChild(actionsDiv);
+        confContainer.appendChild(div);
+
+    } catch (err) {
+        console.error(err);
+        alert("Erreur lors de l'ouverture du récapitulatif.");
+    }
+};
 
 function populateTimeSelect(selectElement, times, minTime) {
     if (!selectElement) return;

@@ -181,7 +181,13 @@ class Reservation
             }
         }
 
-
+        // --- GESTION DES POINTS DE FIDÉLITÉ (DÉDUCTION) ---
+        $pointsUsed = $this->sessionHelper->getPointsUsed();
+        if ($cliNum !== 0 && $pointsUsed > 0) {
+            $reduction = $this->usePoints($cliNum, $pointsUsed);
+            $prix = max(0, $prix - $reduction);
+            $this->sessionHelper->clearPointsUsed();
+        }
 
         $points = floor($distanceTotal) / 10;
 

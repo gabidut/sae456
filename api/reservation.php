@@ -79,6 +79,14 @@ if (isset($_POST['setTripDetails']) && isset($_GET['tripDepartureTime'])) {
         $tripDetails = json_decode($_POST['setTripDetails'], true);
         $session->setCurrentTripDetails($tripDetails);
         $session->setTripDepartureTime($_GET['tripDepartureTime'] ?? null);
+        
+        // Stockage des points utilisés s'il y en a
+        if (isset($_POST['pointsUsed'])) {
+            $session->setPointsUsed((int)$_POST['pointsUsed']);
+        } else {
+            $session->setPointsUsed(0);
+        }
+        
         echo json_encode(['success' => true]);
     } catch (Exception $e) {
         http_response_code(500);
