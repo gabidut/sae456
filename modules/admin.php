@@ -182,17 +182,18 @@ class Adminitration
 
     public function top10BestUsers(): array
     {
-        $sql = "select cli_num from (select cli_num, count(*) as tot from vik_reservation
-                group by cli_num 
-                order by tot desc
-                fetch first 11 rows only) where cli_num != 0";
+        $sql = "SELECT cli_num, tot FROM (
+                    SELECT cli_num, COUNT(*) as tot 
+                    FROM vik_reservation
+                    GROUP BY cli_num 
+                    ORDER BY tot DESC
+                    FETCH FIRST 11 ROWS ONLY
+                ) WHERE cli_num != 0";
 
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute();
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getListeResEntre($datedebut, $datefin): array
