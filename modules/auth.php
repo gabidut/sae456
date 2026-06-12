@@ -252,7 +252,7 @@ class Authentificator
             AND e_deb.eta_heure = (SELECT MIN(eta_heure) FROM vik_etape WHERE res_num = r.res_num AND cli_num = r.cli_num)
             AND e_fin.eta_heure = (SELECT MAX(eta_heure) FROM vik_etape WHERE res_num = r.res_num AND cli_num = r.cli_num)
             
-            ORDER BY r.res_date ASC
+            ORDER BY r.res_date desc
         ";
 
         $stmt = $this->database->prepareStatement($sql);
