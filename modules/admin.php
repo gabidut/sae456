@@ -254,7 +254,7 @@ class Adminitration
 
     public function insertNoeud($lig_num, $code_arret, $code_suivant, $heure_passage, $distance, $duree)
     {
-        $sql = "INSERT INTO VIK_NOEUD (LIG_NUM, COM_CODE_INSEE_ARRET, COM_CODE_INSEE_SUIVAN, NOE_HEURE_PASSAGE, NOE_DISTANCE_PROCHAIN, NOE_DUREE_PROCHAIN) 
+        $sql = "INSERT INTO VIK_NOEUD (LIG_NUM, COM_CODE_INSEE_ARRET, COM_CODE_INSEE_SUIVANT, NOE_HEURE_PASSAGE, NOE_DISTANCE_PROCHAIN, NOE_DUREE_PROCHAIN) 
                 VALUES (:lig_num, :code_arret, :code_suivant, :heure_passage, :distance, :duree)";
 
         $stmt = $this->database->prepareStatement($sql);
@@ -281,14 +281,14 @@ class Adminitration
         $sql = "SELECT 
                     n.COM_CODE_INSEE_ARRET AS CODE_ARRET, 
                     c.COM_NOM AS VILLE_ARRET, 
-                    n.COM_CODE_INSEE_SUIVAN AS CODE_SUIVANT, 
-                    cs.COM_NOM AS VILLE_SUIVANTE, 
+                    n.COM_CODE_INSEE_SUIVANT AS CODE_SUIVANTT, 
+                    cs.COM_NOM AS VILLE_SUIVANTTE, 
                     TO_CHAR(n.NOE_HEURE_PASSAGE, 'HH24:MI') AS HEURE_PASSAGE, 
                     n.NOE_DISTANCE_PROCHAIN AS DISTANCE, 
                     n.NOE_DUREE_PROCHAIN AS DUREE 
                 FROM VIK_NOEUD n
                 JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_ARRET = c.COM_CODE_INSEE
-                LEFT JOIN VIK_COMMUNE cs ON n.COM_CODE_INSEE_SUIVAN = cs.COM_CODE_INSEE
+                LEFT JOIN VIK_COMMUNE cs ON n.COM_CODE_INSEE_SUIVANT = cs.COM_CODE_INSEE
                 WHERE n.LIG_NUM = :lig_num
                 ORDER BY n.NOE_HEURE_PASSAGE ASC";
 
