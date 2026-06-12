@@ -18,27 +18,19 @@ class Authentificator
         $this->session_helper = $session_helper;
     }
 
+
     public function processAuth($email, $password): array
     {
         $user = $this->getClientFromMail($email);
         if (empty($user)) {
-            throw new AuthException("Aucun compte n'est associé à cette adresse email.");
+            throw new AuthException("Email inconnu."); // Erreur propre
         }
-
         if (!$this->verify_password($password, $user['CLI_MDP'])) {
-            throw new AuthException("Le mot de passe est incorrect.");
+            throw new AuthException("Mot de passe incorrect."); // Erreur propre
         }
-
-        $this->session_helper->setUserSession($user['CLI_NUM']);
-        $this->updateConnexionDate($user['CLI_NUM']);
-
-        if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
-        {
-            $this->session_helper->setAdminUser();
-        }   
-
         return $user;
     }
+
     public function logout()
     {
         $this->session_helper->clearUserSession();
@@ -105,16 +97,16 @@ class Authentificator
     }
 
     public function getIsAdmin($userID)
-{
-    $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
-    $stmt = $this->database->prepareStatement($sql);
-    $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
+    {
+        $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
 
-    $stmt->execute(); 
+        $stmt->execute();
 
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $result;
-}
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
     public function updateConnexionDate($num_utilisateur)
     {
@@ -185,7 +177,7 @@ class Authentificator
 
     public function ajoutPointApresResa($num_utilisateur, $nbkilometre)
     {
-        $nbpoints = floor($nbkilometre/10) ;
+        $nbpoints = floor($nbkilometre / 10);
 
         $sqlPoints = "UPDATE vik_client SET cli_nb_points_ec = cli_nb_points_ec + :nbpoints, cli_nb_points_tot = cli_nb_points_tot + :nbpoints WHERE cli_num = :num";
 
