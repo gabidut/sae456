@@ -25,9 +25,9 @@ $lignes = $ligneManager->getLignes();
     </div>
 
     <div class="search-bars">
-        <div class="search-bar-container">
-            <button onclick="location.href = '/reservation/auto'">Créateur de trajets</button>
-            <button onclick="location.href = '/reservation/'">Sélecteur d'étapes</button>
+        <div class="nav-container">
+            <button class="btn-nav" onclick="location.href = '/reservation/auto'">Créateur de trajets</button>
+            <button class="btn-nav active" onclick="location.href = '/reservation/'">Sélecteur d'étapes</button>
         </div>
 
         <div class="search-bar-container">
