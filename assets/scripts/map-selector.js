@@ -157,7 +157,7 @@ function calculateAndSuggestRoutes() {
     }
 
     if (distRoute) {
-        renderRouteList(distRoute.path, "💸 Le moins cher (Distance)", '#007bff', stepsContainer);
+        renderRouteList(distRoute.path, "💸 Le moins cher ", '#007bff', stepsContainer);
         foundAny = true;
     } else {
         const noDistDiv = document.createElement('div');
@@ -175,14 +175,9 @@ function renderRouteList(route, title, colorParam, container) {
 
     const routeDiv = document.createElement('div');
     routeDiv.style.flex = '1';
-    routeDiv.style.border = `2px solid ${colorParam}`;
-    routeDiv.style.borderRadius = '8px';
-    routeDiv.style.padding = '15px';
-    routeDiv.style.backgroundColor = '#fdfdfd';
-    routeDiv.style.color = '#333';
 
-    let html = `<h3 style="color: ${colorParam}; margin-top: 0;">${title}</h3>`;
-    html += `<div style="margin-bottom: 15px;">`;
+    let html = `<h3>${title}</h3>`;
+    html += `<div>`;
 
     fetch('/api/reservation.php?simulateTripPrice=1&tripDepartureTime=' + (tripData.dateTime ? new Date(tripData.dateTime).toISOString() : ''), {
         method: 'POST',
