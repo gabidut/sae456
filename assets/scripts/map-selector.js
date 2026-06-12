@@ -284,6 +284,8 @@ function displaySummaryPage(route, price, title, colorParam) {
 
     html += `
             </ul>
+
+            <div id="loyalty-root-auto"></div>
             
             <div class="summary-actions">
                 <button id="btn-back-map">
@@ -298,6 +300,69 @@ function displaySummaryPage(route, price, title, colorParam) {
 
     overlay.innerHTML = html;
     document.body.appendChild(overlay);
+
+    const initialPrice = parseFloat(price) || 0;
+    let selectedDiscount = 0;
+    let selectedPoints = 0;
+
+    // SECTION FIDÉLITÉ (Injectée dynamiquement)
+    const pointsAvailable = window.userPoints || 0;
+    if (pointsAvailable >= 100) {
+        const loyaltyRoot = document.getElementById('loyalty-root-auto');
+        loyaltyRoot.innerHTML = `
+            <div class="loyalty-section">
+                <div class="loyalty-header">
+                    <h4>Utiliser mes points de fidélité</h4>
+                    <span class="points-count">${pointsAvailable} pts disponibles</span>
+                </div>
+                <div class="points-options">
+                    <div class="points-option ${pointsAvailable < 100 ? 'disabled' : ''}" data-pts="100" data-reduc="1">
+                        <span class="pts">100 pts</span>
+                        <span class="reduc">-1.00 €</span>
+                    </div>
+                    <div class="points-option ${pointsAvailable < 500 ? 'disabled' : ''}" data-pts="500" data-reduc="7">
+                        <span class="pts">500 pts</span>
+                        <span class="reduc">-7.00 €</span>
+                    </div>
+                    <div class="points-option ${pointsAvailable < 1000 ? 'disabled' : ''}" data-pts="1000" data-reduc="15">
+                        <span class="pts">1000 pts</span>
+                        <span class="reduc">-15.00 €</span>
+                    </div>
+                </div>
+                <div class="price-summary">
+                    <span class="original-price" style="display:none"></span>
+                    <span class="final-price">Total : ${initialPrice.toFixed(2)} €</span>
+                </div>
+            </div>
+        `;
+
+        const options = loyaltyRoot.querySelectorAll('.points-option:not(.disabled)');
+        const finalPriceSpan = loyaltyRoot.querySelector('.final-price');
+        const originalPriceSpan = loyaltyRoot.querySelector('.original-price');
+        const mainPriceDisplay = overlay.querySelector('.summary-price h2');
+
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                const wasSelected = opt.classList.contains('selected');
+                options.forEach(o => o.classList.remove('selected'));
+
+                if (wasSelected) {
+                    selectedDiscount = 0;
+                    selectedPoints = 0;
+                    originalPriceSpan.style.display = 'none';
+                } else {
+                    opt.classList.add('selected');
+                    selectedDiscount = parseFloat(opt.dataset.reduc);
+                    selectedPoints = parseInt(opt.dataset.pts);
+                    originalPriceSpan.style.display = 'inline';
+                    originalPriceSpan.textContent = initialPrice.toFixed(2) + ' €';
+                }
+                const total = Math.max(0, initialPrice - selectedDiscount);
+                finalPriceSpan.textContent = `Total : ${total.toFixed(2)} €`;
+                if (mainPriceDisplay) mainPriceDisplay.textContent = `Total : ${total.toFixed(2)} €`;
+            });
+        });
+    }
 
     document.getElementById('btn-back-map').onclick = () => {
         document.body.removeChild(overlay);
@@ -317,9 +382,14 @@ function displaySummaryPage(route, price, title, colorParam) {
             }))
         ));
 
-        fetch('/api/reservation.php', {
+        if (selectedPoints > 0) {
+            reservationData.append('pointsUsed', selectedPoints);
+        }
+
+        const firstStepTime = Object.values(route)[0]?.departTime || '';
+        fetch(`/api/reservation.php?tripDepartureTime=${encodeURIComponent(firstStepTime)}`, {
             method: 'POST',
-            body: new URLSearchParams(reservationData)
+            body: reservationData
         }).then(response => {
             if (response.ok) {
                 location.href = '/reservation/pay/';
