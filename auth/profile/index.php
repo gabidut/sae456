@@ -6,6 +6,9 @@ page_requirements(true);
 $cliId = $_SESSION['user'];
 $infoClient = $session->getClientInfoFromId($cliId);
 $reservation_cli = $authentificator->getReservation($cliId);
+usort($reservation_cli, function ($a, $b) {
+    return strtotime($b['RES_DATE']) - strtotime($a['RES_DATE']);
+});
 
 $messageSucces = "";
 $messageErreur = "";
@@ -89,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($messageSucces): ?>
         <div class="msg-succes"><?= $messageSucces ?></div>
     <?php endif; ?>
-    
+
     <?php if ($messageErreur): ?>
         <div class="msg-succes" style="background-color: rgba(229, 9, 20, 0.1); color: var(--accent-color); border-color: var(--accent-color);">
             <?= $messageErreur ?>
@@ -175,7 +178,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <tr>
                             <th>N° Resa</th>
                             <th>Date</th>
-                            <th>Ligne</th>
                             <th>Départ</th>
                             <th>Arrivée</th>
                             <th>Heure</th>
@@ -187,7 +189,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <tr>
                                 <td><span class="badge-res">#<?= htmlspecialchars($resa['RES_NUM']) ?></span></td>
                                 <td><?= htmlspecialchars($resa['RES_DATE']) ?></td>
-                                <td>Ligne <?= htmlspecialchars($resa['LIG_NUM']) ?></td>
                                 <td><?= htmlspecialchars($resa['DEPART']) ?></td>
                                 <td><?= htmlspecialchars($resa['ARRIVE']) ?></td>
                                 <td><?= htmlspecialchars($resa['HEURE_DEPART']) ?></td>
