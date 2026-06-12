@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $messageSucces = "Nouvel arrêt ajouté à la ligne " . htmlspecialchars($selectedLigne) . " !";
                     header("Refresh: 1.5; URL=?ligne=" . urlencode($selectedLigne));
                 } catch (Exception $e) {
-                    $messageErreur = "Erreur : Cet arrêt existe peut-être déjà pour cette heure.";
+                    $messageErreur = "Erreur SQL exacte : " . $e->getMessage();;
                 }
             }
         }
