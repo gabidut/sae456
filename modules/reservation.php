@@ -292,6 +292,18 @@ class Reservation
             $cliNum = $client['CLI_NUM'];
         }
 
+        $sqlNoeud = "SELECT NOE_DISTANCE_PROCHAIN, COM_CODE_INSEE_SUIVANT 
+                     FROM vik_noeud 
+                     WHERE TRIM(LOWER(COM_CODE_INSEE_ARRET)) = TRIM(LOWER(:courant)) 
+                     AND TRIM(LOWER(LIG_NUM)) = TRIM(LOWER(:ligNum)) 
+                     AND ROWNUM = 1";
+        $stmtNoeud = $this->database->prepareStatement($sqlNoeud);
+
+        $sqlTarif = "SELECT TAR_PRIX 
+                     FROM vik_tarif 
+                     WHERE TRIM(LOWER(TAR_NUM_TRANCHE)) = TRIM(LOWER(:tarNum))";
+        $stmtTarif = $this->database->prepareStatement($sqlTarif);
+
         foreach ($reservationArray as $segment) {
             $ligNum = $segment['ligne'];
             $villeDepartCode = $this->getInseeCode($segment['depart']);
@@ -303,18 +315,14 @@ class Reservation
             $safeguard = 0;
             $distanceSegment = 0;
 
-            // 1. Calcul de la distance pour CE segment
             while ($courant !== $villeArriveeCode && $safeguard < 50) {
-                $sql = "SELECT NOE_DISTANCE_PROCHAIN, COM_CODE_INSEE_SUIVANT 
-                        FROM vik_noeud 
-                        WHERE com_code_insee_arret = :courant 
-                        AND lig_num = :ligNum AND ROWNUM = 1";
-                $stmt = $this->database->prepareStatement($sql);
-                $stmt->execute(['courant' => $courant, 'ligNum' => $ligNum]);
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmtNoeud->execute(['courant' => $courant, 'ligNum' => $ligNum]);
+                $result = $stmtNoeud->fetch(PDO::FETCH_ASSOC);
 
                 if ($result) {
-                    $distEtape = isset($result['NOE_DISTANCE_PROCHAIN']) ? (float) str_replace(',', '.', $result['NOE_DISTANCE_PROCHAIN']) : 0;
+                    $distEtape = isset($result['NOE_DISTANCE_PROCHAIN'])
+                        ? (float) str_replace(',', '.', $result['NOE_DISTANCE_PROCHAIN'])
+                        : 0;
                     $distanceSegment += $distEtape;
                     $courant = $result['COM_CODE_INSEE_SUIVANT'];
                 } else {
@@ -323,56 +331,34 @@ class Reservation
                 $safeguard++;
             }
 
-            // 2. Calcul du prix pour CE segment si une distance a été parcourue
             if ($distanceSegment > 0) {
                 $tarNum = 13;
                 if ($distanceSegment < 10) $tarNum = 1;
-                else if ($distanceSegment < 20) $tarNum = 2;
-                else if ($distanceSegment < 30) $tarNum = 3;
-                else if ($distanceSegment < 40) $tarNum = 4;
-                else if ($distanceSegment < 50) $tarNum = 5;
-                else if ($distanceSegment < 60) $tarNum = 6;
-                else if ($distanceSegment < 80) $tarNum = 7;
-                else if ($distanceSegment < 100) $tarNum = 8;
-                else if ($distanceSegment < 140) $tarNum = 9;
-                else if ($distanceSegment < 160) $tarNum = 10;
-                else if ($distanceSegment < 200) $tarNum = 11;
-                else if ($distanceSegment < 300) $tarNum = 12;
+                elseif ($distanceSegment < 20) $tarNum = 2;
+                elseif ($distanceSegment < 30) $tarNum = 3;
+                elseif ($distanceSegment < 40) $tarNum = 4;
+                elseif ($distanceSegment < 50) $tarNum = 5;
+                elseif ($distanceSegment < 60) $tarNum = 6;
+                elseif ($distanceSegment < 80) $tarNum = 7;
+                elseif ($distanceSegment < 100) $tarNum = 8;
+                elseif ($distanceSegment < 140) $tarNum = 9;
+                elseif ($distanceSegment < 160) $tarNum = 10;
+                elseif ($distanceSegment < 200) $tarNum = 11;
+                elseif ($distanceSegment < 300) $tarNum = 12;
 
-                $sql = "SELECT TAR_PRIX FROM vik_tarif WHERE TAR_NUM_TRANCHE = :tarNum";
-                $stmt = $this->database->prepareStatement($sql);
-                $stmt->execute(['tarNum' => $tarNum]);
-                $result1 = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmtTarif->execute(['tarNum' => $tarNum]);
+                $resultTarif = $stmtTarif->fetch(PDO::FETCH_ASSOC);
 
-                // SÉCURITÉ : On vérifie que la requête a bien trouvé un prix avant de l'ajouter
-                if ($result1 && isset($result1['TAR_PRIX'])) {
-                    $prixTotal += (float) $result1['TAR_PRIX'];
+                if ($resultTarif && isset($resultTarif['TAR_PRIX'])) {
+                    $prixTotal += (float) str_replace(',', '.', $resultTarif['TAR_PRIX']);
                 }
             }
         }
 
-        // Si le prix total est toujours à 0 après la boucle, on arrête ici
-        if ($prixTotal == 0) return ['prix' => 0];
-
-        // 3. Application de la réduction client sur le prix global
-        if ($cliNum !== 0) {
-            $sql = "SELECT TYP_REDUC FROM vik_type_client WHERE typ_num = (SELECT typ_num FROM vik_client WHERE cli_num = :cliNum)";
-            $stmt = $this->database->prepareStatement($sql);
-            $stmt->execute(['cliNum' => $cliNum]);
-            $resultClient = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            // SÉCURITÉ : On vérifie qu'une donnée a été trouvée
-            if ($resultClient && isset($resultClient['TYP_REDUC'])) {
-                $tauxReduction = (float) $resultClient['TYP_REDUC'];
-
-                // CORRECTION MATHÉMATIQUE : Prix - (Prix * Réduction %)
-                // Exemple : Si $tauxReduction est de 20%, on paie 80% du prix total.
-                // Si $tauxReduction est de 0%, le prix reste intact.
-                $prixTotal = $prixTotal * (1 - ($tauxReduction / 100));
-            }
-        }
-
-        return ['prix' => number_format($prixTotal, 2, '.', '')];
+        return [
+            'prix' => $prixTotal,
+            'cliNum' => $cliNum
+        ];
     }
     public function usePoints($cliNum, $pointsToUse): int
     {
