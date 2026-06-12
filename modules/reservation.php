@@ -69,7 +69,7 @@ class Reservation
         return $res ? $res['COM_CODE_INSEE'] : null;
     }
 
-    public function createReservation($reservationArray)
+    public function createReservation($reservationArray, $tripDate)
     {
         $distanceTotal = 0;
         $etapes = [];
@@ -196,16 +196,21 @@ class Reservation
         $stmtRes->execute(['cliNum' => $cliNum]);
         $rowRes = $stmtRes->fetch(PDO::FETCH_ASSOC);
         $newResNum = $rowRes['NEW_RES'];
+        $dateTime = new DateTime($tripDate);
+        $formattedTripDate = $dateTime->format('Y-m-d H:i:s');
 
         $sqlInsert = "INSERT INTO VIK_RESERVATION (CLI_NUM, RES_NUM, TAR_NUM_TRANCHE, RES_DATE, RES_NB_POINTS, RES_PRIX_TOT) 
-                      VALUES (:cliNum, :resNum, :tarNum, SYSDATE, :points, :prix)";
+              VALUES (:cliNum, :resNum, :tarNum, TO_DATE(:resDate, 'YYYY-MM-DD HH24:MI:SS'), :points, :prix)";
+
         $stmtInsert = $this->database->prepareStatement($sqlInsert);
+
         $stmtInsert->execute([
-            'cliNum' => $cliNum,
-            'resNum' => intval($newResNum),
-            'tarNum' => $tarNum,
-            'points' => intval(floor($points)),
-            'prix'   => intval($prix)
+            'cliNum'  => $cliNum,
+            'resNum'  => intval($newResNum),
+            'tarNum'  => $tarNum,
+            'resDate' => $formattedTripDate,
+            'points'  => intval(floor($points)),
+            'prix'    => intval($prix)
         ]);
 
         $sqlInsertEtape = "INSERT INTO VIK_ETAPE (LIG_NUM, CLI_NUM, RES_NUM, COM_CODE_INSEE_DEPART, COM_CODE_INSEE_ARRIVEE, ETA_DISTANCE, ETA_HEURE) 
