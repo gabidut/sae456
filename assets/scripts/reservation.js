@@ -364,8 +364,15 @@ function confirm() {
 
     const busContainer = document.getElementById('bus-animation-container');
     if (busContainer) {
-        busContainer.classList.remove('animate-bus');
-        busContainer.classList.remove('animate-bus-return');
+        const currentLeft = window.getComputedStyle(busContainer).left;
+        let startRot = '0deg';
+        if (busContainer.classList.contains('animate-bus-return')) {
+            startRot = '180deg';
+        }
+        busContainer.style.setProperty('--start-left-forward', currentLeft);
+        busContainer.style.setProperty('--start-rot-forward', startRot);
+
+        busContainer.classList.remove('animate-bus', 'animate-bus-return');
         void busContainer.offsetWidth; // Force reflow
         busContainer.classList.add('animate-bus');
     }
@@ -460,10 +467,11 @@ function confirm() {
 
 function populateTimeSelect(selectElement, times, minTime) {
     if (!selectElement) return;
+    const isDepart = selectElement.id.includes('depart');
     selectElement.innerHTML = '';
     const empty = document.createElement('option');
     empty.value = '';
-    empty.textContent = 'Heure';
+    empty.textContent = isDepart ? 'Heure de départ' : 'Heure d\'arrivée';
     selectElement.appendChild(empty);
     times.sort();
     times.forEach(t => {
@@ -523,7 +531,6 @@ function hideMap() {
     document.querySelector('.map-container').style.display = 'none';
 }
 
-
 function showMap() {
     document.querySelector('.map-container').style.display = 'block';
-}   
+}
