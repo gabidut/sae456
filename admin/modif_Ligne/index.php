@@ -52,6 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // --- 2. ACTIONS SUR UNE LIGNE SÉLECTIONNÉE (Arrêts) ---
     if ($selectedLigne !== null) {
         
+
+        $selectedLigneA = $selectedLigne . 'A';
+        $selectedLigneB = $selectedLigne . 'B';
         // Ajouter un arrêt
         if (isset($_POST['btn_add_noeud'])) {
             $codeArret = $_POST['code_arret'];
@@ -62,7 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!empty($codeArret) && !empty($_POST['heure_passage'])) {
                 try {
-                    $admin->insertNoeud($selectedLigne, $codeArret, $codeSuivant, $heurePassage, $distance, $duree);
+                    $admin->insertNoeud($selectedLigneA, $codeArret, $codeSuivant, $heurePassage, $distance, $duree);
+                    $messageSucces = "Nouvel arrêt ajouté à la ligne " . htmlspecialchars($selectedLigne) . " !";
+                    header("Refresh: 1.5; URL=?ligne=" . urlencode($selectedLigne));
+
+                    $admin->insertNoeud($selectedLigneB, $codeArret, $codeSuivant, $heurePassage, $distance, $duree);
                     $messageSucces = "Nouvel arrêt ajouté à la ligne " . htmlspecialchars($selectedLigne) . " !";
                     header("Refresh: 1.5; URL=?ligne=" . urlencode($selectedLigne));
                 } catch (Exception $e) {
