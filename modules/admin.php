@@ -268,13 +268,41 @@ class Adminitration
         ]);
     }
 
+    public function getToutesLesCommunes(): array
+    {
+        $sql = "SELECT COM_CODE_INSEE, COM_NOM FROM VIK_COMMUNE ORDER BY COM_NOM ASC";
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getNoeudsParLigne($lig_num): array
+{
+        $sql = "SELECT n.COM_CODE_INSEE_ARRET, 
+                    c.COM_NOM AS VILLE_ARRET, 
+                    n.COM_CODE_INSEE_SUIVAN, 
+                    cs.COM_NOM AS VILLE_SUIVANTE, 
+                    TO_CHAR(n.NOE_HEURE_PASSAGE, 'HH24:MI') AS HEURE_PASSAGE, 
+                    n.NOE_DISTANCE_PROCHAIN, 
+                    n.NOE_DUREE_PROCHAIN 
+                FROM VIK_NOEUD n
+                JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_ARRET = c.COM_CODE_INSEE
+                LEFT JOIN VIK_COMMUNE cs ON n.COM_CODE_INSEE_SUIVAN = cs.COM_CODE_INSEE
+                WHERE n.LIG_NUM = :lig_num
+                ORDER BY n.NOE_HEURE_PASSAGE ASC";
+
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['lig_num' => $lig_num]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function clientInactif($clientID): bool {
-    $sql = "SELECT 1 FROM vik_client WHERE cli_num = :cli_num AND cli_date_connec < sysdate - (365*2)";
-    $stmt = $this->database->prepareStatement($sql);
-    $stmt->execute(["cli_num" => $clientID]);
-    
-    return $stmt->fetchColumn() !== false; 
-}
+        $sql = "SELECT 1 FROM vik_client WHERE cli_num = :cli_num AND cli_date_connec < sysdate - (365*2)";
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(["cli_num" => $clientID]);
+        
+        return $stmt->fetchColumn() !== false; 
+    }
 
     public function getClientInfoFromId($cliNum)
     {
