@@ -157,7 +157,7 @@ if ($selected_client_id !== null) {
                                                 Modifier
                                             </button>
                                         <?php else: ?>
-                                            <a href="/admin/modif_Ligne/index.php?client_id=<?php echo htmlspecialchars($c['CLI_NUM']); ?>" class="btn-action-outline" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                                            <a href="/admin/modif_User/index.php?client_id=<?php echo htmlspecialchars($c['CLI_NUM']); ?>" class="btn-action-outline" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">
                                                 Modifier
                                             </a>
                                         <?php endif; ?>

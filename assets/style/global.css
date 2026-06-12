@@ -1150,16 +1150,22 @@ body {
 /* ==========================================================================
    Conteneur principal de la sidebar (Thème Sombre Viking Correct)
    ========================================================================== */
+/* ==========================================================================
+   Conteneur principal de la sidebar (Thème Sombre Viking Correct)
+   ========================================================================== */
 .admin-sidebar {
     width: 260px;
-    background-color: #141414; /* Noir identique à tes cartes */
+    height: calc(100vh - 85px); /* Force la taille exacte de l'écran MOINS le header */
+    position: sticky;           /* Magie : rend le bloc flottant au défilement */
+    top: 85px;                  /* Indique de se caler pile sous le header */
+    background-color: #141414;
     color: #ffffff;
     padding: 24px;
     box-sizing: border-box;
     font-family: 'Segoe UI', Arial, sans-serif;
     border-right: 1px solid #222222;
-    flex-shrink: 0;            /* Empêche la sidebar de se déformer */
-    align-self: stretch;       /* Devient un bloc fluide qui descend jusqu'au footer */
+    flex-shrink: 0;             /* Empêche la sidebar de se faire écraser par le tableau */
+    overflow: hidden;           /* Interdit formellement tout débordement ou scroll */
 }
 /* --- Titre du menu --- */
 .sidebar-title {
