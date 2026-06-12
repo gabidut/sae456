@@ -21,26 +21,23 @@ class Authentificator
     public function processAuth($email, $password): array
     {
         $user = $this->getClientFromMail($email);
-        var_dump($user);
         if (empty($user)) {
-            throw new AuthExeption("Invalid email or password 1");
-        } else {
-            if ($this->verify_password($password, $user['CLI_MDP']))
-            {
-                $this->session_helper->setUserSession($user['CLI_NUM']);
-                $this->updateConnexionDate($user['CLI_NUM']);
-
-                if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
-                {
-                    $this->session_helper->setAdminUser();
-                }   
-
-                return $user;
-
-            }
+            throw new AuthException("Aucun compte n'est associé à cette adresse email.");
         }
 
-        throw new AuthExeption("Invalid email or password 2");
+        if (!$this->verify_password($password, $user['CLI_MDP'])) {
+            throw new AuthException("Le mot de passe est incorrect.");
+        }
+
+        $this->session_helper->setUserSession($user['CLI_NUM']);
+        $this->updateConnexionDate($user['CLI_NUM']);
+
+        if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
+        {
+            $this->session_helper->setAdminUser();
+        }   
+
+        return $user;
     }
     public function logout()
     {
@@ -259,7 +256,7 @@ class Authentificator
     }
 }
 
-class AuthExeption extends Exception
+class AuthException extends Exception
 {
     public function __construct($message = '', $code = 0, ?Throwable $previous = null)
     {
