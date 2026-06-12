@@ -48,6 +48,18 @@ if ($selected_client_id !== null) {
 }
 ?>
 
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Utilisateurs - Admin</title>
+    
+    <link rel="stylesheet" href="/assets/style/sidebar.css">
+    <link rel="stylesheet" href="/assets/style/admin.css"> </head>
+<body>
+
 <div class="admin-dashboard-layout">
     <?php include_once __DIR__ . '/../../includes/admin_sidebar.php'; ?>
 
@@ -83,7 +95,7 @@ if ($selected_client_id !== null) {
 
                 <div style="display: flex; gap: 8px; height: 42px;">
                     <button type="submit" class="btn-action-red" style="padding: 0 20px; height: 100%; cursor: pointer; border: none; font-weight: bold; display: flex; align-items: center; justify-content: center;">
-                        🔍 Filtrer
+                        Filtrer
                     </button>
                     
                     <?php if (!empty($search_query) || $search_type === 'inactifs'): ?>
@@ -99,9 +111,11 @@ if ($selected_client_id !== null) {
                     <thead class="sticky-header">
                         <tr>
                             <th>ID</th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
+                            <th>Client</th>
                             <th>Email</th>
+                            <th>Ville</th>
+                            <th>Profil & Points</th>
+                            <th>Statut</th>
                             <th class="text-center">Actions</th>
                         </tr>
                     </thead>
@@ -109,34 +123,64 @@ if ($selected_client_id !== null) {
                         <?php if (!empty($clients)): ?>
                             <?php foreach ($clients as $c): ?>
                                 <tr class="<?php echo ($selected_client_id !== null && $selected_client_id == $c['CLI_NUM']) ? 'selected-row-highlight' : ''; ?>">
-                                    <td class="font-weight-bold text-red"><?php echo htmlspecialchars($c['CLI_NUM'] ?? '0'); ?></td>
-                                    <td><?php echo htmlspecialchars($c['CLI_NOM'] ?? ''); ?></td>
-                                    <td><?php echo htmlspecialchars($c['CLI_PRENOM'] ?? ''); ?></td>
-                                    <td><?php echo htmlspecialchars($c['CLI_COURRIEL'] ?? ''); ?></td>
-                                    <td class="text-center">
+                                    
+                                    <td class="font-weight-bold text-red">#<?php echo htmlspecialchars($c['CLI_NUM'] ?? '0'); ?></td>
+                                    
+                                    <td>
+                                        <strong style="color: #1e293b;"><?php echo htmlspecialchars(($c['CLI_NOM'] ?? '') . ' ' . ($c['CLI_PRENOM'] ?? '')); ?></strong>
+                                    </td>
+                                    
+                                    <td>
+                                        <div><?php echo htmlspecialchars($c['CLI_COURRIEL'] ?? ''); ?></div>
+                                    </td>
+                                    
+                                    <td><?php echo htmlspecialchars($c['CLI_VILLE'] ?? ''); ?></td>
+                                    
+                                    <td>
+                                        <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; color: #475569;">
+                                            <?php echo htmlspecialchars($c['TYP_NOM'] ?? 'Standard'); ?>
+                                        </span>
+                                        <div style="font-size: 0.85em; color: #10b981; font-weight: bold; margin-top: 4px;">
+                                            <?php echo intval($c['CLI_NB_POINTS_EC'] ?? 0); ?> / <?php echo intval($c['CLI_NB_POINTS_TOT'] ?? 0); ?> pts
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <?php if ($c['CLI_NUM'] == 0): ?>
+                                            <span style="color: #64748b; font-weight: bold;">⚙️ Système</span>
+                                        <?php elseif ($admin->clientInactif($c['CLI_NUM'])): ?>
+                                            <span style="color: #ef4444; font-weight: bold; background: #fee2e2; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">⚠️ Inactif</span>
+                                        <?php else: ?>
+                                            <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">✅ Actif</span>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td class="text-center" style="white-space: nowrap;">
+                                        
                                         <?php 
                                             $search_params = !empty($search_query) ? '&search_type='.$search_type.'&search_query='.urlencode($search_query) : '';
                                             if ($search_type === 'inactifs') $search_params = '&search_type=inactifs';
                                         ?>
-                                        <a href="?client_id=<?php echo htmlspecialchars($c['CLI_NUM']) . $search_params; ?>" class="btn-action-red">
+                                        <a href="?client_id=<?php echo htmlspecialchars($c['CLI_NUM']) . $search_params; ?>" class="btn-action-red" style="margin-right: 5px;">
                                             Voir Résas
                                         </a>
                                         
                                         <?php if ($c['CLI_NUM'] == 0): ?>
-                                            <button type="button" class="btn-action-outline" style="opacity: 0.5; cursor: not-allowed; background-color: #e9ecef; border-color: #dee2e6; color: #6c757d;" title="Le compte système ne peut pas être modifié" disabled>
+                                            <button type="button" class="btn-action-outline" style="opacity: 0.5; cursor: not-allowed;" title="Le compte système ne peut pas être modifié" disabled>
                                                 Modifier
                                             </button>
                                         <?php else: ?>
-                                            <a href="/admin/modif_User/index.php?client_id=<?php echo htmlspecialchars($c['CLI_NUM']); ?>" class="btn-action-outline" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                                            <a href="/admin/modif_Ligne/index.php?client_id=<?php echo htmlspecialchars($c['CLI_NUM']); ?>" class="btn-action-outline" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">
                                                 Modifier
                                             </a>
                                         <?php endif; ?>
+
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="5" class="p-20 text-center text-muted">
+                                <td colspan="7" class="p-20 text-center text-muted">
                                     Aucun utilisateur ne correspond à ces critères.
                                 </td>
                             </tr>
@@ -213,3 +257,7 @@ window.onload = function() {
 </script>
 
 <?php include_once __DIR__ . '/../../includes/footer.php'; ?>
+
+</body>
+</html>
+

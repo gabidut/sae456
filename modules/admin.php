@@ -268,11 +268,19 @@ class Adminitration
         ]);
     }
 
-    public function clientInactif($clientID): bool{
-        $sql = "select * from vik_client where cli_id = :cli_id AND cli_date_connec < sysdate - (365*2)";
+    public function clientInactif($clientID): bool {
+    $sql = "SELECT 1 FROM vik_client WHERE cli_num = :cli_num AND cli_date_connec < sysdate - (365*2)";
+    $stmt = $this->database->prepareStatement($sql);
+    $stmt->execute(["cli_num" => $clientID]);
+    
+    return $stmt->fetchColumn() !== false; 
+}
+
+    public function getClientInfoFromId($cliNum)
+    {
+        $sql = "SELECT cli_num,cli_nom,cli_prenom,cli_courriel,cli_ville,cli_nb_points_ec,cli_nb_points_tot, typ_nom FROM vik_client  join vik_type_client USING (typ_num) WHERE cli_num = :num";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(["cli_id"=> $clientID]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return !is_null($result);
+        $stmt->execute(['num' => $cliNum]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
