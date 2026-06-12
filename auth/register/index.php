@@ -1,54 +1,77 @@
 <?php
 include '../../includes/global.php';
-$error_message = '';
+$errors = [];
+$nom = '';
+$prenom = '';
+$email = '';
+$phone = '';
+$departement = '';
+$ville = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        if ($session->isUserLoggedIn()) {
-            throw new Exception("Vous êtes déjà connecté");
-        }
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $phone = trim($_POST['phone'] ?? '');
+    $departement = trim($_POST['departement'] ?? '');
+    $ville = trim($_POST['ville'] ?? '');
 
-        $nom = trim($_POST['nom'] ?? '');
-        $prenom = trim($_POST['prenom'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $phone = trim($_POST['phone'] ?? '');
-        $departement = trim($_POST['departement'] ?? '');
-        $ville = trim($_POST['ville'] ?? '');
+    if ($session->isUserLoggedIn()) {
+        $errors['global'] = "Vous êtes déjà connecté";
+    }
 
-        if (empty($nom) || empty($prenom) || empty($email) || empty($password) || empty($phone) || empty($departement) || empty($ville)) {
-            throw new Exception("Veuillez remplir tous les champs obligatoires.");
-        }
+    if (empty($nom)) $errors['nom'] = "Le nom est obligatoire.";
+    if (empty($prenom)) $errors['prenom'] = "Le prénom est obligatoire.";
+    if (empty($email)) {
+        $errors['email'] = "L'adresse email est obligatoire.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = "L'adresse email n'est pas valide.";
+    } elseif (!empty($authentificator->getClientFromMail($email))) {
+        $errors['email'] = "Cette adresse email est déjà utilisée.";
+    }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new Exception("L'adresse email n'est pas valide.");
-        }
-
+    if (empty($password)) $errors['password'] = "Le mot de passe est obligatoire.";
+    
+    if (empty($phone)) {
+        $errors['phone'] = "Le numéro de téléphone est obligatoire.";
+    } else {
         $clean_phone = str_replace([' ', '.', '-', '+'], '', $phone);
-        // On vérifie que c'est bien des chiffres et que la longueur n'est pas excessive (souvent 10 chiffres en France, jusqu'à 15 max pour l'international)
         if (!preg_match('/^[0-9]{10}$/', $clean_phone)) {
-            throw new Exception("Le numéro de téléphone n'est pas valide. Il doit contenir 10 chiffres.");
+            $errors['phone'] = "Le numéro de téléphone doit contenir 10 chiffres.";
         }
+    }
 
-        if (!preg_match('/^[0-9]{1,2}$/', $departement)) {
-            throw new Exception("Le département n'est pas valide. Il doit contenir 1 ou 2 chiffres maximum, sans lettres.");
+    if (empty($departement)) {
+        $errors['departement'] = "Le département est obligatoire.";
+    } elseif (!preg_match('/^[0-9]{1,2}$/', $departement)) {
+        $errors['departement'] = "Le département doit contenir 1 ou 2 chiffres.";
+    }
+
+    if (empty($ville)) $errors['ville'] = "La ville est obligatoire.";
+
+    if (empty($errors)) {
+        try {
+            $user = $authentificator->insertUser(
+                $departement,
+                $ville,
+                $nom,
+                $prenom,
+                $authentificator->hash_password($password),
+                $email,
+                $phone
+            );
+            
+            if ($user !== -1) {
+                $session->setUserSession($user);
+                header('Location: /auth/profile/');
+                exit();
+            } else {
+                $errors['global'] = "Une erreur est survenue lors de la création de votre compte.";
+            }
+        } catch (Exception $e) {
+            $errors['global'] = "Erreur : " . $e->getMessage();
         }
-
-        $user = $authentificator->insertUser(
-            $departement,
-            $ville,
-            $nom,
-            $prenom,
-            $authentificator->hash_password($password),
-            $email,
-            $phone
-        );
-        $session->setUserSession($user);
-        header('Location: /auth/profile/');
-        exit();
-    } catch (Exception $e) {
-        // Intercepte les erreurs spécifiques de validation ou de la base de données
-        $error_message = $e->getMessage();
     }
 }
 ?>
@@ -60,6 +83,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>Inscription <span>Viking</span></h2>
         <p class="login-subtitle">Créez votre compte pour rejoindre le réseau</p>
 
+        <?php if (isset($errors['global'])): ?>
+            <div class="error-banner">
+                <p class="error-message"><?php echo htmlspecialchars($errors['global']); ?></p>
+            </div>
+        <?php endif; ?>
+
         <form method="POST" class="login-form">
 
             <div class="form-grid">
@@ -67,47 +96,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-column">
                     <div class="form-group">
                         <label for="nom">Nom</label>
-                        <input type="text" id="nom" name="nom" placeholder="Ex: Delhoumi" value="<?php echo htmlspecialchars($nom ?? ''); ?>" required>
+                        <input type="text" id="nom" name="nom" placeholder="Ex: Delhoumi" value="<?php echo htmlspecialchars($nom); ?>" class="<?php echo isset($errors['nom']) ? 'input-error' : ''; ?>" required>
+                        <?php if (isset($errors['nom'])): ?>
+                            <span class="field-error"><?php echo htmlspecialchars($errors['nom']); ?></span>
+                        <?php endif; ?>
                     </div>
 
                     <div class="form-group">
                         <label for="prenom">Prénom</label>
-                        <input type="text" id="prenom" name="prenom" placeholder="Ex: Sylvian" value="<?php echo htmlspecialchars($prenom ?? ''); ?>" required>
+                        <input type="text" id="prenom" name="prenom" placeholder="Ex: Sylvian" value="<?php echo htmlspecialchars($prenom); ?>" class="<?php echo isset($errors['prenom']) ? 'input-error' : ''; ?>" required>
+                        <?php if (isset($errors['prenom'])): ?>
+                            <span class="field-error"><?php echo htmlspecialchars($errors['prenom']); ?></span>
+                        <?php endif; ?>
                     </div>
 
                     <div class="form-group">
                         <label for="phone">Numéro de téléphone</label>
-                        <input type="tel" id="phone" name="phone" placeholder="Ex: 06 20 74 58 80" value="<?php echo htmlspecialchars($phone ?? ''); ?>" required>
+                        <input type="tel" id="phone" name="phone" placeholder="Ex: 06 20 74 58 80" value="<?php echo htmlspecialchars($phone); ?>" class="<?php echo isset($errors['phone']) ? 'input-error' : ''; ?>" required>
+                        <?php if (isset($errors['phone'])): ?>
+                            <span class="field-error"><?php echo htmlspecialchars($errors['phone']); ?></span>
+                        <?php endif; ?>
                     </div>
                 </div>
 
                 <div class="form-column">
                     <div class="form-group">
                         <label for="departement-input">Département</label>
-                        <input type="text" list="department" id="departement-input" name="departement" placeholder="Ex: 61" value="<?php echo htmlspecialchars($departement ?? ''); ?>" required>
+                        <input type="text" list="department" id="departement-input" name="departement" placeholder="Ex: 61" value="<?php echo htmlspecialchars($departement); ?>" class="<?php echo isset($errors['departement']) ? 'input-error' : ''; ?>" required>
+                        <?php if (isset($errors['departement'])): ?>
+                            <span class="field-error"><?php echo htmlspecialchars($errors['departement']); ?></span>
+                        <?php endif; ?>
                     </div>
 
                     <div class="form-group">
                         <label for="ville">Ville</label>
-                        <input type="text" list="villes" id="ville" name="ville" placeholder="Ex: Argentan" value="<?php echo htmlspecialchars($ville ?? ''); ?>" required>
+                        <input type="text" list="villes" id="ville" name="ville" placeholder="Ex: Argentan" value="<?php echo htmlspecialchars($ville); ?>" class="<?php echo isset($errors['ville']) ? 'input-error' : ''; ?>" required>
+                        <?php if (isset($errors['ville'])): ?>
+                            <span class="field-error"><?php echo htmlspecialchars($errors['ville']); ?></span>
+                        <?php endif; ?>
                     </div>
 
                     <div class="form-group">
                         <label for="password">Mot de passe</label>
-                        <input type="password" id="password" name="password" placeholder="********" required>
+                        <input type="password" id="password" name="password" placeholder="********" class="<?php echo isset($errors['password']) ? 'input-error' : ''; ?>" required>
+                        <?php if (isset($errors['password'])): ?>
+                            <span class="field-error"><?php echo htmlspecialchars($errors['password']); ?></span>
+                        <?php endif; ?>
                     </div>
                 </div>
 
                 <div class="form-group form-group-full">
                     <label for="email">Adresse Email</label>
-                    <input type="email" id="email" name="email" placeholder="Ex: Passoni@ergonomie.fr" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
+                    <input type="email" id="email" name="email" placeholder="Ex: Passoni@ergonomie.fr" value="<?php echo htmlspecialchars($email); ?>" class="<?php echo isset($errors['email']) ? 'input-error' : ''; ?>" required>
+                    <?php if (isset($errors['email'])): ?>
+                        <span class="field-error"><?php echo htmlspecialchars($errors['email']); ?></span>
+                    <?php endif; ?>
                 </div>
-
-                <? if (isset($error_message)) { ?>
-                    <div class="form-group form-group-full">
-                        <p class="error-message"><?php echo htmlspecialchars($error_message); ?></p>
-                    </div>
-                <? } ?>
 
             </div>
 
@@ -122,15 +166,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="/assets/scripts/register.js"></script>
     <datalist id="villes">
-        <?php foreach ($reservationManager->listCities() as $ville) : ?>
-            <option value="<?php echo htmlspecialchars($ville['COM_NOM']); ?>"/>
+        <?php foreach ($reservationManager->listCities() as $ville_item) : ?>
+            <option value="<?php echo htmlspecialchars($ville_item['COM_NOM']); ?>"/>
         <?php endforeach; ?>
     </datalist>
 
     <datalist id="department">
-        <?php foreach ($reservationManager->listDepartments() as $department) : ?>
-            <option value="<?php echo htmlspecialchars($department['DEP_NUM']); ?>">
-                <?php echo htmlspecialchars($department['DEP_NOM']); ?>
+        <?php foreach ($reservationManager->listDepartments() as $department_item) : ?>
+            <option value="<?php echo htmlspecialchars($department_item['DEP_NUM']); ?>">
+                <?php echo htmlspecialchars($department_item['DEP_NOM']); ?>
             </option>
         <?php endforeach; ?>
     </datalist>
