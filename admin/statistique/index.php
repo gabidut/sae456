@@ -126,7 +126,7 @@ foreach ($topUsers as $u) {
             </div>
 
             <div class="viking-card">
-                <h2 style="font-size: 1.2rem; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px;">🏆 Top 5 Voyageurs (Réservations)</h2>
+                <h2 style="font-size: 1.2rem; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px;"> Top 5 Voyageurs (Réservations)</h2>
                 <div style="position: relative; height: 300px; width: 100%; display: flex; justify-content: center;">
                     <canvas id="topUsersChart"></canvas>
                 </div>
