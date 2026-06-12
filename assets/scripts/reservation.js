@@ -464,8 +464,7 @@ window.ouvrirRecapitulatif = function () {
 
         div.innerHTML = html;
 
-        // SECTION POINTS (Visible dès que l'utilisateur est connecté)
-        if (window.userPoints !== undefined) {
+        if (window.userPoints !== undefined && window.userPoints > 0) {
             const pts = window.userPoints;
             const loyaltyDiv = document.createElement('div');
             loyaltyDiv.classList.add('loyalty-section');

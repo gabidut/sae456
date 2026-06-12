@@ -3,7 +3,7 @@ include '../includes/global.php';
 
 $reservation = $session->getCurrentTripDetails();
 try {
-    $resr = $reservationManager->createReservation($reservation);
+    $resr = $reservationManager->createReservation($reservation, $session->getTripDepartureTime());
 } catch (Exception $e) {
     echo "Erreur lors de la création de la réservation : " . $e->getMessage();
     exit;

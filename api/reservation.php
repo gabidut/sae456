@@ -80,7 +80,6 @@ if (isset($_POST['setTripDetails']) && isset($_GET['tripDepartureTime'])) {
         $session->setCurrentTripDetails($tripDetails);
         $session->setTripDepartureTime($_GET['tripDepartureTime'] ?? null);
         
-        // Stockage des points utilisés s'il y en a
         if (isset($_POST['pointsUsed'])) {
             $session->setPointsUsed((int)$_POST['pointsUsed']);
         } else {
