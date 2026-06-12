@@ -339,30 +339,30 @@ class Reservation
             $resultClient = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($resultClient) {
-                $prix = $prix * (1 - ($resultClient['TYP_REDUC'] / 100));
+                $prix = $prix * ($resultClient['TYP_REDUC'] / 100);
             }
         }
 
         return ['prix' => number_format($prix, 2, '.', '')];
     }
 
-    public function usePoints($cliNum, $pointsToUse):int
+    public function usePoints($cliNum, $pointsToUse): int
     {
         $sql = "UPDATE vik_client SET CLI_nb_POINTS_ec = CLI_nb_POINTS_ec - :pointsToUse WHERE CLI_NUM = :cliNum";
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['pointsToUse' => $pointsToUse, 'cliNum' => $cliNum]);
         $reduc = 0;
-        if($pointsToUse == 100) {
+        if ($pointsToUse == 100) {
             $reduc = 1;
         } else if ($pointsToUse == 500) {
             $reduc = 7;
-        }else if ($pointsToUse == 1000) {
+        } else if ($pointsToUse == 1000) {
             $reduc = 15;
         }
         return $reduc;
     }
 
-    public function usablePoints100($cliNum):bool
+    public function usablePoints100($cliNum): bool
     {
         $sql = "SELECT CLI_nb_POINTS_ec FROM vik_client WHERE CLI_NUM = :cliNum";
         $stmt = $this->database->prepareStatement($sql);
@@ -371,7 +371,7 @@ class Reservation
         return $result && (int) $result['CLI_nb_POINTS_ec'] >= 100;
     }
 
-    public function usablePoints500($cliNum):bool
+    public function usablePoints500($cliNum): bool
     {
         $sql = "SELECT CLI_nb_POINTS_ec FROM vik_client WHERE CLI_NUM = :cliNum";
         $stmt = $this->database->prepareStatement($sql);
@@ -380,7 +380,7 @@ class Reservation
         return $result && (int) $result['CLI_nb_POINTS_ec'] >= 500;
     }
 
-    public function usablePoints1000($cliNum):bool
+    public function usablePoints1000($cliNum): bool
     {
         $sql = "SELECT CLI_nb_POINTS_ec FROM vik_client WHERE CLI_NUM = :cliNum";
         $stmt = $this->database->prepareStatement($sql);

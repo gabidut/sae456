@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         try {
-            $user = $authentificator->insertUser(
+            $userId = $authentificator->insertUser(
                 $departement,
                 $ville,
                 $nom,
@@ -62,15 +62,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $phone
             );
             
-            if ($user !== -1) {
-                $session->setUserSession($user);
+            if ($userId > 0) {
+                $session->setUserSession($userId);
                 header('Location: /auth/profile/');
                 exit();
             } else {
-                $errors['global'] = "Une erreur est survenue lors de la création de votre compte.";
+                throw new Exception("Échec de la récupération de l'ID utilisateur.");
             }
         } catch (Exception $e) {
-            $errors['global'] = "Erreur : " . $e->getMessage();
+            if (strpos($e->getMessage(), 'ORA-00001') !== false) {
+                $errors['global'] = "Cette adresse email est déjà utilisée.";
+            } else {
+                $errors['global'] = "Une erreur technique est survenue lors de la création de votre compte.";
+                // En option pour le debug : $errors['global'] .= " (" . $e->getMessage() . ")";
+            }
         }
     }
 }
