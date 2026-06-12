@@ -11,13 +11,77 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
 $messageSucces = "";
 $messageErreur = "";
 
-// 1. On récupère TOUTES les communes (pour les menus déroulants)
+// 1. On récupère TOUTES les communes
 $communes = $admin->getToutesLesCommunes();
 
-// 2. On récupère TOUTES les lignes avec ta méthode !
+// 2. On vérifie si l'admin a cliqué sur une ligne en particulier
+$selectedLigne = isset($_GET['ligne']) && $_GET['ligne'] !== '' ? $_GET['ligne'] : null;
+
+// ==========================================
+// TRAITEMENT DES FORMULAIRES POST
+// ==========================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // --- 1. CRÉER UNE NOUVELLE LIGNE MÈRE ---
+    if (isset($_POST['btn_create_ligne'])) {
+        $newLigNum = trim($_POST['new_lig_num']);
+        $newComDeb = $_POST['new_com_deb'];
+        $newComEnd = $_POST['new_com_end'];
+
+        if (!empty($newLigNum) && !empty($newComDeb) && !empty($newComEnd)) {
+            try {
+                $admin->insertLigne($newLigNum, $newComDeb, $newComEnd);
+                $messageSucces = "La ligne " . htmlspecialchars($newLigNum) . " a été créée !";
+                // On redirige direct sur cette nouvelle ligne pour y ajouter des arrêts
+                header("Refresh: 1.5; URL=?ligne=" . urlencode($newLigNum));
+            } catch (Exception $e) {
+                $messageErreur = "Erreur : Cette ligne existe peut-être déjà.";
+            }
+        } else {
+            $messageErreur = "Veuillez remplir tous les champs pour créer une ligne.";
+        }
+    }
+
+    // --- 2. ACTIONS SUR UNE LIGNE SÉLECTIONNÉE (Arrêts) ---
+    if ($selectedLigne !== null) {
+        
+        // Ajouter un arrêt
+        if (isset($_POST['btn_add_noeud'])) {
+            $codeArret = $_POST['code_arret'];
+            $codeSuivant = !empty($_POST['code_suivant']) ? $_POST['code_suivant'] : null;
+            $heurePassage = "01/01/2000 " . $_POST['heure_passage'] . ":00"; 
+            $distance = !empty($_POST['distance']) ? floatval($_POST['distance']) : 0;
+            $duree = !empty($_POST['duree']) ? intval($_POST['duree']) : 0;
+
+            if (!empty($codeArret) && !empty($_POST['heure_passage'])) {
+                try {
+                    $admin->insertNoeud($selectedLigne, $codeArret, $codeSuivant, $heurePassage, $distance, $duree);
+                    $messageSucces = "Nouvel arrêt ajouté à la ligne " . htmlspecialchars($selectedLigne) . " !";
+                    header("Refresh: 1.5; URL=?ligne=" . urlencode($selectedLigne));
+                } catch (Exception $e) {
+                    $messageErreur = "Erreur : Cet arrêt existe peut-être déjà pour cette heure.";
+                }
+            }
+        }
+
+        // Modifier un horaire
+        if (isset($_POST['btn_update_horaire'])) {
+            $codeArretToUpdate = $_POST['code_arret_hidden'];
+            $nouvelleHeureStr = $_POST['nouvelle_heure'];
+
+            if (!empty($nouvelleHeureStr)) {
+                $nouvelleHeureObj = "01/01/2000 " . $nouvelleHeureStr . ":00";
+                $admin->updateHoraire($selectedLigne, $codeArretToUpdate, $nouvelleHeureObj);
+                $messageSucces = "Horaire mis à jour avec succès.";
+                header("Refresh: 1; URL=?ligne=" . urlencode($selectedLigne));
+            }
+        }
+    }
+}
+
+// 3. On récupère les lignes APRÈS les traitements POST pour que les boutons soient à jour
 $lignesBrutes = $ligneManager->getLignes(); 
 $lignes = [];
-// Petit filtrage au cas où Oracle renvoie "1A" et "1B" (on garde juste les numéros uniques)
 foreach ($lignesBrutes as $l) {
     $num = $l['LIG_NUM'];
     if (!isset($lignes[$num])) {
@@ -25,51 +89,7 @@ foreach ($lignesBrutes as $l) {
     }
 }
 
-// 3. On vérifie si l'admin a cliqué sur une ligne en particulier
-$selectedLigne = isset($_GET['ligne']) && $_GET['ligne'] !== '' ? $_GET['ligne'] : null;
-
-// ==========================================
-// TRAITEMENT DES FORMULAIRES POST (Pour la ligne sélectionnée)
-// ==========================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $selectedLigne !== null) {
-    
-    // --- AJOUTER UN NOUVEL ARRÊT ---
-    if (isset($_POST['btn_add_noeud'])) {
-        $codeArret = $_POST['code_arret'];
-        $codeSuivant = !empty($_POST['code_suivant']) ? $_POST['code_suivant'] : null;
-        $heurePassage = "01/01/2000 " . $_POST['heure_passage'] . ":00"; // Format Oracle
-        $distance = !empty($_POST['distance']) ? floatval($_POST['distance']) : 0;
-        $duree = !empty($_POST['duree']) ? intval($_POST['duree']) : 0;
-
-        if (!empty($codeArret) && !empty($_POST['heure_passage'])) {
-            try {
-                $admin->insertNoeud($selectedLigne, $codeArret, $codeSuivant, $heurePassage, $distance, $duree);
-                $messageSucces = "Nouvel arrêt ajouté à la ligne " . $selectedLigne . " !";
-            } catch (Exception $e) {
-                $messageErreur = "Erreur : Cet arrêt existe peut-être déjà pour cette heure.";
-            }
-        }
-    }
-
-    // --- MODIFIER L'HORAIRE D'UN ARRÊT ---
-    if (isset($_POST['btn_update_horaire'])) {
-        $codeArretToUpdate = $_POST['code_arret_hidden'];
-        $nouvelleHeureStr = $_POST['nouvelle_heure'];
-
-        if (!empty($nouvelleHeureStr)) {
-            $nouvelleHeureObj = "01/01/2000 " . $nouvelleHeureStr . ":00";
-            $admin->updateHoraire($selectedLigne, $codeArretToUpdate, $nouvelleHeureObj);
-            $messageSucces = "Horaire mis à jour avec succès.";
-        }
-    }
-    
-    // Pour éviter de renvoyer le formulaire en faisant F5
-    if (!empty($messageSucces)) {
-        header("Refresh: 2; URL=?ligne=" . $selectedLigne);
-    }
-}
-
-// Si une ligne est sélectionnée, on charge ses arrêts
+// 4. Si une ligne est sélectionnée, on charge ses arrêts
 $noeudsExistants = [];
 if ($selectedLigne !== null) {
     $noeudsExistants = $admin->getNoeudsParLigne($selectedLigne);
@@ -83,9 +103,52 @@ if ($selectedLigne !== null) {
         
         <div class="viking-card" style="margin-bottom: 25px;">
             <h1 class="viking-title">Gestion des Lignes & Horaires</h1>
-            <p class="subtitle text-muted">Sélectionnez une ligne ci-dessous pour modifier son trajet.</p>
+            <p class="subtitle text-muted">Gérez le réseau Viking : créez de nouvelles lignes ou modifiez les existantes.</p>
             
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px;">
+            <?php if ($messageSucces): ?>
+                <div class="msg-succes" style="background: rgba(16,185,129,0.1); color: #10b981; padding: 15px; margin-bottom: 20px; border-radius: 6px;"><?= $messageSucces ?></div>
+            <?php endif; ?>
+            <?php if ($messageErreur): ?>
+                <div class="msg-succes" style="background: rgba(218,27,35,0.1); color: #da1b23; padding: 15px; margin-bottom: 20px; border-radius: 6px;"><?= $messageErreur ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="viking-card" style="margin-bottom: 25px; border-left: 4px solid #10b981;">
+            <h2 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 15px; color: #10b981;">✨ Créer une nouvelle Ligne</h2>
+            
+            <form method="POST" action="" style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                <div>
+                    <label style="font-size: 0.85rem; color: #aaa;">Numéro (ex: 1A) *</label><br>
+                    <input type="text" name="new_lig_num" required style="padding: 8px; width: 120px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
+                </div>
+
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="font-size: 0.85rem; color: #aaa;">Ville de Départ *</label><br>
+                    <select name="new_com_deb" required style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
+                        <option value="">-- Choisir --</option>
+                        <?php foreach ($communes as $ville): ?>
+                            <option value="<?= htmlspecialchars($ville['COM_CODE_INSEE']) ?>"><?= htmlspecialchars($ville['COM_NOM']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="font-size: 0.85rem; color: #aaa;">Terminus *</label><br>
+                    <select name="new_com_end" required style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
+                        <option value="">-- Choisir --</option>
+                        <?php foreach ($communes as $ville): ?>
+                            <option value="<?= htmlspecialchars($ville['COM_CODE_INSEE']) ?>"><?= htmlspecialchars($ville['COM_NOM']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <button type="submit" name="btn_create_ligne" class="btn-action-outline" style="height: 36px; border-color: #10b981; color: #10b981; font-weight: bold;">Ajouter</button>
+            </form>
+        </div>
+
+        <div class="viking-card" style="margin-bottom: 25px;">
+            <h2 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 15px;">Sélectionner une ligne à modifier</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                 <?php foreach ($lignes as $l): ?>
                     <?php $isActive = ($selectedLigne == $l['LIG_NUM']); ?>
                     <a href="?ligne=<?= htmlspecialchars($l['LIG_NUM']) ?>" 
@@ -97,22 +160,15 @@ if ($selectedLigne !== null) {
             </div>
         </div>
 
-        <?php if ($messageSucces): ?>
-            <div class="msg-succes" style="background: rgba(16,185,129,0.1); color: #10b981; padding: 15px; margin-bottom: 20px; border-radius: 6px;">✅ <?= $messageSucces ?></div>
-        <?php endif; ?>
-        <?php if ($messageErreur): ?>
-            <div class="msg-succes" style="background: rgba(218,27,35,0.1); color: #da1b23; padding: 15px; margin-bottom: 20px; border-radius: 6px;">⚠️ <?= $messageErreur ?></div>
-        <?php endif; ?>
-
-        <?php if ($selectedLigne !== null): ?>
+        <?php if ($selectedLigne !== null && isset($lignes[$selectedLigne])): ?>
             
             <div class="viking-card" style="margin-bottom: 25px; border-left: 4px solid #da1b23;">
-                <h2>Édition du Trajet : Ligne <span style="color: #da1b23;"><?= htmlspecialchars($selectedLigne) ?></span></h2>
-                <p class="text-muted">Départ : <?= htmlspecialchars($lignes[$selectedLigne]['VILLE_DEB']) ?> ➔ Terminus : <?= htmlspecialchars($lignes[$selectedLigne]['VILLE_TERM']) ?></p>
+                <h2 style="margin: 0; font-size: 1.3rem;">Édition du Trajet : Ligne <span style="color: #da1b23;"><?= htmlspecialchars($selectedLigne) ?></span></h2>
+                <p class="text-muted" style="margin: 5px 0 0 0;">Départ : <?= htmlspecialchars($lignes[$selectedLigne]['VILLE_DEB']) ?> ➔ Terminus : <?= htmlspecialchars($lignes[$selectedLigne]['VILLE_TERM']) ?></p>
             </div>
 
             <div class="viking-card" style="margin-bottom: 25px;">
-                <h3 style="margin-top: 0; font-size: 1.1rem; margin-bottom: 15px;">➕ Insérer un nouvel arrêt</h3>
+                <h3 style="margin-top: 0; font-size: 1.1rem; margin-bottom: 15px;">Insérer un nouvel arrêt au trajet</h3>
                 
                 <form method="POST" action="" style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 150px;">
@@ -155,7 +211,7 @@ if ($selectedLigne !== null) {
             </div>
 
             <div class="viking-card">
-                <h3 style="margin-top: 0; font-size: 1.1rem; margin-bottom: 15px;">⏱️ Horaires programmés</h3>
+                <h3 style="margin-top: 0; font-size: 1.1rem; margin-bottom: 15px;">Horaires programmés</h3>
                 
                 <table class="admin-table">
                     <thead>
@@ -204,10 +260,6 @@ if ($selectedLigne !== null) {
                 </table>
             </div>
 
-        <?php else: ?>
-            <div class="placeholder-info-box">
-                Sélectionnez une ligne dans les boutons ci-dessus pour accéder à l'édition de ses horaires et arrêts.
-            </div>
         <?php endif; ?>
 
     </main>
