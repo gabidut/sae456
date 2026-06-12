@@ -914,7 +914,6 @@ body, .viking-theme-body {
 /* ==========================================================================
    Styles pour la page visualisation admin
    ========================================================================== */
-/* --- Structure Générale (Fonds Sombres) --- */
 body {
     background-color: #0d0d0d; /* Fond très sombre comme sur ta capture */
     color: #ffffff;
@@ -930,9 +929,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 25px;
-    flex: 1;                   /* Occupe tout l'espace restant à droite */
-    min-width: 0;              /* TRÈS IMPORTANT : empêche les grands tableaux de faire déborder ce bloc */
-    padding: 25px;
+    flex: 1;
+    min-width: 0;
+    padding: 0px 25px 25px 25px; 
     background-color: #0d0d0d;
     box-sizing: border-box;
 }
