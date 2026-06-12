@@ -178,12 +178,12 @@ if ($selectedLigne !== null) {
                                         
                                         <td style="color: white; font-weight: 500;">
                                             <?= htmlspecialchars($n['VILLE_ARRET']) ?>
-                                            <input type="hidden" name="code_arret_hidden" value="<?= htmlspecialchars($n['COM_CODE_INSEE_ARRET']) ?>">
+                                            <input type="hidden" name="code_arret_hidden" value="<?= htmlspecialchars($n['CODE_ARRET']) ?>">
                                         </td>
 
                                         <td class="text-muted">
                                             <?= htmlspecialchars($n['VILLE_SUIVANTE'] ?? 'Terminus') ?> 
-                                            (<?= htmlspecialchars($n['NOE_DISTANCE_PROCHAIN'] ?? '0') ?> km)
+                                            (<?= htmlspecialchars($n['DISTANCE'] ?? '0') ?> km)
                                         </td>
 
                                         <td>

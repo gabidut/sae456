@@ -277,14 +277,15 @@ class Adminitration
     }
 
     public function getNoeudsParLigne($lig_num): array
-{
-        $sql = "SELECT n.COM_CODE_INSEE_ARRET, 
+    {
+        $sql = "SELECT 
+                    n.COM_CODE_INSEE_ARRET AS CODE_ARRET, 
                     c.COM_NOM AS VILLE_ARRET, 
-                    n.COM_CODE_INSEE_SUIVAN, 
+                    n.COM_CODE_INSEE_SUIVAN AS CODE_SUIVANT, 
                     cs.COM_NOM AS VILLE_SUIVANTE, 
                     TO_CHAR(n.NOE_HEURE_PASSAGE, 'HH24:MI') AS HEURE_PASSAGE, 
-                    n.NOE_DISTANCE_PROCHAIN, 
-                    n.NOE_DUREE_PROCHAIN 
+                    n.NOE_DISTANCE_PROCHAIN AS DISTANCE, 
+                    n.NOE_DUREE_PROCHAIN AS DUREE 
                 FROM VIK_NOEUD n
                 JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_ARRET = c.COM_CODE_INSEE
                 LEFT JOIN VIK_COMMUNE cs ON n.COM_CODE_INSEE_SUIVAN = cs.COM_CODE_INSEE
