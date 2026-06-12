@@ -194,4 +194,77 @@ class Adminitration
 
         return $result;
     }
+
+    public function getListeResEntre($datedebut, $datefin): array
+    {
+        $sql = "SELECT count(*) AS total_res
+            FROM vik_reservation
+            WHERE TRUNC(res_date    ) BETWEEN TO_DATE(:datedebut, 'DD/MM/YY') AND TO_DATE(:datefin, 'DD/MM/YY')";
+
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['datedebut' => $datedebut, 'datefin' => $datefin]);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    public function updateLigne($lig_num, $newcomdeb, $newcomend)
+    {
+        $sql = "UPDATE VIK_LIGNE 
+                SET COM_CODE_INSEE_DEBU = :newcomdeb, 
+                    COM_CODE_INSEE_TERM = :newcomend 
+                WHERE LIG_NUM = :lig_num";
+
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute([
+            'lig_num'   => $lig_num,
+            'newcomdeb' => $newcomdeb,
+            'newcomend' => $newcomend
+        ]);
+    }
+
+    public function updateHoraire($lig_num, $code_insee_arret, $nouvelle_heure)
+    {
+        $sql = "UPDATE VIK_NOEUD 
+                SET NOE_HEURE_PASSAGE = :nouvelle_heure 
+                WHERE LIG_NUM = :lig_num 
+                  AND COM_CODE_INSEE_ARRET = :code_arret";
+
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute([
+            'nouvelle_heure' => $nouvelle_heure,
+            'lig_num'        => $lig_num,
+            'code_arret'     => $code_insee_arret
+        ]);
+    }
+
+    public function insertLigne($lig_num, $comdeb, $comend)
+    {
+        $sql = "INSERT INTO VIK_LIGNE (LIG_NUM, COM_CODE_INSEE_DEBU, COM_CODE_INSEE_TERM) 
+                VALUES (:lig_num, :comdeb, :comend)";
+
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute([
+            'lig_num' => $lig_num,
+            'comdeb'  => $comdeb,
+            'comend'  => $comend
+        ]);
+    }
+
+    public function insertNoeud($lig_num, $code_arret, $code_suivant, $heure_passage, $distance, $duree)
+    {
+        $sql = "INSERT INTO VIK_NOEUD (LIG_NUM, COM_CODE_INSEE_ARRET, COM_CODE_INSEE_SUIVAN, NOE_HEURE_PASSAGE, NOE_DISTANCE_PROCHAIN, NOE_DUREE_PROCHAIN) 
+                VALUES (:lig_num, :code_arret, :code_suivant, :heure_passage, :distance, :duree)";
+
+        $stmt = $this->database->prepareStatement($sql);
+        return $stmt->execute([
+            'lig_num'       => $lig_num,
+            'code_arret'    => $code_arret,
+            'code_suivant'  => $code_suivant,
+            'heure_passage' => $heure_passage,
+            'distance'      => $distance,
+            'duree'         => $duree
+        ]);
+    }
 }

@@ -13,25 +13,12 @@ async function fetchLignes() {
         resolve();
     });
 }
+
 function addStep() {
-    // Masquer les boutons de suppression des étapes précédentes
     document.querySelectorAll('.btn-remove-step').forEach(btn => btn.style.display = 'none');
 
     const stepIndex = Object.keys(steps).length;
-    steps[stepIndex] = {};
-
-    const lignesDatalist = document.createElement('datalist');
-    lignesDatalist.id = 'lignes-list-' + stepIndex;
-    document.body.appendChild(lignesDatalist);
-
-    // 1. DEUX datalists séparées pour Départ et Arrivée
-    const departDataList = document.createElement('datalist');
-    departDataList.id = `depart-list-${stepIndex}`;
-    document.body.appendChild(departDataList);
-
-    const arriveeDataList = document.createElement('datalist');
-    arriveeDataList.id = `arrivee-list-${stepIndex}`;
-    document.body.appendChild(arriveeDataList);
+    steps[stepIndex] = { ligne: '', depart: '', arrivee: '', departTime: '', arriveeTime: '' };
 
     const div = document.createElement('div');
     div.classList.add('search-form-horizontal');
@@ -40,93 +27,71 @@ function addStep() {
     // -- LINE GROUP --
     const ligneGroup = document.createElement('div');
     ligneGroup.classList.add('input-group');
-
     const ligneLabel = document.createElement('label');
     ligneLabel.textContent = 'Ligne';
 
-    const ligneInput = document.createElement('input');
-    ligneInput.setAttribute('list', 'lignes-list-' + stepIndex);
-    ligneInput.setAttribute('placeholder', 'Ligne');
-    ligneInput.setAttribute('required', '');
-    ligneInput.setAttribute('autocomplete', 'off');
+    const ligneSelect = document.createElement('select');
+    ligneSelect.innerHTML = '<option value="">Choisir une ligne</option>';
+    ligneSelect.required = true;
 
     // -- DEPART GROUP --
     const departGroup = document.createElement('div');
     departGroup.classList.add('input-group');
-
     const departLabel = document.createElement('label');
     departLabel.textContent = 'Départ';
 
-    const departInput = document.createElement('input');
-    departInput.setAttribute('list', `depart-list-${stepIndex}`);
-    departInput.setAttribute('placeholder', 'D\'où partez-vous ?');
-    departInput.setAttribute('required', '');
-    departInput.setAttribute('autocomplete', 'off');
-    departInput.setAttribute('id', `depart-input-${stepIndex}`);
-    departInput.disabled = true;
+    const departSelect = document.createElement('select');
+    departSelect.id = `depart-input-${stepIndex}`;
+    departSelect.innerHTML = '<option value="">D\'où partez-vous ?</option>';
+    departSelect.disabled = true;
 
     const departTimeSelect = document.createElement('select');
-    departTimeSelect.setAttribute('id', `depart-time-${stepIndex}`);
-    departTimeSelect.innerHTML = '<option value="">Heure de départ</option>';
+    departTimeSelect.id = `depart-time-${stepIndex}`;
+    departTimeSelect.innerHTML = '<option value="">Heure</option>';
     departTimeSelect.disabled = true;
 
     // -- ARRIVEE GROUP --
     const arriveeGroup = document.createElement('div');
     arriveeGroup.classList.add('input-group');
-
     const arriveeLabel = document.createElement('label');
     arriveeLabel.textContent = 'Arrivée';
 
-    const arriveeInput = document.createElement('input');
-    arriveeInput.setAttribute('list', `arrivee-list-${stepIndex}`);
-    arriveeInput.setAttribute('placeholder', 'Où allez-vous ?');
-    arriveeInput.setAttribute('required', '');
-    arriveeInput.setAttribute('autocomplete', 'off');
-    arriveeInput.disabled = true;
+    const arriveeSelect = document.createElement('select');
+    arriveeSelect.innerHTML = '<option value="">Où allez-vous ?</option>';
+    arriveeSelect.disabled = true;
 
     const arriveeTimeSelect = document.createElement('select');
-    arriveeTimeSelect.setAttribute('id', `arrivee-time-${stepIndex}`);
-    arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-    arriveeTimeSelect.disabled = true; // Toujours désactivé
-    arriveeTimeSelect.style.appearance = 'none'; // Rend l'aspect plus "lecture seule"
+    arriveeTimeSelect.id = `arrivee-time-${stepIndex}`;
+    arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
+    arriveeTimeSelect.disabled = true;
 
     if (stepIndex > 0) {
-        departInput.value = steps[stepIndex - 1].arrivee || '';
-        departInput.setAttribute('readonly', '');
-        departInput.disabled = false; // Désactivé = grisé, Readonly = bloqué mais actif visuellement
-        steps[stepIndex].depart = departInput.value;
-        computeLineForStep(stepIndex);
+        const previousArrivee = steps[stepIndex - 1].arrivee;
+        if (previousArrivee) {
+            departSelect.innerHTML = `<option value="${previousArrivee}" selected>${previousArrivee}</option>`;
+            departSelect.disabled = true;
+            steps[stepIndex].depart = previousArrivee;
+            computeLineForStep(stepIndex, ligneSelect);
+        }
     } else {
         lignes.forEach(ligne => {
-            const optionA = document.createElement('option');
-            optionA.value = ligne.LIG_NUM;
-            lignesDatalist.appendChild(optionA);
+            const option = document.createElement('option');
+            option.value = ligne.LIG_NUM;
+            option.textContent = ligne.LIG_NUM;
+            ligneSelect.appendChild(option);
         });
     }
 
-    ligneGroup.appendChild(ligneLabel);
-    ligneGroup.appendChild(ligneInput);
-
-    departGroup.appendChild(departLabel);
-    departGroup.appendChild(departInput);
-    departGroup.appendChild(departTimeSelect);
-
-    arriveeGroup.appendChild(arriveeLabel);
-    arriveeGroup.appendChild(arriveeInput);
-    arriveeGroup.appendChild(arriveeTimeSelect);
-
-    div.appendChild(ligneGroup);
-    div.appendChild(buildDivider());
-    div.appendChild(departGroup);
-    div.appendChild(buildDivider());
-    div.appendChild(arriveeGroup);
+    ligneGroup.append(ligneLabel, ligneSelect);
+    departGroup.append(departLabel, departSelect, departTimeSelect);
+    arriveeGroup.append(arriveeLabel, arriveeSelect, arriveeTimeSelect);
+    div.append(ligneGroup, buildDivider(), departGroup, buildDivider(), arriveeGroup);
 
     const stepWrapper = document.createElement('div');
     stepWrapper.classList.add('step-wrapper');
     stepWrapper.dataset.wrapperStep = stepIndex;
     stepWrapper.appendChild(div);
 
-    // -- REMOVE BUTTON --
     if (stepIndex > 0) {
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
@@ -136,6 +101,7 @@ function addStep() {
         removeBtn.addEventListener('click', () => {
             stepWrapper.remove();
             delete steps[stepIndex];
+            triggerValidationAndPrice();
 
             const keys = Object.keys(steps).map(Number).sort((a, b) => a - b);
             if (keys.length > 1) {
@@ -151,227 +117,157 @@ function addStep() {
     }
 
     document.getElementById('steps').appendChild(stepWrapper);
-    ligneInput.focus();
 
-    // ==========================================
-    // ÉVÉNEMENTS
-    // ==========================================
+    const filterStops = () => {
+        const cache = scheduleCache[stepIndex];
+        if (!cache) return;
 
-    ligneInput.addEventListener('change', function () {
+        const orderedVilles = cache.orderedVilles;
+        const currentDep = steps[stepIndex].depart || departSelect.value;
+        const currentArr = steps[stepIndex].arrivee || arriveeSelect.value;
+
+        // 1. Villes disponibles pour le départ (tout ce qui est AVANT l'arrivée sélectionnée)
+        let depOptions = orderedVilles;
+        if (currentArr) {
+            const arrIdx = orderedVilles.indexOf(currentArr);
+            depOptions = orderedVilles.slice(0, arrIdx);
+        }
+
+        // 2. Villes disponibles pour l'arrivée (tout ce qui est APRÈS le départ sélectionné)
+        let arrOptions = orderedVilles;
+        if (currentDep) {
+            const depIdx = orderedVilles.indexOf(currentDep);
+            arrOptions = orderedVilles.slice(depIdx + 1);
+        }
+
+        // Mise à jour du Select Départ (uniquement si ce n'est pas une étape forcée)
+        if (stepIndex === 0) {
+            populateSelectOptions(departSelect, depOptions, "D'où partez-vous ?");
+            if (currentDep && depOptions.includes(currentDep)) {
+                departSelect.value = currentDep;
+            }
+        }
+
+        // Mise à jour du Select Arrivée
+        populateSelectOptions(arriveeSelect, arrOptions, "Où allez-vous ?");
+        if (currentArr && arrOptions.includes(currentArr)) {
+            arriveeSelect.value = currentArr;
+        }
+
+        triggerValidationAndPrice();
+    };
+
+    const updateTimes = async () => {
+        const cache = scheduleCache[stepIndex];
+        if (!cache) return;
+
+        const depVal = departSelect.value;
+        const arrVal = arriveeSelect.value;
+
+        if (depVal) {
+            const currentSelectedTime = departTimeSelect.value;
+            const prevArrTime = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
+            populateTimeSelect(departTimeSelect, cache.map[depVal] || [], prevArrTime);
+            departTimeSelect.disabled = false;
+
+            if (currentSelectedTime && Array.from(departTimeSelect.options).some(o => o.value === currentSelectedTime)) {
+                departTimeSelect.value = currentSelectedTime;
+            }
+        } else {
+            departTimeSelect.innerHTML = '<option value="">Heure</option>';
+            departTimeSelect.disabled = true;
+        }
+
+        if (depVal && arrVal && departTimeSelect.value) {
+            try {
+                const response = await fetch(`/api/reservation.php?getFinalHoraire=1&lineId=${steps[stepIndex].ligne}&codeInseeDepart=${encodeURIComponent(depVal)}&codeInseeArrivee=${encodeURIComponent(arrVal)}&horaireDepart=${encodeURIComponent(departTimeSelect.value)}`);
+                const data = await response.json();
+
+                if (data && data.horaires && data.horaires.length > 0) {
+                    arriveeTimeSelect.innerHTML = `<option value="${data.horaires[0]}">${data.horaires[0]}</option>`;
+                    steps[stepIndex].arriveeTime = data.horaires[0];
+                    arriveeTimeSelect.disabled = false;
+                } else {
+                    arriveeTimeSelect.innerHTML = '<option value="">Indisponible</option>';
+                    steps[stepIndex].arriveeTime = '';
+                }
+            } catch (e) {
+                console.error("Erreur calcul horaire: ", e);
+            }
+        } else {
+            arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
+            steps[stepIndex].arriveeTime = '';
+            arriveeTimeSelect.disabled = true;
+        }
+        triggerValidationAndPrice();
+    };
+
+    ligneSelect.addEventListener('change', async function () {
         const ligneValue = this.value;
         steps[stepIndex].ligne = ligneValue;
-        
-        // Réinitialisation de la suite logique
-        departTimeSelect.innerHTML = '<option value="">Heure de départ</option>';
-        departTimeSelect.disabled = true;
-        steps[stepIndex].departTime = '';
-        
-        arriveeInput.value = '';
-        arriveeInput.disabled = true;
+
         steps[stepIndex].arrivee = '';
-        
-        arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-        steps[stepIndex].arriveeTime = '';
-        
+        if (stepIndex === 0) steps[stepIndex].depart = '';
+
+        removeSubsequentSteps(stepIndex);
+
         if (ligneValue) {
-            fetch(`/api/reservation.php?ligne=${encodeURIComponent(ligneValue)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const map = {};
-                    const orderedVilles = []; // 2. On garde l'ordre des arrêts
+            const response = await fetch(`/api/reservation.php?ligne=${encodeURIComponent(ligneValue)}`);
+            const data = await response.json();
 
-                    data.forEach(item => {
-                        const ville = item.VILLE_ARRET;
-                        const time = item.HEURE_PASSAGE;
-                        if (!map[ville]) {
-                            map[ville] = [];
-                            orderedVilles.push(ville); // L'ordre de l'API est préservé
-                        }
-                        if (time && !map[ville].includes(time)) map[ville].push(time);
-                    });
+            const map = {};
+            const orderedVilles = [];
 
-                    // 3. On sauvegarde la carte ET l'ordre dans le cache
-                    scheduleCache[stepIndex] = { map: map, orderedVilles: orderedVilles };
+            data.forEach(item => {
+                const ville = item.VILLE_ARRET;
+                const time = item.HEURE_PASSAGE;
+                if (!map[ville]) {
+                    map[ville] = [];
+                    orderedVilles.push(ville);
+                }
+                if (time && !map[ville].includes(time)) map[ville].push(time);
+            });
 
-                    // Remplir les suggestions de départ avec TOUTES les villes
-                    departDataList.innerHTML = '';
-                    arriveeDataList.innerHTML = '';
-                    orderedVilles.forEach(ville => {
-                        const opt = document.createElement('option');
-                        opt.value = ville;
-                        departDataList.appendChild(opt);
-                        arriveeDataList.appendChild(opt.cloneNode(true)); // Par défaut, on met tout
-                    });
-                    
-                    // Si une ville de départ était déjà saisie, on vérifie si elle est sur la ligne
-                    if (departInput.value && !orderedVilles.includes(departInput.value)) {
-                        departInput.value = '';
-                        steps[stepIndex].depart = '';
-                    }
+            scheduleCache[stepIndex] = { map, orderedVilles };
 
-                    if (stepIndex === 0) {
-                        departInput.disabled = false;
-                        
-                        // Si le départ est valide, on déclenche l'événement change pour filtrer la suite
-                        if (departInput.value && map[departInput.value]) {
-                            departInput.dispatchEvent(new Event('change'));
-                        }
-                    } else {
-                        // Pour l'étape > 0, le départ est déjà défini, on peut directement activer l'heure de départ
-                        const departVal = departInput.value;
-                        const prevArrTime = steps[stepIndex - 1].arriveeTime || null;
-                        if (departVal && map[departVal]) {
-                            populateTimeSelect(departTimeSelect, map[departVal], prevArrTime);
-                            departTimeSelect.disabled = false;
-                        }
-                    }
-                });
+            if (stepIndex === 0) departSelect.disabled = false;
+            arriveeSelect.disabled = false;
+
+            filterStops();
+            updateTimes();
         } else {
-            // Si la ligne est vidée mais qu'on a déjà un départ, on repeuple la liste globale
-            if (typeof globalVilles !== 'undefined') {
-                departDataList.innerHTML = '';
-                globalVilles.forEach(ville => {
-                    const opt = document.createElement('option');
-                    opt.value = ville.COM_NOM;
-                    departDataList.appendChild(opt);
-                });
-            }
+            departSelect.disabled = true;
+            arriveeSelect.disabled = true;
+            departTimeSelect.disabled = true;
+            arriveeTimeSelect.disabled = true;
         }
     });
 
-    departInput.addEventListener('change', function () {
-        const departValue = this.value;
-        steps[stepIndex].depart = departValue;
+    departSelect.addEventListener('change', function () {
+        steps[stepIndex].depart = this.value;
 
-        const cache = scheduleCache[stepIndex] || {};
-        const map = cache.map || {};
-        const orderedVilles = cache.orderedVilles || [];
+        removeSubsequentSteps(stepIndex);
 
-        // 4. Filtrer la liste d'arrivée en fonction du départ
-        arriveeDataList.innerHTML = '';
-        const departIndex = orderedVilles.indexOf(departValue);
-
-        if (departIndex !== -1) {
-            // N'ajoute que les villes APRES l'index de départ
-            for (let i = departIndex + 1; i < orderedVilles.length; i++) {
-                const option = document.createElement('option');
-                option.value = orderedVilles[i];
-                arriveeDataList.appendChild(option);
-            }
-        }
-
-        // Réinitialisation de la suite
-        departTimeSelect.innerHTML = '<option value="">Heure de départ</option>';
-        departTimeSelect.disabled = true;
-        steps[stepIndex].departTime = '';
-        
-        arriveeInput.value = '';
-        arriveeInput.disabled = true;
-        steps[stepIndex].arrivee = '';
-        
-        arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-        steps[stepIndex].arriveeTime = '';
-
-        const prevArrTime2 = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
-        if (map[departValue]) {
-            populateTimeSelect(departTimeSelect, map[departValue], prevArrTime2);
-            departTimeSelect.disabled = false;
-        }
-    });
-    
-    departTimeSelect.addEventListener('change', function() {
-        const selected = this.value;
-        const prevArr = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
-        if (prevArr && selected && selected < prevArr) {
-            alert('L\'heure de départ doit être après l\'heure d\'arrivée précédente.');
-            this.value = '';
-            steps[stepIndex].departTime = '';
-            arriveeInput.value = '';
-            arriveeInput.disabled = true;
-            arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-            steps[stepIndex].arriveeTime = '';
-            return;
-        }
-        
-        steps[stepIndex].departTime = selected;
-        
-        if (selected) {
-            arriveeInput.disabled = false;
-            
-            // Si une arrivée est déjà sélectionnée, recalculer l'heure d'arrivée
-            const arriveeVal = arriveeInput.value;
-            if (arriveeVal) {
-                updateArriveeTime(stepIndex, arriveeVal, selected);
-            }
-        } else {
-            arriveeInput.value = '';
-            arriveeInput.disabled = true;
-            arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-            steps[stepIndex].arriveeTime = '';
-        }
+        filterStops();
+        updateTimes();
     });
 
-    arriveeInput.addEventListener('change', function () {
-        const arriveeValue = this.value;
-        steps[stepIndex].arrivee = arriveeValue;
-        const cache = scheduleCache[stepIndex] || {};
-        const orderedVilles = cache.orderedVilles || [];
+    arriveeSelect.addEventListener('change', function () {
+        steps[stepIndex].arrivee = this.value;
 
-        // 6. Sécurité si l'utilisateur force la saisie clavier d'un arrêt précédent
-        if (departInput.value) {
-            const dIndex = orderedVilles.indexOf(departInput.value);
-            const aIndex = orderedVilles.indexOf(arriveeValue);
+        removeSubsequentSteps(stepIndex);
 
-            if (aIndex !== -1 && dIndex !== -1 && aIndex <= dIndex) {
-                alert("La destination doit se trouver après le point de départ de la ligne.");
-                this.value = '';
-                steps[stepIndex].arrivee = '';
-                arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-                steps[stepIndex].arriveeTime = '';
-                return;
-            }
-        }
-        
-        const departTime = steps[stepIndex].departTime;
-        if (arriveeValue && departTime) {
-             updateArriveeTime(stepIndex, arriveeValue, departTime);
-        } else {
-             arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-             steps[stepIndex].arriveeTime = '';
-        }
-
-        if (stepIndex < Object.keys(steps).length - 1) {
-            const nextDepartInput = document.getElementById(`depart-input-${stepIndex + 1}`);
-            if (nextDepartInput) {
-                nextDepartInput.value = arriveeValue;
-                steps[stepIndex + 1].depart = arriveeValue;
-                computeLineForStep(stepIndex + 1);
-            }
-        }
+        filterStops();
+        updateTimes();
     });
-}
 
-function updateArriveeTime(stepIndex, arriveeValue, minTime) {
-    const cache = scheduleCache[stepIndex] || {};
-    const map = cache.map || {};
-    const arriveeTimeSelect = document.getElementById(`arrivee-time-${stepIndex}`);
-    
-    if (map[arriveeValue] && minTime) {
-        // On prend le premier horaire d'arrivée disponible après l'heure de départ
-        const times = map[arriveeValue].filter(t => t > minTime);
-        if (times.length > 0) {
-            times.sort();
-            steps[stepIndex].arriveeTime = times[0];
-            arriveeTimeSelect.innerHTML = `<option value="${times[0]}">${times[0]}</option>`;
-        } else {
-            arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-            steps[stepIndex].arriveeTime = '';
-            alert("Aucun horaire d\'arrivée trouvé pour cette destination après le départ.");
-        }
-    } else {
-        arriveeTimeSelect.innerHTML = '<option value="">Heure d\'arrivée</option>';
-        steps[stepIndex].arriveeTime = '';
-    }
+    departTimeSelect.addEventListener('change', function () {
+        steps[stepIndex].departTime = this.value;
+
+        removeSubsequentSteps(stepIndex);
+
+        updateTimes();
+    });
 }
 
 function buildDivider() {
@@ -380,19 +276,78 @@ function buildDivider() {
     return divider;
 }
 
-function computeLineForStep(step) {
-    fetch('/api/reservation.php?findAllLignesFromCity=' + (steps[step - 1].arrivee ? steps[step - 1].arrivee.toLowerCase() : ''))
+function populateSelectOptions(selectObj, optionsArr, placeholder) {
+    selectObj.innerHTML = `<option value="">${placeholder}</option>`;
+    optionsArr.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        selectObj.appendChild(option);
+    });
+}
+
+function populateTimeSelect(selectElement, times, minTime) {
+    selectElement.innerHTML = '<option value="">Heure</option>';
+    times.sort();
+    times.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        if (minTime && t < minTime) opt.disabled = true;
+        selectElement.appendChild(opt);
+    });
+}
+
+function computeLineForStep(step, ligneSelectElement) {
+    const prevArrivee = steps[step - 1].arrivee ? steps[step - 1].arrivee.toLowerCase() : '';
+    fetch('/api/reservation.php?findAllLignesFromCity=' + encodeURIComponent(prevArrivee))
         .then(response => response.json())
         .then(data => {
-            let stepsDatalist = document.getElementById(`lignes-list-${step}`);
-            if (!stepsDatalist) return;
-            stepsDatalist.innerHTML = '';
-            data.forEach(item => {
+            ligneSelectElement.innerHTML = '<option value="">Choisir une ligne</option>';
+            const previousLine = steps[step - 1].ligne;
+
+            data.forEach(ville => {
+                if (previousLine && ville.LIG_NUM === previousLine) return;
                 const option = document.createElement('option');
-                option.value = item.LIG_NUM;
-                stepsDatalist.appendChild(option);
+                option.value = ville.LIG_NUM;
+                option.textContent = ville.LIG_NUM;
+                ligneSelectElement.appendChild(option);
             });
         });
+}
+
+let priceTimeout;
+function triggerValidationAndPrice() {
+    clearTimeout(priceTimeout);
+
+    const allSteps = Object.values(steps);
+    const isValid = allSteps.length > 0 && allSteps.every(s => s.ligne && s.depart && s.arrivee && s.departTime && s.arriveeTime);
+
+    const btnConfirm = document.getElementById('btn-confirm');
+    if (btnConfirm) btnConfirm.disabled = !isValid;
+
+    if (!isValid) {
+        document.getElementById('dynamic-price').textContent = '0.00 €';
+        return;
+    }
+
+    priceTimeout = setTimeout(async () => {
+        try {
+            const formData = new FormData();
+            formData.append('simulateTripPrice', JSON.stringify(allSteps));
+
+            const response = await fetch('/api/reservation.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.prix !== undefined) {
+                document.getElementById('dynamic-price').textContent = `${data.prix} €`;
+            }
+        } catch (e) {
+            console.error("Erreur lors du calcul du prix :", e);
+        }
+    }, 500);
 }
 
 let originalFormHTML = '';
@@ -407,7 +362,6 @@ function confirm() {
         return;
     }
 
-    // Lancer l'animation du bus au moment de la réservation
     const busContainer = document.getElementById('bus-animation-container');
     if (busContainer) {
         const currentLeft = window.getComputedStyle(busContainer).left;
@@ -423,15 +377,12 @@ function confirm() {
         busContainer.classList.add('animate-bus');
     }
 
-    // Sauvegarder l'état actuel pour pouvoir annuler
     const stepsContainer = document.getElementById('steps');
     const searchActions = document.querySelector('.search-actions');
 
-    // Masquer le formulaire plutôt que de le vider
     stepsContainer.style.display = 'none';
     searchActions.style.display = 'none';
 
-    // Créer un conteneur pour la vue confirmation
     const confContainer = document.createElement('div');
     confContainer.id = 'confirmation-view-container';
     stepsContainer.parentNode.insertBefore(confContainer, stepsContainer.nextSibling);
@@ -469,7 +420,7 @@ function confirm() {
     payButton.addEventListener('click', () => {
         const reservationData = new FormData();
         reservationData.append('setTripDetails', JSON.stringify(steps));
-        
+
 
         fetch('/api/reservation.php', {
             method: 'POST',
@@ -488,13 +439,10 @@ function confirm() {
     cancelButton.textContent = 'Annuler';
     cancelButton.style.marginTop = '0';
     cancelButton.addEventListener('click', () => {
-        // Supprimer la vue confirmation
         confContainer.remove();
-        // Réafficher le formulaire original (les données sont préservées dans l'objet 'steps' et dans le DOM)
         stepsContainer.style.display = 'flex';
         searchActions.style.display = 'flex';
 
-        // Lancer l'animation de retour du bus (U-Turn)
         const busContainer = document.getElementById('bus-animation-container');
         if (busContainer) {
             const currentLeft = window.getComputedStyle(busContainer).left;
@@ -504,7 +452,7 @@ function confirm() {
             }
             busContainer.style.setProperty('--start-left-return', currentLeft);
             busContainer.style.setProperty('--start-rot-return', startRot);
-            
+
             busContainer.classList.remove('animate-bus', 'animate-bus-return');
             void busContainer.offsetWidth; // Force reflow
             busContainer.classList.add('animate-bus-return');
@@ -547,10 +495,37 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => lastRow.classList.remove('errored'), 2000);
             return;
         }
-        
         addStep();
     });
 });
+
+function removeSubsequentSteps(currentIndex) {
+    const keys = Object.keys(steps).map(Number).sort((a, b) => a - b);
+    let removed = false;
+
+    keys.forEach(key => {
+        if (key > currentIndex) {
+            const wrapper = document.querySelector(`.step-wrapper[data-wrapper-step="${key}"]`);
+            if (wrapper) wrapper.remove();
+
+            delete steps[key];
+            removed = true;
+        }
+    });
+
+    if (removed) {
+        const newKeys = Object.keys(steps).map(Number).sort((a, b) => a - b);
+        if (newKeys.length > 1) {
+            const lastKey = newKeys[newKeys.length - 1];
+            const lastWrapper = document.querySelector(`.step-wrapper[data-wrapper-step="${lastKey}"]`);
+            if (lastWrapper) {
+                const lastBtn = lastWrapper.querySelector('.btn-remove-step');
+                if (lastBtn) lastBtn.style.display = 'flex';
+            }
+        }
+        triggerValidationAndPrice();
+    }
+}
 
 function hideMap() {
     document.querySelector('.map-container').style.display = 'none';
