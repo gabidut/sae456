@@ -117,7 +117,7 @@ if ($selected_client_id !== null) {
                                     <td class="font-weight-bold text-red">#<?php echo htmlspecialchars($c['CLI_NUM'] ?? '0'); ?></td>
                                     
                                     <td>
-                                        <strong style="color: #1e293b;"><?php echo htmlspecialchars(($c['CLI_NOM'] ?? '') . ' ' . ($c['CLI_PRENOM'] ?? '')); ?></strong>
+                                        <strong style="color: #f3f3f3ff;"><?php echo htmlspecialchars(($c['CLI_NOM'] ?? '') . ' ' . ($c['CLI_PRENOM'] ?? '')); ?></strong>
                                     </td>
                                     
                                     <td>

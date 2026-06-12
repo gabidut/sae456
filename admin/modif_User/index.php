@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p style="color: #6c757d; font-size: 14px; margin-top: 5px;">ID Client : #<?= $cliId ?></p>
         </div>
 
-        <form method="post" style="margin: 0;" onsubmit="return confirm('⚠️ Êtes-vous sûr de vouloir supprimer définitivement ce client ? Cette action est irréversible et supprimera potentiellement ses réservations.');">
+        <form method="post" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement ce client ? Cette action est irréversible et supprimera potentiellement ses réservations.');">
             <button type="submit" name="btn_delete_client" class="btn-logout" style="background-color: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
                 Supprimer le client
             </button>
