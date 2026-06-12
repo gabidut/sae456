@@ -339,7 +339,7 @@ class Reservation
             $resultClient = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($resultClient) {
-                $prix = $prix * (1 - ($resultClient['TYP_REDUC'] / 100));
+                $prix = $prix * ($resultClient['TYP_REDUC'] / 100);
             }
         }
 
