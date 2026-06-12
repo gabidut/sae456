@@ -230,17 +230,25 @@ class Reservation
     public function getFinalHoraire($lineId, $codeInseeDepart, $codeInseeArrivee, $horaireDepart)
     {
         $duree = 0;
-        $codeInseeDepart = $this->getInseeCode($codeInseeDepart);
-        $codeInseeArrivee = $this->getInseeCode($codeInseeArrivee);
+        $codeInseeDepart = trim((string) $this->getInseeCode($codeInseeDepart));
+        $codeInseeArrivee = trim((string) $this->getInseeCode($codeInseeArrivee));
+
         $sql = "SELECT NOE_DUREE_PROCHAIN, COM_CODE_INSEE_SUIVANT 
                 FROM VIK_NOEUD 
-                WHERE COM_CODE_INSEE_ARRET = :depart 
-                AND lig_num = :ligne";
+                WHERE TRIM(LOWER(COM_CODE_INSEE_ARRET)) = TRIM(LOWER(:depart)) 
+                AND TRIM(LOWER(LIG_NUM)) = TRIM(LOWER(:ligne))";
         $stmt = $this->database->prepareStatement($sql);
 
         $currentDepart = $codeInseeDepart;
+        $circuitBreaker = 0;
+        $maxStops = 100;
 
-        while ($currentDepart !== $codeInseeArrivee) {
+        while ($currentDepart != $codeInseeArrivee) {
+
+            if (++$circuitBreaker > $maxStops) {
+                throw new \Exception("Boucle infinie détectée sur la ligne $lineId.");
+            }
+
             $stmt->execute([
                 'ligne' => $lineId,
                 'depart' => $currentDepart
@@ -249,16 +257,16 @@ class Reservation
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$row) {
-                throw new \Exception("Chemin introuvable ou rupture de la ligne entre $codeInseeDepart et $codeInseeArrivee.");
+                throw new \Exception("Chemin introuvable ou rupture de la ligne entre $codeInseeDepart et $codeInseeArrivee. Arrêt bloquant : $currentDepart");
             }
 
             $duree += (int) $row['NOE_DUREE_PROCHAIN'];
-            $currentDepart = $row['COM_CODE_INSEE_SUIVANT'];
+            $currentDepart = trim((string) $row['COM_CODE_INSEE_SUIVANT']);
         }
 
         $datePrevue = new \DateTime($horaireDepart);
-
         $datePrevue->modify("+$duree minutes");
+
         return ['horaires' => [$datePrevue->format('H:i')]];
     }
 
@@ -337,4 +345,5 @@ class Reservation
 
         return ['prix' => number_format($prix, 2, '.', '')];
     }
+
 }

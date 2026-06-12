@@ -298,22 +298,58 @@ function populateTimeSelect(selectElement, times, minTime) {
     });
 }
 
-function computeLineForStep(step, ligneSelectElement) {
+async function computeLineForStep(step, ligneSelectElement) {
     const prevArrivee = steps[step - 1].arrivee ? steps[step - 1].arrivee.toLowerCase() : '';
-    fetch('/api/reservation.php?findAllLignesFromCity=' + encodeURIComponent(prevArrivee))
-        .then(response => response.json())
-        .then(data => {
-            ligneSelectElement.innerHTML = '<option value="">Choisir une ligne</option>';
-            const previousLine = steps[step - 1].ligne;
+    if (!prevArrivee) return;
 
-            data.forEach(ville => {
-                if (previousLine && ville.LIG_NUM === previousLine) return;
-                const option = document.createElement('option');
-                option.value = ville.LIG_NUM;
-                option.textContent = ville.LIG_NUM;
-                ligneSelectElement.appendChild(option);
+    const usedLines = [];
+    for (let i = 0; i < step; i++) {
+        if (steps[i] && steps[i].ligne) {
+            usedLines.push(steps[i].ligne);
+        }
+    }
+
+    try {
+        const response = await fetch('/api/reservation.php?findAllLignesFromCity=' + encodeURIComponent(prevArrivee));
+        const data = await response.json();
+
+        ligneSelectElement.innerHTML = '<option value="">Choisir une ligne</option>';
+
+        const lineChecks = await Promise.all(data.map(async (ville) => {
+
+            if (usedLines.includes(ville.LIG_NUM)) return null;
+
+            const lineResponse = await fetch(`/api/reservation.php?ligne=${encodeURIComponent(ville.LIG_NUM)}`);
+            const lineData = await lineResponse.json();
+
+            const orderedVilles = [];
+            lineData.forEach(item => {
+                if (!orderedVilles.includes(item.VILLE_ARRET)) {
+                    orderedVilles.push(item.VILLE_ARRET);
+                }
             });
+
+            const depIdx = orderedVilles.findIndex(v => v.toLowerCase() === prevArrivee);
+
+            if (depIdx !== -1 && depIdx < orderedVilles.length - 1) {
+                return ville.LIG_NUM;
+            }
+
+            return null;
+        }));
+
+        lineChecks.forEach(ligNum => {
+            if (ligNum) {
+                const option = document.createElement('option');
+                option.value = ligNum;
+                option.textContent = ligNum;
+                ligneSelectElement.appendChild(option);
+            }
         });
+
+    } catch (error) {
+        console.error("Erreur lors de la vérification des lignes disponibles :", error);
+    }
 }
 
 let priceTimeout;
