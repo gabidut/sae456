@@ -188,7 +188,8 @@ function addStep() {
                 if (data && data.horaires && data.horaires.length > 0) {
                     arriveeTimeSelect.innerHTML = `<option value="${data.horaires[0]}">${data.horaires[0]}</option>`;
                     steps[stepIndex].arriveeTime = data.horaires[0];
-                    arriveeTimeSelect.disabled = false;
+                    // On garde disabled car c'est une valeur calculée
+                    arriveeTimeSelect.disabled = true;
                 } else {
                     arriveeTimeSelect.innerHTML = '<option value="">Indisponible</option>';
                     steps[stepIndex].arriveeTime = '';
