@@ -284,7 +284,8 @@ class Reservation
 
     public function simulatePrice($reservationArray)
     {
-        $prixTotal = 0;
+        $distanceTotal = 0;
+        $prix = 0;
         $cliNum = 0;
 
         if ($this->sessionHelper->isUserLoggedIn()) {
@@ -299,11 +300,7 @@ class Reservation
                      AND ROWNUM = 1";
         $stmtNoeud = $this->database->prepareStatement($sqlNoeud);
 
-        $sqlTarif = "SELECT TAR_PRIX 
-                     FROM vik_tarif 
-                     WHERE TRIM(LOWER(TAR_NUM_TRANCHE)) = TRIM(LOWER(:tarNum))";
-        $stmtTarif = $this->database->prepareStatement($sqlTarif);
-
+        // 1. On calcule la distance TOTALE de l'ensemble du trajet
         foreach ($reservationArray as $segment) {
             $ligNum = $segment['ligne'];
             $villeDepartCode = $this->getInseeCode($segment['depart']);
@@ -313,7 +310,6 @@ class Reservation
 
             $courant = $villeDepartCode;
             $safeguard = 0;
-            $distanceSegment = 0;
 
             while ($courant !== $villeArriveeCode && $safeguard < 50) {
                 $stmtNoeud->execute(['courant' => $courant, 'ligNum' => $ligNum]);
@@ -323,40 +319,67 @@ class Reservation
                     $distEtape = isset($result['NOE_DISTANCE_PROCHAIN'])
                         ? (float) str_replace(',', '.', $result['NOE_DISTANCE_PROCHAIN'])
                         : 0;
-                    $distanceSegment += $distEtape;
+                    $distanceTotal += $distEtape;
                     $courant = $result['COM_CODE_INSEE_SUIVANT'];
                 } else {
                     break;
                 }
                 $safeguard++;
             }
+        }
 
-            if ($distanceSegment > 0) {
-                $tarNum = 13;
-                if ($distanceSegment < 10) $tarNum = 1;
-                elseif ($distanceSegment < 20) $tarNum = 2;
-                elseif ($distanceSegment < 30) $tarNum = 3;
-                elseif ($distanceSegment < 40) $tarNum = 4;
-                elseif ($distanceSegment < 50) $tarNum = 5;
-                elseif ($distanceSegment < 60) $tarNum = 6;
-                elseif ($distanceSegment < 80) $tarNum = 7;
-                elseif ($distanceSegment < 100) $tarNum = 8;
-                elseif ($distanceSegment < 140) $tarNum = 9;
-                elseif ($distanceSegment < 160) $tarNum = 10;
-                elseif ($distanceSegment < 200) $tarNum = 11;
-                elseif ($distanceSegment < 300) $tarNum = 12;
+        if ($distanceTotal > 0) {
+            $tarNum = 13;
+            if ($distanceTotal < 10) $tarNum = 1;
+            elseif ($distanceTotal < 20) $tarNum = 2;
+            elseif ($distanceTotal < 30) $tarNum = 3;
+            elseif ($distanceTotal < 40) $tarNum = 4;
+            elseif ($distanceTotal < 50) $tarNum = 5;
+            elseif ($distanceTotal < 60) $tarNum = 6;
+            elseif ($distanceTotal < 80) $tarNum = 7;
+            elseif ($distanceTotal < 100) $tarNum = 8;
+            elseif ($distanceTotal < 140) $tarNum = 9;
+            elseif ($distanceTotal < 160) $tarNum = 10;
+            elseif ($distanceTotal < 200) $tarNum = 11;
+            elseif ($distanceTotal < 300) $tarNum = 12;
 
-                $stmtTarif->execute(['tarNum' => $tarNum]);
-                $resultTarif = $stmtTarif->fetch(PDO::FETCH_ASSOC);
+            $sqlTarif = "SELECT TAR_PRIX FROM vik_tarif WHERE TAR_NUM_TRANCHE = :tarNum";
+            $stmtTarif = $this->database->prepareStatement($sqlTarif);
+            $stmtTarif->execute(['tarNum' => $tarNum]);
+            $resultTarif = $stmtTarif->fetch(PDO::FETCH_ASSOC);
 
-                if ($resultTarif && isset($resultTarif['TAR_PRIX'])) {
-                    $prixTotal += (float) str_replace(',', '.', $resultTarif['TAR_PRIX']);
-                }
+            if ($resultTarif && isset($resultTarif['TAR_PRIX'])) {
+                $prix = (float) str_replace(',', '.', $resultTarif['TAR_PRIX']);
             }
         }
 
+        if ($cliNum !== 0 && $prix > 0) {
+            $sqlReduc = "SELECT TYP_REDUC FROM vik_type_client WHERE typ_num = (SELECT typ_num FROM vik_client WHERE cli_num = :cliNum)";
+            $stmtReduc = $this->database->prepareStatement($sqlReduc);
+            $stmtReduc->execute(['cliNum' => $cliNum]);
+            $resultClient = $stmtReduc->fetch(PDO::FETCH_ASSOC);
+
+            if ($resultClient && isset($resultClient['TYP_REDUC'])) {
+                $prix = $prix * ((float)$resultClient['TYP_REDUC'] / 100);
+            }
+        }
+
+        $pointsUsed = $this->sessionHelper->getPointsUsed();
+        if ($cliNum !== 0 && $pointsUsed > 0 && $prix > 0) {
+            $reductionSimulee = 0;
+            if ($pointsUsed == 100) {
+                $reductionSimulee = 1;
+            } else if ($pointsUsed == 500) {
+                $reductionSimulee = 7;
+            } else if ($pointsUsed == 1000) {
+                $reductionSimulee = 15;
+            }
+
+            $prix = max(0, $prix - $reductionSimulee);
+        }
+
         return [
-            'prix' => $prixTotal,
+            'prix' => $prix,
             'cliNum' => $cliNum
         ];
     }

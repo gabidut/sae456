@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($password)) $errors['password'] = "Le mot de passe est obligatoire.";
-    
+
     if (empty($phone)) {
         $errors['phone'] = "Le numéro de téléphone est obligatoire.";
     } else {
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $email,
                 $phone
             );
-            
+
             if ($userId > 0) {
                 $session->setUserSession($userId);
                 header('Location: /auth/profile/');
@@ -74,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors['global'] = "Cette adresse email est déjà utilisée.";
             } else {
                 $errors['global'] = "Une erreur technique est survenue lors de la création de votre compte.";
+                $errors['global'] .= " (" . $e->getMessage() . ")";
                 // En option pour le debug : $errors['global'] .= " (" . $e->getMessage() . ")";
             }
         }
@@ -129,7 +130,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-column">
                     <div class="form-group">
                         <label for="departement-input">Département</label>
-                        <input type="text" list="department" id="departement-input" name="departement" placeholder="Ex: 61" value="<?php echo htmlspecialchars($departement); ?>" class="<?php echo isset($errors['departement']) ? 'input-error' : ''; ?>">
+                        <select id="departement-input" name="departement" class="<?php echo isset($errors['departement']) ? 'input-error' : ''; ?>" style="padding: 10px; border-radius: 5px; border: 1px solid var(--bg-color); background-color: var(--bg-color); color: #fff;">
+                            <option value="">Sélectionnez votre département</option>
+
+                            <?php foreach ($reservationManager->listDepartments() as $department_item) : ?>
+                                <option value="<?php echo htmlspecialchars($department_item['DEP_NUM']); ?>"
+                                    <?php echo (($departement ?? '') == $department_item['DEP_NUM']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($department_item['DEP_NUM'] . ' - ' . $department_item['DEP_NOM']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                         <?php if (isset($errors['departement'])): ?>
                             <span class="field-error"><?php echo htmlspecialchars($errors['departement']); ?></span>
                         <?php endif; ?>
@@ -137,7 +147,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-group">
                         <label for="ville">Ville</label>
-                        <input type="text" list="villes" id="ville" name="ville" placeholder="Ex: Argentan" value="<?php echo htmlspecialchars($ville); ?>" class="<?php echo isset($errors['ville']) ? 'input-error' : ''; ?>">
+                        <select id="ville" name="ville" class="<?php echo isset($errors['ville']) ? 'input-error' : ''; ?>" style="padding: 10px; border-radius: 5px; border: 1px solid var(--bg-color); background-color: var(--bg-color); color: #fff;">
+                            <option value="">Sélectionnez votre ville</option>
+                            <?php foreach ($reservationManager->listCities() as $city_item) : ?>
+                                <option value="<?php echo htmlspecialchars($city_item['COM_NOM']); ?>">
+                                    <?= htmlspecialchars($city_item['COM_NOM']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                         <?php if (isset($errors['ville'])): ?>
                             <span class="field-error"><?php echo htmlspecialchars($errors['ville']); ?></span>
                         <?php endif; ?>
@@ -172,11 +189,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     <script src="/assets/scripts/register.js"></script>
-    <datalist id="villes">
-        <?php foreach ($reservationManager->listCities() as $ville_item) : ?>
-            <option value="<?php echo htmlspecialchars($ville_item['COM_NOM']); ?>"/>
-        <?php endforeach; ?>
-    </datalist>
 
     <datalist id="department">
         <?php foreach ($reservationManager->listDepartments() as $department_item) : ?>

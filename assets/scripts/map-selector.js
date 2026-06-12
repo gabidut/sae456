@@ -6,9 +6,9 @@ let polylines = [];
 let highlightedPolylines = [];
 let gcities = {};
 
-L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
+L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
 }).addTo(map);
 
 const departure = document.getElementById('ville1');
@@ -26,7 +26,7 @@ function clearState(resetInputs = false) {
     highlightedPolylines.forEach(poly => map.removeLayer(poly));
     highlightedPolylines = [];
 
-    polylines.forEach(poly => poly.setStyle({ color: 'grey', weight: 8 }));
+    polylines.forEach(poly => poly.setStyle({ color: 'grey', weight: 2 }));
 
     const stepsContainer = document.getElementById('steps');
     if (stepsContainer) stepsContainer.innerHTML = '';
@@ -90,6 +90,12 @@ const networkGraph = {};
 
         cities.forEach(city => {
             const marker = L.marker([city.COM_LAT, city.COM_LONG]).addTo(map);
+            marker.setIcon(L.icon({
+                iconUrl: '/image/ville.png',
+                iconSize: [35, 35],
+                iconAnchor: [17.5, 25],
+                popupAnchor: [1, -34],
+            }));
             marker.bindPopup(`<b>${city.COM_NOM}</b>`);
             marker.on('click', () => handleMarkerClick(city));
             markers[city.COM_CODE_INSEE] = { marker, name: city.COM_NOM };
@@ -103,7 +109,7 @@ const networkGraph = {};
                     networkGraph[ligne.DEPART][ligne.ARRIVEE] = {
                         ligne: ligne.LIGNE,
                         distance: parseFloat(ligne.DISTANCE ? ligne.DISTANCE.replace(',', '.') : 0) || 0,
-                        duree: parseInt(ligne.DUREE) || 5, // 5 min par défaut
+                        duree: parseInt(ligne.DUREE) || 5,
                         horaires: ligne.HORAIRES ? ligne.HORAIRES.split(',') : []
                     };
                 }
@@ -111,7 +117,11 @@ const networkGraph = {};
                 const depM = markers[ligne.DEPART]?.marker;
                 const arrM = markers[ligne.ARRIVEE]?.marker;
                 if (depM && arrM) {
-                    const poly = L.polyline([depM.getLatLng(), arrM.getLatLng()], { color: 'grey', weight: 8 }).addTo(map);
+                    const poly = L.polyline([depM.getLatLng(), arrM.getLatLng()], {
+                        color: '#2c2c2cff',
+                        weight: 1.5,
+                        opacity: 1
+                    }).addTo(map);
                     polylines.push(poly);
                 }
             });
@@ -196,8 +206,10 @@ function renderRouteList(route, title, colorParam, container) {
             if (departMarker && arrivMarker) {
                 const poly = L.polyline([departMarker.getLatLng(), arrivMarker.getLatLng()], {
                     color: colorParam,
-                    weight: 8,
-                    opacity: 0.6
+                    weight: 12,
+                    opacity: 0.4,
+                    lineCap: 'round',
+                    lineJoin: 'round'
                 }).addTo(map);
 
                 poly.bindPopup(`<b>${title} - Étape ${index + 1} (Ligne ${step.ligne})</b><br>${step.depart} → ${step.arrivee}`);

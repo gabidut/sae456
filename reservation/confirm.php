@@ -25,7 +25,7 @@ try {
 
         <div class="ticket-info">
             <div class="info-item">
-                <label>N° Réservation</label>
+                <label>Code de Réservation</label>
                 <span><?= htmlspecialchars($resr['cliNum']) ?>/<?= htmlspecialchars($resr['reservation_id']) ?></span>
             </div>
             <div class="info-item">
@@ -34,7 +34,7 @@ try {
             </div>
             <div class="info-item">
                 <label>Points Gagnés</label>
-                <span><?= htmlspecialchars($resr['points']) ?> pts</span>
+                <span><?= htmlspecialchars($session->isUserLoggedIn() ? $resr['points'] : 0) ?> pts</span>
             </div>
             <div class="info-item">
                 <label>Montant Total</label>

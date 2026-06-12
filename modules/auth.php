@@ -34,10 +34,9 @@ class Authentificator
         $this->session_helper->setUserSession($user['CLI_NUM']);
         $this->updateConnexionDate($user['CLI_NUM']);
 
-        if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
-        {
+        if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) {
             $this->session_helper->setAdminUser();
-        }   
+        }
 
         return $user;
     }
@@ -82,14 +81,16 @@ class Authentificator
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $sql = "INSERT INTO vik_client(TYP_NUM, DEP_NUM, CLI_NOM, CLI_PRENOM, CLI_VILLE, CLI_TELEPHONE, CLI_COURRIEL, cli_nb_points_ec, cli_nb_points_tot, cli_date_connec, cli_mdp) 
-                VALUES ('10', :dep, UPPER(:nom), INITCAP(:prenom), :ville, :tel, :mail, '0', '0', SYSDATE, :mdp) 
+        $sql = "INSERT INTO vik_client(TYP_NUM, DEP_NUM, CLI_NOM, CLI_PRENOM, CLI_VILLE, CLI_TELEPHONE, CLI_COURRIEL, cli_nb_points_ec, cli_nb_points_tot, cli_date_connec, cli_mdp)
+                VALUES ('1', :dep, UPPER(:nom), INITCAP(:prenom), :ville, :tel, :mail, '10', '10', SYSDATE, :mdp) 
                 RETURNING CLI_NUM INTO :new_id";
-        
+
         $stmt = $this->database->prepareStatement($sql);
 
         $newId = 0;
 
+        $nom = strtoupper(trim($nom));
+        $prenom = ucfirst(strtolower(trim($prenom)));
         $stmt->bindParam(':dep', $dep);
         $stmt->bindParam(':nom', $nom);
         $stmt->bindParam(':prenom', $prenom);
@@ -97,7 +98,7 @@ class Authentificator
         $stmt->bindParam(':tel', $tel);
         $stmt->bindParam(':mail', $mail);
         $stmt->bindParam(':mdp', $mdp);
-        
+
         // Oracle specific: bind the returning ID
         $stmt->bindParam(':new_id', $newId, PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT, 32);
 
@@ -111,16 +112,16 @@ class Authentificator
     }
 
     public function getIsAdmin($userID)
-{
-    $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
-    $stmt = $this->database->prepareStatement($sql);
-    $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
+    {
+        $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
 
-    $stmt->execute(); 
+        $stmt->execute();
 
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $result;
-}
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
     public function updateConnexionDate($num_utilisateur)
     {
@@ -191,7 +192,7 @@ class Authentificator
 
     public function ajoutPointApresResa($num_utilisateur, $nbkilometre)
     {
-        $nbpoints = floor($nbkilometre/10) ;
+        $nbpoints = floor($nbkilometre / 10);
 
         $sqlPoints = "UPDATE vik_client SET cli_nb_points_ec = cli_nb_points_ec + :nbpoints, cli_nb_points_tot = cli_nb_points_tot + :nbpoints WHERE cli_num = :num";
 
