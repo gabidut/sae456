@@ -148,7 +148,7 @@ function calculateAndSuggestRoutes() {
     let foundAny = false;
 
     if (timeRoute) {
-        renderRouteList(timeRoute.path, "⏳ Le plus rapide", '#28a745', stepsContainer);
+        renderRouteList(timeRoute.path, "⏳ Le plus rapide", '#0625d3ff', stepsContainer);
         foundAny = true;
     } else {
         const noTimeDiv = document.createElement('div');
