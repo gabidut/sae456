@@ -127,21 +127,18 @@ if ($selected_client_id !== null) {
                                     <td><?php echo htmlspecialchars($c['CLI_VILLE'] ?? ''); ?></td>
                                     
                                     <td>
-                                        <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; color: #475569;">
-                                            <?php echo htmlspecialchars($c['TYP_NOM'] ?? 'Standard'); ?>
-                                        </span>
-                                        <div style="font-size: 0.85em; color: #10b981; font-weight: bold; margin-top: 4px;">
-                                            <?php echo intval($c['CLI_NB_POINTS_EC'] ?? 0); ?> / <?php echo intval($c['CLI_NB_POINTS_TOT'] ?? 0); ?> pts
+                                        <div style="font-size: 0.85em; color: #e9e9e9ff; font-weight: bold; margin-top: 4px;">
+                                            <?php echo intval($c['CLI_NB_POINTS_EC'] ?? 0); ?> | <?php echo intval($c['CLI_NB_POINTS_TOT'] ?? 0); ?> pts
                                         </div>
                                     </td>
 
                                     <td>
                                         <?php if ($c['CLI_NUM'] == 0): ?>
-                                            <span style="color: #64748b; font-weight: bold;">⚙️ Système</span>
+                                            <span style="color: #64748b; font-weight: bold;">Système</span>
                                         <?php elseif ($admin->clientInactif($c['CLI_NUM'])): ?>
-                                            <span style="color: #ef4444; font-weight: bold; background: #fee2e2; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">⚠️ Inactif</span>
+                                            <span style="color: #ef4444; font-weight: bold; background: #fee2e2; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">Inactif</span>
                                         <?php else: ?>
-                                            <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">✅ Actif</span>
+                                            <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">Actif</span>
                                         <?php endif; ?>
                                     </td>
 
