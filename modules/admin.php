@@ -86,15 +86,15 @@ class Adminitration
     {
         $sql = "SELECT * FROM vik_client where lower(cli_courriel) like lower(:cli_courriel )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_courriel' => $cli_courriel.'%']);
+        $stmt->execute(['cli_courriel' =>'%' . $cli_courriel.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function listClientsSortRang($typ_num): array
+    public function listClientsSortRang($typ_nom): array
     {
         $sql = "SELECT * FROM vik_client join vik_type_client using (typ_num) where lower(typ_nom) like lower(:typ_nom )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['typ_num' => $typ_num.'%']);
+        $stmt->execute(['typ_nom' => $typ_nom.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
