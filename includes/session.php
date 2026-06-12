@@ -73,4 +73,9 @@ class SessionHelper
     {
         $_SESSION['is_admin'] = true;
     }
+
+        public function unsetAdminUser()
+    {
+        $_SESSION['is_admin'] = false;
+    }
 }
