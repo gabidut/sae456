@@ -15,7 +15,6 @@ const departure = document.getElementById('ville1');
 const arrival = document.getElementById('ville2');
 const tripDate = document.getElementById('trip-date');
 
-// Initialiser à la date/heure actuelle
 const now = new Date();
 now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
 if (tripDate) {
@@ -24,11 +23,9 @@ if (tripDate) {
 }
 
 function clearState(resetInputs = false) {
-    // Nettoie les lignes colorées des résultats
     highlightedPolylines.forEach(poly => map.removeLayer(poly));
     highlightedPolylines = [];
 
-    // Remet les lignes de base en gris
     polylines.forEach(poly => poly.setStyle({ color: 'grey', weight: 8 }));
 
     const stepsContainer = document.getElementById('steps');
@@ -48,6 +45,19 @@ function updateCityInput(e) {
     const matchedCity = gcities[e.target.value.toLowerCase()];
 
     if (matchedCity) {
+        if (isDeparture) {
+            const marker = markers[matchedCity.COM_CODE_INSEE]?.marker;
+            if (marker) {
+                marker.openPopup();
+                map.setView(marker.getLatLng(), 10);
+            }
+        } else {
+            const marker = markers[matchedCity.COM_CODE_INSEE]?.marker;
+            if (marker) {
+                marker.openPopup();
+                map.setView(marker.getLatLng(), 10);
+            }
+        }
         tripData[isDeparture ? 'departure' : 'arrival'] = matchedCity.COM_CODE_INSEE;
         if (tripData.departure && tripData.arrival) calculateAndSuggestRoutes();
     } else {
@@ -66,7 +76,6 @@ if (tripDate) tripDate.addEventListener('change', function () {
 const colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta', 'yellow', 'brown', 'black'];
 const networkGraph = {};
 
-// Initialisation de la carte et du graphe
 (() => {
     fetch('/api/cities.php?citiesAndGPS=1').then(r => r.json()).then(cities => {
         const datalist = document.createElement('datalist');
@@ -162,54 +171,147 @@ function calculateAndSuggestRoutes() {
 }
 
 function renderRouteList(route, title, colorParam, container) {
+    console.log(route);
+
     const routeDiv = document.createElement('div');
     routeDiv.style.flex = '1';
     routeDiv.style.border = `2px solid ${colorParam}`;
     routeDiv.style.borderRadius = '8px';
     routeDiv.style.padding = '15px';
     routeDiv.style.backgroundColor = '#fdfdfd';
+    routeDiv.style.color = '#333';
 
     let html = `<h3 style="color: ${colorParam}; margin-top: 0;">${title}</h3>`;
     html += `<div style="margin-bottom: 15px;">`;
 
-    Object.values(route).forEach((step, index) => {
-        const departMarker = markers[step.departCode]?.marker;
-        const arrivMarker = markers[step.arriveeCode]?.marker;
+    fetch('/api/reservation.php?simulateTripPrice=1&tripDepartureTime=' + (tripData.dateTime ? new Date(tripData.dateTime).toISOString() : ''), {
+        method: 'POST',
+        body: new URLSearchParams({
+            simulateTripPrice: JSON.stringify(Object.values(route))
+        })
+    }).then(r => r.json()).then(data => {
+        const priceP = document.createElement('p');
+        priceP.innerHTML = `<b>Prix estimé :</b> ${data.prix} €`;
+        routeDiv.insertBefore(priceP, routeDiv.querySelector('button'));
 
-        if (departMarker && arrivMarker) {
-            // opacity: 0.6 permet de voir les tracés s'ils se superposent
-            const poly = L.polyline([departMarker.getLatLng(), arrivMarker.getLatLng()], {
-                color: colorParam,
-                weight: 8,
-                opacity: 0.6
-            }).addTo(map);
+        Object.values(route).forEach((step, index) => {
+            const departMarker = markers[step.departCode]?.marker;
+            const arrivMarker = markers[step.arriveeCode]?.marker;
 
-            poly.bindPopup(`<b>${title} - Étape ${index + 1} (Ligne ${step.ligne})</b><br>${step.depart} → ${step.arrivee}`);
-            highlightedPolylines.push(poly);
+            if (departMarker && arrivMarker) {
+                const poly = L.polyline([departMarker.getLatLng(), arrivMarker.getLatLng()], {
+                    color: colorParam,
+                    weight: 8,
+                    opacity: 0.6
+                }).addTo(map);
 
-            html += `
-                <p style="margin: 5px 0; font-size: 0.9em;">
+                poly.bindPopup(`<b>${title} - Étape ${index + 1} (Ligne ${step.ligne})</b><br>${step.depart} → ${step.arrivee}`);
+                highlightedPolylines.push(poly);
+
+                html += `
+                <p style="margin: 5px 0; font-size: 0.9em; color: #333;">
                     <b>Étape ${index + 1} (Ligne ${step.ligne})</b><br>
                     ${step.depart} (${step.departTime}) ➔ ${step.arrivee} (${step.arriveeTime})
                 </p>`;
-        }
+            }
+        });
+
+        html += `</div>`;
+        routeDiv.innerHTML = html;
+
+        const payButton = document.createElement('button');
+        payButton.textContent = 'Confirmer et Payer';
+        payButton.classList.add('btn-pay');
+        payButton.style.width = '100%';
+        payButton.style.padding = '10px';
+        payButton.style.backgroundColor = colorParam;
+        payButton.style.color = 'white';
+        payButton.style.border = 'none';
+        payButton.style.borderRadius = '4px';
+        payButton.style.cursor = 'pointer';
+
+        payButton.onclick = () => {
+            displaySummaryPage(route, data.prix, title, colorParam);
+        };
+        routeDiv.appendChild(payButton);
+
     });
 
-    html += `</div>`;
-    routeDiv.innerHTML = html;
 
-    const payButton = document.createElement('button');
-    payButton.textContent = 'Confirmer et Payer';
-    payButton.classList.add('btn-pay');
-    payButton.style.width = '100%';
-    payButton.style.padding = '10px';
-    payButton.style.backgroundColor = colorParam;
-    payButton.style.color = 'white';
-    payButton.style.border = 'none';
-    payButton.style.borderRadius = '4px';
-    payButton.style.cursor = 'pointer';
+    container.appendChild(routeDiv);
+}
 
-    payButton.onclick = () => {
+function timeToMins(timeStr) {
+    let [h, m] = timeStr.split(':').map(Number);
+    return h * 60 + m;
+}
+
+function minsToTime(mins) {
+    let h = Math.floor((mins % 1440) / 60).toString().padStart(2, '0');
+    let m = Math.floor(mins % 60).toString().padStart(2, '0');
+    return `${h}:${m}`;
+}
+function displaySummaryPage(route, price, title, colorParam) {
+    const overlay = document.createElement('div');
+    overlay.id = 'trip-summary-page';
+
+    const startDate = tripData.dateTime ? new Date(tripData.dateTime).toLocaleString('fr-FR', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    }) : 'Immédiat';
+
+    let html = `
+        <div class="summary-container">
+            <h1>Récapitulatif de votre trajet</h1>
+            <hr>
+            
+            <div class="summary-header">
+                <div class="summary-info">
+                    <h3>${title}</h3>
+                    <p><b>Départ :</b> ${startDate}</p>
+                </div>
+                <div class="summary-price">
+                    <h2>Total : ${price} €</h2>
+                </div>
+            </div>
+
+            <h3>Vos étapes</h3>
+            <ul>
+    `;
+
+    Object.values(route).forEach((step, index) => {
+        html += `
+            <li>
+                <b>Étape ${index + 1} - Ligne ${step.ligne}</b><br>
+                <span>🚆 <b>${step.depart}</b> (${step.departTime}) ➔ <b>${step.arrivee}</b> (${step.arriveeTime})</span>
+            </li>
+        `;
+    });
+
+    html += `
+            </ul>
+            
+            <div class="summary-actions">
+                <button id="btn-back-map">
+                    ← Modifier l'itinéraire
+                </button>
+                <button id="btn-confirm-final">
+                    Confirmer et Payer ✔
+                </button>
+            </div>
+        </div>
+    `;
+
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay);
+
+    document.getElementById('btn-back-map').onclick = () => {
+        document.body.removeChild(overlay);
+    };
+
+    document.getElementById('btn-confirm-final').onclick = function () {
+        this.textContent = 'Traitement en cours...';
+        this.disabled = true;
+
         const reservationData = new FormData();
         reservationData.append('setTripDetails', JSON.stringify(
             Object.values(route).map(step => ({
@@ -224,27 +326,20 @@ function renderRouteList(route, title, colorParam, container) {
             method: 'POST',
             body: new URLSearchParams(reservationData)
         }).then(response => {
-            if (response.ok) location.href = '/reservation/pay/';
+            if (response.ok) {
+                location.href = '/reservation/pay/';
+            } else {
+                throw new Error("Erreur serveur");
+            }
+        }).catch(err => {
+            console.error(err);
+            alert("Un problème est survenu lors de la confirmation.");
+            this.textContent = 'Confirmer et Payer ✔';
+            this.disabled = false;
         });
     };
-
-    routeDiv.appendChild(payButton);
-    container.appendChild(routeDiv);
 }
 
-// Utilitaires de conversion pour le temps
-function timeToMins(timeStr) {
-    let [h, m] = timeStr.split(':').map(Number);
-    return h * 60 + m;
-}
-
-function minsToTime(mins) {
-    let h = Math.floor((mins % 1440) / 60).toString().padStart(2, '0');
-    let m = Math.floor(mins % 60).toString().padStart(2, '0');
-    return `${h}:${m}`;
-}
-
-// Algorithme de Dijkstra mis à jour (Temps et Distance)
 function calculateDijkstra(graph, startCode, endCode, mode) {
     const distances = {};
     const previous = {};
@@ -279,42 +374,57 @@ function calculateDijkstra(graph, startCode, endCode, mode) {
 
         for (let neighbor in graph[currNode]) {
             let edge = graph[currNode][neighbor];
-            let weight = Infinity;
-            let expectedArrivalMins = arrivalTimeAtNode[currNode];
-            let usedDepartTime = "00:00";
 
-            if (mode === 'distance') {
-                weight = edge.distance;
-            } else if (mode === 'time') {
-                let currentMins = arrivalTimeAtNode[currNode];
-                let nextDepMins = Infinity;
+            let currentMins = arrivalTimeAtNode[currNode];
+            let nextDepMins = Infinity;
+
+            if (edge.horaires && edge.horaires.length > 0) {
+                let timeOfDay = currentMins % 1440;
 
                 for (let h of edge.horaires) {
                     let hMins = timeToMins(h);
-                    if (hMins >= currentMins) {
-                        nextDepMins = hMins;
+                    if (hMins >= timeOfDay) {
+                        nextDepMins = (currentMins - timeOfDay) + hMins;
                         break;
                     }
                 }
 
-                if (nextDepMins !== Infinity) {
-                    let waitTime = nextDepMins - currentMins;
-                    weight = waitTime + edge.duree;
-                    expectedArrivalMins = nextDepMins + edge.duree;
-                    usedDepartTime = minsToTime(nextDepMins);
+                if (nextDepMins === Infinity) {
+                    let baseDays = currentMins - timeOfDay;
+                    nextDepMins = baseDays + 1440 + timeToMins(edge.horaires[0]);
                 }
+            }
+
+            let waitTime = 0;
+            let expectedArrivalMins = currentMins;
+            let usedDepartTime = "00:00";
+
+            if (nextDepMins !== Infinity) {
+                waitTime = nextDepMins - currentMins;
+                expectedArrivalMins = nextDepMins + edge.duree;
+                usedDepartTime = minsToTime(nextDepMins);
+            } else {
+                expectedArrivalMins = currentMins + edge.duree;
+                usedDepartTime = minsToTime(currentMins);
+            }
+
+            let weight = Infinity;
+            if (mode === 'distance') {
+                weight = edge.distance;
+            } else if (mode === 'time') {
+                weight = waitTime + edge.duree;
             }
 
             let alt = distances[currNode] + weight;
 
             if (alt < distances[neighbor]) {
                 distances[neighbor] = alt;
-                arrivalTimeAtNode[neighbor] = mode === 'time' ? expectedArrivalMins : 0;
+                arrivalTimeAtNode[neighbor] = expectedArrivalMins;
                 previous[neighbor] = {
                     node: currNode,
                     edge: edge,
-                    departTime: mode === 'time' ? usedDepartTime : "N/A",
-                    arriveeTime: mode === 'time' ? minsToTime(expectedArrivalMins) : "N/A"
+                    departTime: usedDepartTime,
+                    arriveeTime: minsToTime(expectedArrivalMins)
                 };
             }
         }

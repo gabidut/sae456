@@ -451,7 +451,7 @@ function confirm() {
         reservationData.append('setTripDetails', JSON.stringify(steps));
 
 
-        fetch('/api/reservation.php', {
+        fetch('/api/reservation.php?tripDepartureTime=' + (tripData.dateTime ? new Date(tripData.dateTime).toISOString() : ''), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
