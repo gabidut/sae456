@@ -700,3 +700,19 @@
         height: 500px;
     }
 }
+\
+/* --- LOYALTY POINTS --- */
+.loyalty-section { background: rgba(255, 255, 255, 0.05); border: 1px dashed var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+.loyalty-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.loyalty-header h4 { margin: 0; font-size: 0.95rem; color: var(--text-main); text-transform: uppercase; }
+.points-count { background: #c0392b; color: white; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
+.points-options { display: flex; gap: 10px; flex-wrap: wrap; }
+.points-option { flex: 1; min-width: 100px; border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.02); }
+.points-option:hover:not(.disabled) { border-color: #c0392b; background: rgba(192, 57, 43, 0.1); }
+.points-option.selected { border-color: #c0392b !important; background: rgba(192, 57, 43, 0.2) !important; box-shadow: 0 0 0 1px #c0392b; }
+.points-option.disabled { opacity: 0.3; cursor: not-allowed; }
+.points-option .pts { display: block; font-weight: bold; font-size: 1.1rem; color: #c0392b; }
+.points-option .reduc { font-size: 0.75rem; color: var(--text-muted); }
+.price-summary { margin-top: 15px; text-align: right; }
+.price-summary .original-price { text-decoration: line-through; color: var(--text-muted); margin-right: 10px; font-size: 1.1rem; }
+.price-summary .final-price { font-size: 1.4rem; font-weight: 800; color: var(--accent-color); }\

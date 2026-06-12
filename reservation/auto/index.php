@@ -26,6 +26,9 @@ if (isset($_GET['direction'])) {
 <link rel="stylesheet" href="/assets/style/reservation-auto.css">
 
 <script src="/assets/scripts/map-selector.js" defer></script>
+<script>
+    window.userPoints = <?= $session->isUserLoggedIn() ? (int)$session->getUserSession()['CLI_NB_POINTS_EC'] : 0 ?>;
+</script>
 
 <main>
     <div class="map-layout-container <?php echo isset($_GET['BYPASS_DECO']) ? 'bypass-deco' : ''; ?>" id="main-layout">
