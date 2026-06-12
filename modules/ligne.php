@@ -41,17 +41,10 @@ class Ligne
 
     public function findAllLinesByCity($cityName)
     {
-        $sql = "SELECT DISTINCT LIG_NUM
-                FROM (
-                    SELECT LIG_NUM FROM VIK_NOEUD n JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_ARRET = c.COM_CODE_INSEE WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
-                    UNION
-                    SELECT LIG_NUM FROM VIK_NOEUD n JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_SUIVANT = c.COM_CODE_INSEE WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
-                    UNION
-                    SELECT LIG_NUM FROM VIK_LIGNE l JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_DEBU = c.COM_CODE_INSEE WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
-                    UNION
-                    SELECT LIG_NUM FROM VIK_LIGNE l JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_TERM = c.COM_CODE_INSEE WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
-                )
-                ORDER BY TO_NUMBER(REGEXP_REPLACE(LIG_NUM, '[^0-9]', '')) ASC";
+        $sql = "SELECT distinct TRIM(lig_num) as lig_num from vik_noeud n
+                join vik_commune c on c.com_code_insee = n.com_code_insee_arret 
+                or c.com_code_insee = n.com_code_insee_suivant
+                where TRIM(LOWER(com_nom)) = TRIM(LOWER(:cityName))";
 
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute(['cityName' => $cityName]);

@@ -25,9 +25,12 @@ $lignes = $ligneManager->getLignes();
         <div class="search-main-layout">
             <div id="steps" class="steps-list">
             </div>
-            <div class="search-actions">
+            <div class="search-actions" style="display: flex; align-items: center; gap: 15px;">
+                <div class="price-display" style="font-size: 1.2rem; font-weight: bold; padding: 10px 20px; background: #f0f0f0; border-radius: 8px;">
+                    Total estimé : <span id="dynamic-price">0.00 €</span>
+                </div>
                 <button class="btn-search btn-reserve" onclick="showMap()">VOIR LA CARTE</button>
-                <button class="btn-search btn-reserve" onclick="confirm()">RESERVER</button>
+                <button class="btn-search btn-reserve" id="btn-confirm" onclick="confirm()" disabled>RESERVER</button>
                 <button class="btn-plus" id="add-step-btn" type="button" title="Ajouter une étape">+</button>
             </div>
         </div>
