@@ -90,6 +90,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link rel="stylesheet" href="/assets/style/profil.css">
 
 <div class="profile-container">
+    <div style="margin-bottom: 25px;">
+        <a href="/admin/visualise/index.php" style="text-decoration: none; color: #a0a0a0; font-weight: 600; font-size: 0.95rem; display: inline-flex; align-items: center; transition: color 0.2s ease;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#a0a0a0'">
+            ← Retour 
+        </a>
+    </div>
+
     <div class="profile-header">
         <div>
             <h1>Profil Utilisateur : <span><?= htmlspecialchars($infoClient['CLI_PRENOM']) ?> <?= htmlspecialchars($infoClient['CLI_NOM']) ?></span></h1>
