@@ -7,8 +7,8 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
     exit();
 }
 
-if (!isset($_GET['ligne']) || empty($_GET['ligne'])) {
-    header('Location: index.php'); 
+if (!isset($_GET['ligne']) || $_GET['ligne'] === '') {
+    header('Location: ../lignes/index.php'); 
     exit();
 }
 
