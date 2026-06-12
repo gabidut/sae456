@@ -255,7 +255,7 @@ class Adminitration
     public function insertNoeud($lig_num, $code_arret, $code_suivant, $heure_passage, $distance, $duree)
     {
         $sql = "INSERT INTO VIK_NOEUD (LIG_NUM, COM_CODE_INSEE_ARRET, COM_CODE_INSEE_SUIVANT, NOE_HEURE_PASSAGE, NOE_DISTANCE_PROCHAIN, NOE_DUREE_PROCHAIN) 
-                VALUES (:lig_num, :code_arret, :code_suivant, TO_DATE(:heure_passage, 'HH24:MI'), :distance, :duree)";
+                VALUES (:lig_num, :code_arret, :code_suivant, TO_DATE(:heure_passage, 'DD/MM/YYYY HH24:MI:SS'), :distance, :duree)";
 
         $stmt = $this->database->prepareStatement($sql);
         return $stmt->execute([
