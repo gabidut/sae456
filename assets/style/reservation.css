@@ -104,6 +104,13 @@
     border-color: var(--accent-color);
 }
 
+.input-group input:disabled, .input-group select:disabled {
+    background-color: #f1f3f5;
+    color: #adb5bd;
+    cursor: not-allowed;
+    border-color: #e9ecef;
+}
+
 .divider {
     width: 2px;
     height: 30px;
