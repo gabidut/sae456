@@ -203,32 +203,58 @@
     margin-top: 0.5rem; /* Un petit espace au-dessus pour respirer */
 }
 
-/* Validation Errors */
-.error-banner {
-    background-color: rgba(229, 9, 20, 0.1);
-    border-left: 4px solid var(--accent-color);
-    padding: 1rem;
-    margin-bottom: 2rem;
-    border-radius: 4px;
+/* ==========================================
+   FORCE MAX VISIBILITY FOR ERRORS (High Priority)
+   ========================================== */
+
+/* The main banner at the top */
+main.login-main .login-container .error-banner {
+    background-color: #ff0000 !important;
+    border: 3px solid #ffffff !important;
+    padding: 1.2rem !important;
+    margin-bottom: 2rem !important;
+    border-radius: 8px !important;
+    display: block !important;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
-.error-message {
-    color: var(--accent-color);
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin: 0;
+/* The text inside the banner */
+main.login-main .login-container .error-banner .error-message {
+    color: #ffffff !important;
+    font-size: 1.2rem !important;
+    font-weight: 900 !important;
+    margin: 0 !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    display: block !important;
 }
 
-.field-error {
-    color: var(--accent-color);
-    font-size: 0.75rem;
-    font-weight: 500;
-    margin-top: 0.2rem;
+/* Specific error messages under fields */
+main.login-main .login-container .field-error {
+    color: #ff0000 !important; /* Force RED */
+    font-size: 0.9rem !important;
+    font-weight: 800 !important;
+    margin-top: 0.5rem !important;
+    display: block !important;
+    background-color: #ffffff !important; /* White background for max contrast */
+    padding: 5px 10px !important;
+    border-radius: 4px !important;
+    border: 1px solid #ff0000 !important;
+    width: fit-content !important;
 }
 
-.input-error {
-    border-color: var(--accent-color) !important;
+/* Inputs with errors */
+main.login-main .login-container input.input-error {
+    border: 3px solid #ff0000 !important;
+    background-color: #fff0f0 !important;
+    color: #000000 !important; /* Black text for readability on light red bg */
 }
+
+/* ==========================================
+   END OF ERROR STYLES
+   ========================================== */
 
 /* On s'assure que sur mobile (une seule colonne), il se comporte normalement */
 @media (max-width: 768px) {

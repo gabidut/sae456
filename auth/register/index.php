@@ -83,20 +83,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>Inscription <span>Viking</span></h2>
         <p class="login-subtitle">Créez votre compte pour rejoindre le réseau</p>
 
-        <?php if (isset($errors['global'])): ?>
+        <?php if (!empty($errors)): ?>
             <div class="error-banner">
-                <p class="error-message"><?php echo htmlspecialchars($errors['global']); ?></p>
+                <p class="error-message">
+                    <?php echo isset($errors['global']) ? htmlspecialchars($errors['global']) : "Veuillez corriger les erreurs dans le formulaire."; ?>
+                </p>
             </div>
         <?php endif; ?>
 
-        <form method="POST" class="login-form">
+        <form method="POST" class="login-form" novalidate>
 
             <div class="form-grid">
 
                 <div class="form-column">
                     <div class="form-group">
                         <label for="nom">Nom</label>
-                        <input type="text" id="nom" name="nom" placeholder="Ex: Delhoumi" value="<?php echo htmlspecialchars($nom); ?>" class="<?php echo isset($errors['nom']) ? 'input-error' : ''; ?>" required>
+                        <input type="text" id="nom" name="nom" placeholder="Ex: Delhoumi" value="<?php echo htmlspecialchars($nom); ?>" class="<?php echo isset($errors['nom']) ? 'input-error' : ''; ?>">
                         <?php if (isset($errors['nom'])): ?>
                             <span class="field-error"><?php echo htmlspecialchars($errors['nom']); ?></span>
                         <?php endif; ?>
@@ -104,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-group">
                         <label for="prenom">Prénom</label>
-                        <input type="text" id="prenom" name="prenom" placeholder="Ex: Sylvian" value="<?php echo htmlspecialchars($prenom); ?>" class="<?php echo isset($errors['prenom']) ? 'input-error' : ''; ?>" required>
+                        <input type="text" id="prenom" name="prenom" placeholder="Ex: Sylvian" value="<?php echo htmlspecialchars($prenom); ?>" class="<?php echo isset($errors['prenom']) ? 'input-error' : ''; ?>">
                         <?php if (isset($errors['prenom'])): ?>
                             <span class="field-error"><?php echo htmlspecialchars($errors['prenom']); ?></span>
                         <?php endif; ?>
@@ -112,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-group">
                         <label for="phone">Numéro de téléphone</label>
-                        <input type="tel" id="phone" name="phone" placeholder="Ex: 06 20 74 58 80" value="<?php echo htmlspecialchars($phone); ?>" class="<?php echo isset($errors['phone']) ? 'input-error' : ''; ?>" required>
+                        <input type="tel" id="phone" name="phone" placeholder="Ex: 06 20 74 58 80" value="<?php echo htmlspecialchars($phone); ?>" class="<?php echo isset($errors['phone']) ? 'input-error' : ''; ?>">
                         <?php if (isset($errors['phone'])): ?>
                             <span class="field-error"><?php echo htmlspecialchars($errors['phone']); ?></span>
                         <?php endif; ?>
@@ -122,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-column">
                     <div class="form-group">
                         <label for="departement-input">Département</label>
-                        <input type="text" list="department" id="departement-input" name="departement" placeholder="Ex: 61" value="<?php echo htmlspecialchars($departement); ?>" class="<?php echo isset($errors['departement']) ? 'input-error' : ''; ?>" required>
+                        <input type="text" list="department" id="departement-input" name="departement" placeholder="Ex: 61" value="<?php echo htmlspecialchars($departement); ?>" class="<?php echo isset($errors['departement']) ? 'input-error' : ''; ?>">
                         <?php if (isset($errors['departement'])): ?>
                             <span class="field-error"><?php echo htmlspecialchars($errors['departement']); ?></span>
                         <?php endif; ?>
@@ -130,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-group">
                         <label for="ville">Ville</label>
-                        <input type="text" list="villes" id="ville" name="ville" placeholder="Ex: Argentan" value="<?php echo htmlspecialchars($ville); ?>" class="<?php echo isset($errors['ville']) ? 'input-error' : ''; ?>" required>
+                        <input type="text" list="villes" id="ville" name="ville" placeholder="Ex: Argentan" value="<?php echo htmlspecialchars($ville); ?>" class="<?php echo isset($errors['ville']) ? 'input-error' : ''; ?>">
                         <?php if (isset($errors['ville'])): ?>
                             <span class="field-error"><?php echo htmlspecialchars($errors['ville']); ?></span>
                         <?php endif; ?>
@@ -138,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-group">
                         <label for="password">Mot de passe</label>
-                        <input type="password" id="password" name="password" placeholder="********" class="<?php echo isset($errors['password']) ? 'input-error' : ''; ?>" required>
+                        <input type="password" id="password" name="password" placeholder="********" class="<?php echo isset($errors['password']) ? 'input-error' : ''; ?>">
                         <?php if (isset($errors['password'])): ?>
                             <span class="field-error"><?php echo htmlspecialchars($errors['password']); ?></span>
                         <?php endif; ?>
@@ -147,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-group form-group-full">
                     <label for="email">Adresse Email</label>
-                    <input type="email" id="email" name="email" placeholder="Ex: Passoni@ergonomie.fr" value="<?php echo htmlspecialchars($email); ?>" class="<?php echo isset($errors['email']) ? 'input-error' : ''; ?>" required>
+                    <input type="email" id="email" name="email" placeholder="Ex: Passoni@ergonomie.fr" value="<?php echo htmlspecialchars($email); ?>" class="<?php echo isset($errors['email']) ? 'input-error' : ''; ?>">
                     <?php if (isset($errors['email'])): ?>
                         <span class="field-error"><?php echo htmlspecialchars($errors['email']); ?></span>
                     <?php endif; ?>
