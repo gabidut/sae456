@@ -137,102 +137,19 @@ foreach ($topUsers as $u) {
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // ==========================================
-    // 1. GRAPHIQUE EN BEIGNET (Les Lignes)
-    // ==========================================
-    
-    // Le dictionnaire des vraies couleurs de votre planège !
-    const mapColors = {
-        '1': '#E52B20', // Rouge
-        '2': '#88C62A', // Vert Clair
-        '3': '#8C187B', // Violet
-        '4': '#3B8B41', // Vert Foncé
-        '5': '#EBE015', // Jaune
-        '6': '#F3989B', // Rose
-        '7': '#B07735', // Marron
-        '8': '#9E9EA0', // Gris
-        '9': '#2D9893', // Bleu Canard / Teal
-        '10': '#5A3B22', // Marron Foncé
-        '11': '#6C5599', // Violet Foncé
-        '12': '#EDA11D', // Orange
-        '13': '#121212', // Noir
-        '14': '#8E2625', // Bordeaux
-        '15': '#ED1D24', // Rouge Vif
-        '16': '#8E9091', // Gris Foncé
-        '17': '#2E65A8', // Bleu
-        '18': '#F7EC20', // Jaune Vif
-        '19': '#000000'  // Noir pur
-    };
-
-    const numLignesJS = <?= json_encode($numerosLignes) ?>;
-    
-    // On génère le tableau des couleurs en associant chaque ligne à sa couleur sur la carte
-    const backgroundColorsLignes = numLignesJS.map(num => mapColors[num] || '#da1b23'); 
-
-    new Chart(document.getElementById('lignesChart').getContext('2d'), {
-        type: 'doughnut',
-        data: {
+    const vikingStatsData = {
+        lignes: {
             labels: <?= json_encode($labelsLignes) ?>,
-            datasets: [{
-                data: <?= json_encode($dataPourcentages) ?>,
-                backgroundColor: backgroundColorsLignes,
-                borderColor: '#141414',
-                borderWidth: 2,
-                hoverOffset: 6
-            }]
+            data: <?= json_encode($dataPourcentages) ?>,
+            numeros: <?= json_encode($numerosLignes) ?>
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right', labels: { color: '#ffffff', font: { size: 12 } } },
-                tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ' : ' + c.raw + '%'; } } }
-            },
-            cutout: '65%'
-        }
-    });
-
-    // ==========================================
-    // 2. GRAPHIQUE EN BÂTONS (Top 5 Voyageurs)
-    // ==========================================
-    
-    new Chart(document.getElementById('topUsersChart').getContext('2d'), {
-        type: 'bar',
-        data: {
+        topUsers: {
             labels: <?= json_encode($labelsTopUsers) ?>,
-            datasets: [{
-                label: 'Nombre de réservations',
-                data: <?= json_encode($dataTopUsers) ?>,
-                backgroundColor: '#da1b23', // Rouge Viking
-                borderColor: '#ff4d4d',
-                borderWidth: 1,
-                borderRadius: 4, // Coins arrondis sur les bâtons
-                barPercentage: 0.6 // Largeur des bâtons
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false } // On cache la légende car le titre suffit
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { color: '#888888', stepSize: 1 }, // Nombres entiers uniquement
-                    grid: { color: '#222222' } // Grille sombre
-                },
-                x: {
-                    ticks: { color: '#ffffff', font: { weight: 'bold' } },
-                    grid: { display: false } // Pas de lignes verticales
-                }
-            }
+            data: <?= json_encode($dataTopUsers) ?>
         }
-    });
-
-});
+    };
 </script>
+
+<script src="/assets/scripts/stats.js"></script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
