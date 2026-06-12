@@ -34,8 +34,10 @@ $lignes = $ligneManager->getLignes();
         </div>
 
         <div class="search-bar-container">
-            <label for="date-depart">Date du trajet : </label>
-            <input type="date" id="date-depart" name="date-depart" min="<?= date('Y-m-d') ?>" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+            <div class="date-selection-wrapper">
+                <label for="date-depart">Date du trajet</label>
+                <input type="date" id="date-depart" name="date-depart" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>">
+            </div>
             <div class="search-main-layout">
                 <div id="steps" class="steps-list">
                 </div>

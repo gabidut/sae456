@@ -83,6 +83,48 @@
     color: #333;
 }
 
+/* --- DATE SELECTION (BEAU ROUGE) --- */
+.date-selection-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.date-selection-wrapper label {
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #555;
+    letter-spacing: 1px;
+}
+
+.date-selection-wrapper input[type="date"] {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(192, 57, 43, 0.2);
+    transition: all 0.2s;
+}
+
+.date-selection-wrapper input[type="date"]:hover {
+    background-color: #a93226; /* Rouge un peu plus foncé au survol */
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(192, 57, 43, 0.3);
+}
+
+.date-selection-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Met l'icône du calendrier en blanc */
+    cursor: pointer;
+}
+
 /* --- MAIN LAYOUT --- */
 .search-main-layout {
     display: flex;
