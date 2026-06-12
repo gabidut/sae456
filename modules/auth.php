@@ -186,7 +186,7 @@ class Authentificator
 
         $newTotalPoints = $client['cli_nb_points_tot'];
 
-        $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points <= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE ASC";
+        $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points >= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE desc fetch first 1 rows only";
         $stmtGetTier = $this->database->prepareStatement($sqlGetTier);
         $stmtGetTier->execute(['points' => $newTotalPoints]);
         $tier = $stmtGetTier->fetch();
@@ -194,7 +194,7 @@ class Authentificator
         if ($tier) {
             $newType = $tier['TYP_NUM'];
         } else {
-            $newType = 5;
+            $newType = 1;
         }
         $sqlUpgrade = "UPDATE vik_client SET typ_num = :newType WHERE cli_num = :num";
         $stmtUpgrade = $this->database->prepareStatement($sqlUpgrade);
