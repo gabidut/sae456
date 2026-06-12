@@ -69,6 +69,16 @@ class SessionHelper
         return $_SESSION['current_trip'] ?? null;
     }
 
+    public function setTripDepartureTime($time)
+    {
+        $_SESSION['trip_departure_time'] = $time;
+    }
+
+    public function getTripDepartureTime()
+    {
+        return $_SESSION['trip_departure_time'] ?? null;
+    }
+
     public function setAdminUser()
     {
         $_SESSION['is_admin'] = true;

@@ -43,15 +43,6 @@ const networkGraph = {};
                         }
                     }
                 });
-                // marker.on('mouseover', function () {
-                //     if (isCreatingTripFromMap && tripData.departure) {
-                //         if (currentHighlightLayer) {
-                //             map.removeLayer(currentHighlightLayer);
-                //         }
-                //         const route = calculateDijkstra(networkGraph, tripData.departure, city.COM_CODE_INSEE, markers);
-                //         currentHighlightLayer = highlightRoute(route);
-                //     }
-                // });
 
 
                 markers[city.COM_CODE_INSEE] = { marker: marker, name: city.COM_NOM };
