@@ -19,7 +19,7 @@ try {
 <div class="confirm-container">
     <div class="confirm-card">
         <div class="success-icon">OK</div>
-        
+
         <h2 class="confirm-title">Réservation Confirmée !</h2>
         <p class="confirm-subtitle">Merci <?= $session->isUserLoggedIn() ? htmlspecialchars($session->getUserSession()['CLI_PRENOM']) : 'cher client' ?> pour votre confiance.</p>
 
@@ -30,7 +30,7 @@ try {
             </div>
             <div class="info-item">
                 <label>Heure de Départ</label>
-                <span><?= htmlspecialchars($resr['etapes'][0]['heure']) ?></span>
+                <span>Le <?= (new DateTime($session->getTripDepartureTime()))->format('d/m/Y') ?> à <?= (new DateTime($resr['heureDepart']))->format('H:i') ?></span>
             </div>
             <div class="info-item">
                 <label>Points Gagnés</label>
@@ -59,6 +59,7 @@ try {
 <span id="reservation" style="display: none;">
     <?= json_encode($resr) ?>
 </span>
+<span id="dateDepart" style="display: none;"><?= (new DateTime($session->getTripDepartureTime()))->format('d/m/Y') ?> à <?= (new DateTime($resr['heureDepart']))->format('H:i') ?></span>
 
 <?php
 require '../includes/footer.php';

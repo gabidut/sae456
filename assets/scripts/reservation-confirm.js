@@ -21,15 +21,15 @@ $('#download-billet').click(function () {
     img.onload = function () {
 
         doc.setFillColor(229, 9, 20);
-        doc.rect(0, 0, 210, 40, 'F'); 
+        doc.rect(0, 0, 210, 40, 'F');
 
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(22);
         doc.setFont("helvetica", "bold");
         doc.text("BILLET DE RÉSERVATION", 15, 25);
-        doc.addImage(img, 'PNG', 125, 10, 614/8, 197/8);
+        doc.addImage(img, 'PNG', 125, 10, 614 / 8, 197 / 8);
 
-        doc.setTextColor(40, 40, 40); 
+        doc.setTextColor(40, 40, 40);
 
         doc.setFontSize(14);
         doc.text(`Réservation n° ${reservationData.cliNum}/${reservationData.reservation_id}`, 15, 55);
@@ -42,7 +42,7 @@ $('#download-billet').click(function () {
         doc.setFont("helvetica", "normal");
         doc.text("Départ :", 15, 75);
         doc.setFont("helvetica", "bold");
-        doc.text(`${reservationData.etapes[0].heure}`, 45, 75);
+        doc.text(`Le ${document.getElementById('dateDepart').textContent}`, 45, 75);
 
         doc.setFont("helvetica", "normal");
         doc.text("Prix Total :", 15, 90);
@@ -61,7 +61,7 @@ $('#download-billet').click(function () {
 
         doc.setFontSize(10);
         doc.setFont("helvetica", "italic");
-        doc.setTextColor(120, 120, 120); 
+        doc.setTextColor(120, 120, 120);
         doc.text("Merci de voyager avec Viking Transport !", 105, 140, { align: "center" });
 
         doc.save(`billet_${reservationData.reservation_id}.pdf`);
