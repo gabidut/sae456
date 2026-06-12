@@ -14,6 +14,9 @@ $lignes = $ligneManager->getLignes();
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <script src="/assets/scripts/reservation.js?v=<?php echo time(); ?>" defer></script>
+<script>
+    window.userPoints = <?= $session->isUserLoggedIn() ? (int)$session->getUserSession()['CLI_NB_POINTS_EC'] : 0 ?>;
+</script>
 <div class="reservation-hero">
     <div class="hero-bg-top"></div>
     <div class="hero-bg-bottom"></div>
@@ -41,7 +44,7 @@ $lignes = $ligneManager->getLignes();
                         Total estimé : <span id="dynamic-price">0.00 €</span>
                     </div>
                     <button class="btn-search btn-reserve" onclick="showMap()">VOIR LA CARTE</button>
-                    <button class="btn-search btn-reserve" id="btn-confirm" onclick="confirm()" disabled>RESERVER</button>
+                    <button class="btn-search btn-reserve" id="btn-confirm" onclick="ouvrirRecapitulatif()" disabled>RESERVER</button>
                     <button class="btn-plus" id="add-step-btn" type="button" title="Ajouter une étape">+</button>
                 </div>
             </div>

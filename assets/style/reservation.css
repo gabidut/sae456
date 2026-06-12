@@ -491,3 +491,101 @@ model-viewer {
     flex-direction: column;
     gap: 15px;  
 }
+
+/* --- LOYALTY POINTS --- */
+.loyalty-section {
+    background: #fff;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.loyalty-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.loyalty-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.points-count {
+    background: #c0392b;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.points-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.points-option {
+    flex: 1;
+    min-width: 120px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fdfdfd;
+}
+
+.points-option:hover:not(.disabled) {
+    border-color: #c0392b;
+    background: #fff5f5;
+}
+
+.points-option.selected {
+    border-color: #c0392b !important;
+    background: #feeaea !important;
+    box-shadow: 0 0 0 2px #c0392b;
+}
+
+.points-option.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+}
+
+.points-option .pts {
+    display: block;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #c0392b;
+}
+
+.points-option .reduc {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.price-summary {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.price-summary .original-price {
+    text-decoration: line-through;
+    color: #999;
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.price-summary .final-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-color);
+}

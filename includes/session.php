@@ -69,6 +69,21 @@ class SessionHelper
         return $_SESSION['current_trip'] ?? null;
     }
 
+    public function setPointsUsed($points)
+    {
+        $_SESSION['points_used'] = (int)$points;
+    }
+
+    public function getPointsUsed()
+    {
+        return $_SESSION['points_used'] ?? 0;
+    }
+
+    public function clearPointsUsed()
+    {
+        unset($_SESSION['points_used']);
+    }
+
     public function setTripDepartureTime($time)
     {
         $_SESSION['trip_departure_time'] = $time;
