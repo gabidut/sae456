@@ -2,7 +2,6 @@
 $page_active = 'gestion_lignes';
 require_once __DIR__ . '/../../includes/global.php';
 
-// Sécurité
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
     header('Location: ../../index.php');
     exit();
@@ -11,38 +10,51 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
 $messageSucces = "";
 $messageErreur = "";
 
-// 1. On récupère TOUTES les communes
 $communes = $admin->getToutesLesCommunes();
 
-// 2. On vérifie si l'admin a cliqué sur une ligne en particulier
 $selectedLigne = isset($_GET['ligne']) && $_GET['ligne'] !== '' ? $_GET['ligne'] : null;
+
+
+function obtenirLigneFormattee($ligneManager, $baseLigne, $suffixe) {
+    $target = $baseLigne . $suffixe; // ex: '21' . 'A' = '21A'
+    $brutes = $ligneManager->getLignes2();
+    foreach ($brutes as $b) {
+        if (trim($b['LIG_NUM']) === $target) {
+            return $b['LIG_NUM']; 
+        }
+    }
+    return $target; 
+}
+
+$selectedLigneA = null;
+$selectedLigneB = null;
+if ($selectedLigne !== null) {
+    $selectedLigneA = obtenirLigneFormattee($ligneManager, $selectedLigne, 'A');
+    $selectedLigneB = obtenirLigneFormattee($ligneManager, $selectedLigne, 'B');
+}
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (isset($_POST['btn_create_ligne'])) {
         $baseLigNum = trim($_POST['new_lig_num']);
-        
         $baseLigNum = preg_replace('/[^0-9]/', '', $baseLigNum);
 
         $newComDeb = $_POST['new_com_deb'];
         $newComEnd = $_POST['new_com_end'];
 
         if (!empty($baseLigNum) && !empty($newComDeb) && !empty($newComEnd)) {
-            
-            $ligNumA = $baseLigNum . 'A'; // Sens Aller
-            $ligNumB = $baseLigNum . 'B'; // Sens Retour
+            $ligNumA = $baseLigNum . 'A'; 
+            $ligNumB = $baseLigNum . 'B'; 
 
             try {
                 $admin->insertLigne($ligNumA, $newComDeb, $newComEnd);
-                
                 $admin->insertLigne($ligNumB, $newComEnd, $newComDeb);
 
-                $messageSucces = "Magique ! Les lignes " . htmlspecialchars($ligNumA) . " et " . htmlspecialchars($ligNumB) . " ont été générées.";
-                
-                header("Refresh: 2; URL=?ligne=" . urlencode($ligNumA));
+                $messageSucces = "Les lignes " . htmlspecialchars($ligNumA) . " et " . htmlspecialchars($ligNumB) . " ont été générées.";
+                header("Refresh: 2; URL=?ligne=" . urlencode($baseLigNum));
             } catch (Exception $e) {
-                $messageErreur = "Erreur : La ligne " . htmlspecialchars($baseLigNum) . " (A ou B) existe déjà en base de données.";
+                $messageErreur = "Erreur : La ligne " . htmlspecialchars($baseLigNum) . " existe déjà en base de données.";
             }
         } else {
             $messageErreur = "Veuillez remplir un numéro de ligne valide et sélectionner les villes.";
@@ -52,10 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // --- 2. ACTIONS SUR UNE LIGNE SÉLECTIONNÉE (Arrêts) ---
     if ($selectedLigne !== null) {
         
-
-        $selectedLigneA = $selectedLigne . 'A';
-        $selectedLigneB = $selectedLigne . 'B';
-        // Ajouter un arrêt
+        // Ajouter / Insérer un arrêt
         if (isset($_POST['btn_add_noeud'])) {
             $codeArret = $_POST['code_arret'];
             $codeSuivant = !empty($_POST['code_suivant']) ? $_POST['code_suivant'] : null;
@@ -65,15 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!empty($codeArret) && !empty($_POST['heure_passage'])) {
                 try {
+                    // Utilisation des identifiants formatés avec les espaces Oracle requis
                     $admin->insertNoeud($selectedLigneA, $codeArret, $codeSuivant, $heurePassage, $distance, $duree);
-                    $messageSucces = "Nouvel arrêt ajouté à la ligne " . htmlspecialchars($selectedLigne) . " !";
-                    header("Refresh: 1.5; URL=?ligne=" . urlencode($selectedLigne));
-
                     $admin->insertNoeud($selectedLigneB, $codeArret, $codeSuivant, $heurePassage, $distance, $duree);
-                    $messageSucces = "Nouvel arrêt ajouté à la ligne " . htmlspecialchars($selectedLigne) . " !";
+                    
+                    $messageSucces = "Nouvel arrêt ajouté aux deux sens de la ligne " . htmlspecialchars($selectedLigne) . " !";
                     header("Refresh: 1.5; URL=?ligne=" . urlencode($selectedLigne));
                 } catch (Exception $e) {
-                    $messageErreur = "Erreur SQL exacte : " . $e->getMessage();;
+                    $messageErreur = "Erreur SQL exacte : " . $e->getMessage();
                 }
             }
         }
@@ -83,9 +91,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $codeArretToUpdate = $_POST['code_arret_hidden'];
             $nouvelleHeureStr = $_POST['nouvelle_heure'];
 
+            // 🌟 TYPO CORRIGÉE ICI : $nouvelleHeureStr possède désormais son orthographe exacte
             if (!empty($nouvelleHeureStr)) {
                 $nouvelleHeureObj = "01/01/2000 " . $nouvelleHeureStr . ":00";
-                $admin->updateHoraire($selectedLigne, $codeArretToUpdate, $nouvelleHeureObj);
+                
+                $admin->updateHoraire($selectedLigneA, $codeArretToUpdate, $nouvelleHeureObj);
+                $admin->updateHoraire($selectedLigneB, $codeArretToUpdate, $nouvelleHeureObj);
+                
                 $messageSucces = "Horaire mis à jour avec succès.";
                 header("Refresh: 1; URL=?ligne=" . urlencode($selectedLigne));
             }
@@ -93,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 3. On récupère les lignes APRÈS les traitements POST pour que les boutons soient à jour
+// 3. On récupère les lignes pour générer les boutons de sélection
 $lignesBrutes = $ligneManager->getLignes(); 
 $lignes = [];
 foreach ($lignesBrutes as $l) {
@@ -103,10 +115,10 @@ foreach ($lignesBrutes as $l) {
     }
 }
 
-// 4. Si une ligne est sélectionnée, on charge ses arrêts
+// 4. On charge les arrêts existants de la ligne (en se basant sur la chaîne formatée)
 $noeudsExistants = [];
 if ($selectedLigne !== null) {
-    $noeudsExistants = $admin->getNoeudsParLigne($selectedLigne);
+    $noeudsExistants = $admin->getNoeudsParLigne($selectedLigneA);
 }
 ?>
 
@@ -129,14 +141,11 @@ if ($selectedLigne !== null) {
 
         <div class="viking-card" style="margin-bottom: 25px; border-left: 4px solid #10b981;">
             <h2 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 15px; color: #10b981;">Créer une nouvelle Ligne</h2>
-            
             <form method="POST" action="" style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
                 <div>
                     <label style="font-size: 0.85rem; color: #aaa;">Numéro (ex: 20) *</label><br>
                     <input type="text" name="new_lig_num" placeholder="Ex: 20" required style="padding: 8px; width: 120px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
-                    <div style="font-size: 0.7rem; color: #10b981; margin-top: 4px;">Génère A et B auto.</div>
                 </div>
-
                 <div style="flex: 1; min-width: 150px;">
                     <label style="font-size: 0.85rem; color: #aaa;">Ville de Départ *</label><br>
                     <select name="new_com_deb" required style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
@@ -146,7 +155,6 @@ if ($selectedLigne !== null) {
                         <?php endforeach; ?>
                     </select>
                 </div>
-
                 <div style="flex: 1; min-width: 150px;">
                     <label style="font-size: 0.85rem; color: #aaa;">Terminus *</label><br>
                     <select name="new_com_end" required style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
@@ -156,7 +164,6 @@ if ($selectedLigne !== null) {
                         <?php endforeach; ?>
                     </select>
                 </div>
-
                 <button type="submit" name="btn_create_ligne" class="btn-action-outline" style="height: 36px; border-color: #10b981; color: #10b981; font-weight: bold;">Ajouter</button>
             </form>
         </div>
@@ -166,9 +173,7 @@ if ($selectedLigne !== null) {
             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                 <?php foreach ($lignes as $l): ?>
                     <?php $isActive = ($selectedLigne == $l['LIG_NUM']); ?>
-                    <a href="?ligne=<?= htmlspecialchars($l['LIG_NUM']) ?>" 
-                       class="<?= $isActive ? 'btn-action-red' : 'btn-action-outline' ?>" 
-                       style="text-decoration: none; padding: 10px 15px; font-size: 1rem;">
+                    <a href="?ligne=<?= htmlspecialchars($l['LIG_NUM']) ?>" class="<?= $isActive ? 'btn-action-red' : 'btn-action-outline' ?>" style="text-decoration: none; padding: 10px 15px; font-size: 1rem;">
                         Ligne <?= htmlspecialchars($l['LIG_NUM']) ?>
                     </a>
                 <?php endforeach; ?>
@@ -186,20 +191,27 @@ if ($selectedLigne !== null) {
                 <h3 style="margin-top: 0; font-size: 1.1rem; margin-bottom: 15px;">Insérer un nouvel arrêt au trajet</h3>
                 
                 <form method="POST" action="" style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                    
                     <div style="flex: 1; min-width: 150px;">
-                        <label style="font-size: 0.85rem; color: #aaa;">Arrêt Actuel *</label>
-                        <select name="code_arret" style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
-                            <option value="">-- Ville d'arrêt --</option>
-                            <?php foreach ($communes as $ville): ?>
-                                <option value="<?= htmlspecialchars($ville['COM_CODE_INSEE']) ?>"><?= htmlspecialchars($ville['COM_NOM']) ?></option>
-                            <?php endforeach; ?>
+                        <label style="font-size: 0.85rem; color: #aaa;">Arrêt Actuel (Sur la ligne) *</label>
+                        <select name="code_arret" required style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
+                            <option value="">-- Choisir un arrêt existant --</option>
+                            <?php if (!empty($noeudsExistants)): ?>
+                                <?php foreach ($noeudsExistants as $n): ?>
+                                    <option value="<?= htmlspecialchars($n['CODE_ARRET']) ?>"><?= htmlspecialchars($n['VILLE_ARRET']) ?> (<?= htmlspecialchars($n['HEURE_PASSAGE']) ?>)</option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <?php foreach ($communes as $ville): ?>
+                                    <option value="<?= htmlspecialchars($ville['COM_CODE_INSEE']) ?>"><?= htmlspecialchars($ville['COM_NOM']) ?> (Premier arrêt)</option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </select>
                     </div>
 
                     <div style="flex: 1; min-width: 150px;">
-                        <label style="font-size: 0.85rem; color: #aaa;">Prochain Arrêt (Optionnel)</label>
-                        <select name="code_suivant" style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
-                            <option value="">-- Ville suivante --</option>
+                        <label style="font-size: 0.85rem; color: #aaa;">Prochain Arrêt (Toutes les villes) *</label>
+                        <select name="code_suivant" required style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #333; border-radius: 4px;">
+                            <option value="">-- Choisir la destination --</option>
                             <?php foreach ($communes as $ville): ?>
                                 <option value="<?= htmlspecialchars($ville['COM_CODE_INSEE']) ?>"><?= htmlspecialchars($ville['COM_NOM']) ?></option>
                             <?php endforeach; ?>
@@ -226,15 +238,15 @@ if ($selectedLigne !== null) {
             </div>
 
             <div class="viking-card">
-                <h3 style="margin-top: 0; font-size: 1.1rem; margin-bottom: 15px;">Horaires programmés</h3>
+                <h3 style="margin-top: 0; font-size: 1.1rem; margin-bottom: 15px;">Horaires programmés & Visualisation des liaisons</h3>
                 
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Heure</th>
-                            <th>Ville d'Arrêt</th>
-                            <th>Direction (Prochaine ville)</th>
-                            <th>Modifier Heure</th>
+                            <th>Arrêt de Départ</th>
+                            <th>Liaison / Direction</th>
+                            <th>Heure Actuelle</th>
+                            <th>Nouvel Horaire</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -243,18 +255,20 @@ if ($selectedLigne !== null) {
                             <?php foreach ($noeudsExistants as $n): ?>
                                 <tr>
                                     <form method="POST" action="">
-                                        <td style="font-weight: bold; font-size: 1.1rem; color: #da1b23;">
-                                            <?= htmlspecialchars($n['HEURE_PASSAGE']) ?>
-                                        </td>
-                                        
-                                        <td style="color: white; font-weight: 500;">
-                                            <?= htmlspecialchars($n['VILLE_ARRET']) ?>
+                                        <td style="color: white; font-weight: bold; font-size: 1.05rem;">
+                                             <?= htmlspecialchars($n['VILLE_ARRET']) ?>
                                             <input type="hidden" name="code_arret_hidden" value="<?= htmlspecialchars($n['CODE_ARRET']) ?>">
                                         </td>
 
-                                        <td class="text-muted">
-                                            <?= htmlspecialchars($n['VILLE_SUIVANTE'] ?? 'Terminus') ?> 
-                                            (<?= htmlspecialchars($n['DISTANCE'] ?? '0') ?> km)
+                                        <td class="text-muted" style="font-style: italic;">
+                                            → <?= htmlspecialchars($n['VILLE_SUIVANTTE'] ?? 'Terminus de la ligne') ?> 
+                                            <?php if (!empty($n['VILLE_SUIVANTTE'])): ?>
+                                                <span style="font-size: 0.8rem; color: #888;">(<?= htmlspecialchars($n['DISTANCE'] ?? '0') ?> km)</span>
+                                            <?php endif; ?>
+                                        </td>
+
+                                        <td style="font-weight: bold; color: #da1b23; font-size: 1.1rem;">
+                                            <?= htmlspecialchars($n['HEURE_PASSAGE']) ?>
                                         </td>
 
                                         <td>
@@ -263,7 +277,7 @@ if ($selectedLigne !== null) {
                                         </td>
 
                                         <td class="text-center">
-                                            <button type="submit" name="btn_update_horaire" class="btn-action-outline">Enregistrer</button>
+                                            <button type="submit" name="btn_update_horaire" class="btn-action-outline">Enregistrer l'heure</button>
                                         </td>
                                     </form>
                                 </tr>
