@@ -14,10 +14,9 @@ class Ligne
 
     public function getLignes()
     {
-       $sql = "SELECT DISTINCT REGEXP_REPLACE(LIG_NUM, '[^0-9]', '') AS LIG_NUM
+        $sql = "SELECT DISTINCT REGEXP_REPLACE(LIG_NUM, '[^0-9]', '') AS LIG_NUM
                 FROM VIK_LIGNE l
                 JOIN VIK_COMMUNE c ON l.COM_CODE_INSEE_DEBU = c.COM_CODE_INSEE OR l.COM_CODE_INSEE_TERM = c.COM_CODE_INSEE
-                WHERE LOWER(c.COM_NOM) = LOWER(:cityName)
             ORDER BY TO_NUMBER(REGEXP_REPLACE(l.LIG_NUM, '[^0-9]', '')) ASC";
 
         $stmt = $this->database->prepareStatement($sql);
