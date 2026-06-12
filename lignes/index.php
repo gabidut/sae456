@@ -134,7 +134,6 @@ if (isset($_GET['direction'])) {
 
     </main>
 
-    <?php require '../includes/footer.php'; ?>
 
 </body>
 
