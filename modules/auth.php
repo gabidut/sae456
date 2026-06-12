@@ -18,19 +18,29 @@ class Authentificator
         $this->session_helper = $session_helper;
     }
 
-
     public function processAuth($email, $password): array
     {
         $user = $this->getClientFromMail($email);
+        $commonError = "L'adresse email ou le mot de passe est incorrect.";
+
         if (empty($user)) {
-            throw new AuthException("Email inconnu."); // Erreur propre
+            throw new AuthException($commonError);
         }
+
         if (!$this->verify_password($password, $user['CLI_MDP'])) {
-            throw new AuthException("Mot de passe incorrect."); // Erreur propre
+            throw new AuthException($commonError);
         }
+
+        $this->session_helper->setUserSession($user['CLI_NUM']);
+        $this->updateConnexionDate($user['CLI_NUM']);
+
+        if (isset($user['CLI_ROLE']) && $user['CLI_ROLE'] == 1) 
+        {
+            $this->session_helper->setAdminUser();
+        }   
+
         return $user;
     }
-
     public function logout()
     {
         $this->session_helper->clearUserSession();
@@ -68,16 +78,17 @@ class Authentificator
      * @param string $mdp
      * @param string $mail
      * @param string $tel
-     * @return bool
+     * @return int
      */
     public function insertUser($dep, $ville, $nom, $prenom, $mdp, $mail, $tel)
     {
-        $sql = "insert into vik_client(TYP_NUM,DEP_NUM,CLI_NOM,CLI_PRENOM,CLI_VILLE,CLI_TELEPHONE,CLI_COURRIEL,cli_nb_points_ec,cli_nb_points_tot,cli_date_connec, cli_mdp) values ('1',:dep,upper(:nom),initcap(:prenom),:ville,:tel,:mail,'10','10',sysdate,:mdp) RETURNING cli_num INTO :new_id";
+        $sql = "INSERT INTO vik_client(TYP_NUM, DEP_NUM, CLI_NOM, CLI_PRENOM, CLI_VILLE, CLI_TELEPHONE, CLI_COURRIEL, cli_nb_points_ec, cli_nb_points_tot, cli_date_connec, cli_mdp) 
+                VALUES ('10', :dep, UPPER(:nom), INITCAP(:prenom), :ville, :tel, :mail, '0', '0', SYSDATE, :mdp) 
+                RETURNING CLI_NUM INTO :new_id";
+        
         $stmt = $this->database->prepareStatement($sql);
 
         $newId = 0;
-
-        $stmt->bindParam(':new_id', $newId, PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT, 32);
 
         $stmt->bindParam(':dep', $dep);
         $stmt->bindParam(':nom', $nom);
@@ -86,27 +97,30 @@ class Authentificator
         $stmt->bindParam(':tel', $tel);
         $stmt->bindParam(':mail', $mail);
         $stmt->bindParam(':mdp', $mdp);
-
-        $success = $stmt->execute();
-
-        if ($success && $newId) {
-            return $newId;
-        }
-
-        return -1;
-    }
-
-    public function getIsAdmin($userID)
-    {
-        $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
-        $stmt = $this->database->prepareStatement($sql);
-        $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
+        
+        // Oracle specific: bind the returning ID
+        $stmt->bindParam(':new_id', $newId, PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT, 32);
 
         $stmt->execute();
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+        if ($newId > 0) {
+            return (int)$newId;
+        }
+
+        throw new Exception("L'identifiant n'a pas pu être récupéré après l'insertion.");
     }
+
+    public function getIsAdmin($userID)
+{
+    $sql = 'SELECT CLI_ROLE FROM VIK_CLIENT WHERE CLI_NUM = :userId';
+    $stmt = $this->database->prepareStatement($sql);
+    $stmt->bindParam(':userId', $userID, PDO::PARAM_INT);
+
+    $stmt->execute(); 
+
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+}
 
     public function updateConnexionDate($num_utilisateur)
     {
@@ -177,7 +191,7 @@ class Authentificator
 
     public function ajoutPointApresResa($num_utilisateur, $nbkilometre)
     {
-        $nbpoints = floor($nbkilometre / 10);
+        $nbpoints = floor($nbkilometre/10) ;
 
         $sqlPoints = "UPDATE vik_client SET cli_nb_points_ec = cli_nb_points_ec + :nbpoints, cli_nb_points_tot = cli_nb_points_tot + :nbpoints WHERE cli_num = :num";
 
@@ -195,7 +209,7 @@ class Authentificator
 
         $newTotalPoints = $client['CLI_NB_POINTS_TOT'];
 
-        $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points >= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE desc fetch first 1 rows only";
+        $sqlGetTier = "SELECT TYP_NUM FROM vik_type_client WHERE :points <= TYP_PT_LIMITE ORDER BY TYP_PT_LIMITE ASC";
         $stmtGetTier = $this->database->prepareStatement($sqlGetTier);
         $stmtGetTier->execute(['points' => intval($newTotalPoints)]);
         $tier = $stmtGetTier->fetch();
@@ -203,7 +217,7 @@ class Authentificator
         if ($tier) {
             $newType = $tier['TYP_NUM'];
         } else {
-            $newType = 1;
+            $newType = 5;
         }
         $sqlUpgrade = "UPDATE vik_client SET typ_num = :newType WHERE cli_num = :num";
         $stmtUpgrade = $this->database->prepareStatement($sqlUpgrade);
