@@ -250,13 +250,8 @@ main {
     background-color: var(--surface-color);
     border-bottom: 3px solid var(--accent-color);
     padding: 1rem 2rem;
-    position: fixed;     /* Changé de relative à fixed */
-    top: 0;              /* Bloqué tout en haut */
-    left: 0;
-    right: 0;
-    width: 100%;         /* Prend toute la largeur */
+    position: relative;     /* Changé de relative à fixed */
     z-index: 1000;       /* Reste au-dessus de tout */
-    box-sizing: border-box;
 }
 
 .header-container {
