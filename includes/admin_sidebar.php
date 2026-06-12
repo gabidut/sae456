@@ -6,7 +6,7 @@
             <span class="icon"></span> Statistiques
         </a>
         
-        <a href="../visualise/index.php" class="sidebar-link <?php echo ($page_active === 'clients') ? 'active' : ''; ?>">
+        <a href="../visualise/index.php" class="sidebar-link <?php echo ($page_active === 'visulise') ? 'active' : ''; ?>">
             <span class="icon"></span> Gestion Clients
         </a>
         
