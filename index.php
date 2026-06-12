@@ -183,7 +183,7 @@ include 'includes/global.php';
 <section class="eco-bus-section">
     <div class="eco-bus-header">
         <h2>Nos Bus <span>Viking Transport</span></h2>
-        <p>Viking Transport s'engage à préserver les routes et paysages de Normandie en ayant une conduite adaptée et respectueuse de l'environnement. <strong>N'hésitez pas à cliquer sur le bus ;)</strong></p>
+        <p>Viking Transport s'engage à préserver les routes et paysages de Normandie en ayant une conduite adaptée et respectueuse de l'environnement.</p>
     </div>
 
     <div class="eco-bus-container">
