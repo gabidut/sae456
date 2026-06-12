@@ -74,7 +74,7 @@ if ($selected_client_id !== null) {
             <option value="email" <?php echo $search_type === 'email' ? 'selected' : ''; ?>>Adresse Email</option>
             <option value="ville" <?php echo $search_type === 'ville' ? 'selected' : ''; ?>>Ville</option>
             <option value="rang" <?php echo $search_type === 'rang' ? 'selected' : ''; ?>>Rang (Type)</option>
-            <option value="inactifs" <?php echo $search_type === 'inactifs' ? 'selected' : ''; ?>>⚠️ Comptes inactifs (+2 ans)</option>
+            <option value="inactifs" <?php echo $search_type === 'inactifs' ? 'selected' : ''; ?>>Comptes inactifs (+2 ans)</option>
         </select>
     </div>
 
@@ -136,7 +136,7 @@ if ($selected_client_id !== null) {
                                         <?php if ($c['CLI_NUM'] == 0): ?>
                                             <span style="color: #64748b; font-weight: bold;">Système</span>
                                         <?php elseif ($admin->clientInactif($c['CLI_NUM'])): ?>
-                                            <span style="color: #ef4444; font-weight: bold; background: #fee2e2; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">Inactif</span>
+                                            <span style="color: #ef4444; font-weight: bold; font-size: 0.85rem;">Inactif</span>
                                         <?php else: ?>
                                             <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">Actif</span>
                                         <?php endif; ?>
