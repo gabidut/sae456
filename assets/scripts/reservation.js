@@ -15,16 +15,10 @@ async function fetchLignes() {
 }
 
 function addStep() {
+    document.querySelectorAll('.btn-remove-step').forEach(btn => btn.style.display = 'none');
+
     const stepIndex = Object.keys(steps).length;
-    steps[stepIndex] = {};
-
-    const lignesDatalist = document.createElement('datalist');
-    lignesDatalist.id = 'lignes-list-' + stepIndex;
-    document.body.appendChild(lignesDatalist);
-
-    const dataList = document.createElement('datalist');
-    dataList.id = `villes-list-${stepIndex}`;
-    document.body.appendChild(dataList);
+    steps[stepIndex] = { ligne: '', depart: '', arrivee: '', departTime: '', arriveeTime: '' };
 
     const div = document.createElement('div');
     div.classList.add('search-form-horizontal');
@@ -33,195 +27,246 @@ function addStep() {
     // -- LINE GROUP --
     const ligneGroup = document.createElement('div');
     ligneGroup.classList.add('input-group');
-
     const ligneLabel = document.createElement('label');
     ligneLabel.textContent = 'Ligne';
 
-    const ligneInput = document.createElement('input');
-    ligneInput.setAttribute('list', 'lignes-list-' + stepIndex);
-    ligneInput.setAttribute('placeholder', 'Ligne');
-    ligneInput.setAttribute('required', '');
-    ligneInput.setAttribute('autocomplete', 'off');
+    const ligneSelect = document.createElement('select');
+    ligneSelect.innerHTML = '<option value="">Choisir une ligne</option>';
+    ligneSelect.required = true;
 
     // -- DEPART GROUP --
     const departGroup = document.createElement('div');
     departGroup.classList.add('input-group');
-
     const departLabel = document.createElement('label');
     departLabel.textContent = 'Départ';
 
-    const departInput = document.createElement('input');
-    departInput.setAttribute('list', `villes-list-${stepIndex}`);
-    departInput.setAttribute('placeholder', 'D\'où partez-vous ?');
-    departInput.setAttribute('required', '');
-    departInput.setAttribute('autocomplete', 'off');
-    departInput.setAttribute('id', `depart-input-${stepIndex}`);
+    const departSelect = document.createElement('select');
+    departSelect.id = `depart-input-${stepIndex}`;
+    departSelect.innerHTML = '<option value="">D\'où partez-vous ?</option>';
+    departSelect.disabled = true;
 
     const departTimeSelect = document.createElement('select');
-    departTimeSelect.setAttribute('id', `depart-time-${stepIndex}`);
+    departTimeSelect.id = `depart-time-${stepIndex}`;
     departTimeSelect.innerHTML = '<option value="">Heure</option>';
+    departTimeSelect.disabled = true;
 
     // -- ARRIVEE GROUP --
     const arriveeGroup = document.createElement('div');
     arriveeGroup.classList.add('input-group');
-
     const arriveeLabel = document.createElement('label');
     arriveeLabel.textContent = 'Arrivée';
 
-    const arriveeInput = document.createElement('input');
-    arriveeInput.setAttribute('list', `villes-list-${stepIndex}`);
-    arriveeInput.setAttribute('placeholder', 'Où allez-vous ?');
-    arriveeInput.setAttribute('required', '');
-    arriveeInput.setAttribute('autocomplete', 'off');
+    const arriveeSelect = document.createElement('select');
+    arriveeSelect.innerHTML = '<option value="">Où allez-vous ?</option>';
+    arriveeSelect.disabled = true;
 
     const arriveeTimeSelect = document.createElement('select');
-    arriveeTimeSelect.setAttribute('id', `arrivee-time-${stepIndex}`);
+    arriveeTimeSelect.id = `arrivee-time-${stepIndex}`;
     arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
+    arriveeTimeSelect.disabled = true;
 
     if (stepIndex > 0) {
-        departInput.value = steps[stepIndex - 1].arrivee || '';
-        departInput.setAttribute('readonly', '');
-        steps[stepIndex].depart = departInput.value;
-        computeLineForStep(stepIndex);
+        const previousArrivee = steps[stepIndex - 1].arrivee;
+        if (previousArrivee) {
+            departSelect.innerHTML = `<option value="${previousArrivee}" selected>${previousArrivee}</option>`;
+            departSelect.disabled = true;
+            steps[stepIndex].depart = previousArrivee;
+            computeLineForStep(stepIndex, ligneSelect);
+        }
     } else {
         lignes.forEach(ligne => {
-            const optionA = document.createElement('option');
-            optionA.value = ligne.LIG_NUM;
-            lignesDatalist.appendChild(optionA);
+            const option = document.createElement('option');
+            option.value = ligne.LIG_NUM;
+            option.textContent = ligne.LIG_NUM;
+            ligneSelect.appendChild(option);
         });
     }
 
-    ligneGroup.appendChild(ligneLabel);
-    ligneGroup.appendChild(ligneInput);
+    ligneGroup.append(ligneLabel, ligneSelect);
+    departGroup.append(departLabel, departSelect, departTimeSelect);
+    arriveeGroup.append(arriveeLabel, arriveeSelect, arriveeTimeSelect);
+    div.append(ligneGroup, buildDivider(), departGroup, buildDivider(), arriveeGroup);
 
-    departGroup.appendChild(departLabel);
-    departGroup.appendChild(departInput);
-    departGroup.appendChild(departTimeSelect);
+    const stepWrapper = document.createElement('div');
+    stepWrapper.classList.add('step-wrapper');
+    stepWrapper.dataset.wrapperStep = stepIndex;
+    stepWrapper.appendChild(div);
 
-    arriveeGroup.appendChild(arriveeLabel);
-    arriveeGroup.appendChild(arriveeInput);
-    arriveeGroup.appendChild(arriveeTimeSelect);
+    if (stepIndex > 0) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.classList.add('btn-remove-step');
+        removeBtn.innerHTML = '&times;';
+        removeBtn.title = 'Supprimer cette étape';
+        removeBtn.addEventListener('click', () => {
+            stepWrapper.remove();
+            delete steps[stepIndex];
+            triggerValidationAndPrice();
 
-    div.appendChild(ligneGroup);
-    div.appendChild(buildDivider());
-    div.appendChild(departGroup);
-    div.appendChild(buildDivider());
-    div.appendChild(arriveeGroup);
-
-    document.getElementById('steps').appendChild(div);
-
-    // Event listeners
-    ligneInput.addEventListener('change', function () {
-        const ligneValue = this.value;
-        steps[stepIndex].ligne = ligneValue;
-        if (ligneValue) {
-            fetch(`/api/reservation.php?ligne=${encodeURIComponent(ligneValue)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const map = {};
-                    data.forEach(item => {
-                        const ville = item.VILLE_ARRET;
-                        const time = item.HEURE_PASSAGE;
-                        if (!map[ville]) map[ville] = [];
-                        if (time && !map[ville].includes(time)) map[ville].push(time);
-                    });
-                    scheduleCache[stepIndex] = map;
-                    const villes = Object.keys(map);
-                    let stepsDatalist = document.getElementById(`villes-list-${stepIndex}`);
-                    stepsDatalist.innerHTML = '';
-                    villes.forEach(ville => {
-                        const option = document.createElement('option');
-                        option.value = ville;
-                        stepsDatalist.appendChild(option);
-                    });
-                    const departVal = departInput.value;
-                    const prevArrTime = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
-                    if (departVal && map[departVal]) populateTimeSelect(departTimeSelect, map[departVal], prevArrTime);
-                    const arriveeVal = arriveeInput.value;
-                    const departSelectedTime = steps[stepIndex].departTime || departTimeSelect.value || null;
-                    if (arriveeVal && map[arriveeVal]) populateTimeSelect(arriveeTimeSelect, map[arriveeVal], departSelectedTime);
-                });
-        }
-    });
-
-    arriveeInput.addEventListener('change', function () {
-        const arriveeValue = this.value;
-        steps[stepIndex].arrivee = arriveeValue;
-        const map = scheduleCache[stepIndex] || {};
-        const minForArrive = steps[stepIndex].departTime || null;
-        if (map[arriveeValue]) {
-            populateTimeSelect(arriveeTimeSelect, map[arriveeValue], minForArrive);
-        } else {
-            arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
-        }
-        steps[stepIndex].arriveeTime = '';
-        if (stepIndex < Object.keys(steps).length - 1) {
-            const nextDepartInput = document.getElementById(`depart-input-${stepIndex + 1}`);
-            if (nextDepartInput) {
-                nextDepartInput.value = arriveeValue;
-                steps[stepIndex + 1].depart = arriveeValue;
-                computeLineForStep(stepIndex + 1);
-            }
-        }
-    });
-
-    departInput.addEventListener('change', function () {
-        const departValue = this.value;
-        steps[stepIndex].depart = departValue;
-        const map = scheduleCache[stepIndex] || {};
-        const prevArrTime2 = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
-        if (map[departValue]) {
-            populateTimeSelect(departTimeSelect, map[departValue], prevArrTime2);
-        } else {
-            departTimeSelect.innerHTML = '<option value="">Heure</option>';
-        }
-        steps[stepIndex].departTime = '';
-    });
-
-    departTimeSelect.addEventListener('change', function() {
-        const selected = this.value;
-        const prevArr = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
-        if (prevArr && selected && selected < prevArr) {
-            alert('L\'heure de départ doit être après l\'heure d\'arrivée précédente.');
-            this.value = '';
-            steps[stepIndex].departTime = '';
-            return;
-        }
-        steps[stepIndex].departTime = selected;
-        const map = scheduleCache[stepIndex] || {};
-        const arriveeValLocal = arriveeInput.value;
-        if (arriveeValLocal && map[arriveeValLocal]) {
-            populateTimeSelect(arriveeTimeSelect, map[arriveeValLocal], selected);
-            if (steps[stepIndex].arriveeTime && steps[stepIndex].arriveeTime < selected) {
-                steps[stepIndex].arriveeTime = '';
-                arriveeTimeSelect.value = '';
-            }
-        }
-    });
-
-    arriveeTimeSelect.addEventListener('change', function() {
-        const selected = this.value;
-        const departSel = steps[stepIndex].departTime || null;
-        if (departSel && selected && selected < departSel) {
-            alert('L\'heure d\'arrivée doit être après l\'heure de départ.');
-            this.value = '';
-            steps[stepIndex].arriveeTime = '';
-            return;
-        }
-        steps[stepIndex].arriveeTime = selected;
-        const nextIndex = stepIndex + 1;
-        const nextDepartSelect = document.getElementById(`depart-time-${nextIndex}`);
-        if (nextDepartSelect) {
-            const nextMap = scheduleCache[nextIndex] || {};
-            const nextDepartStation = steps[nextIndex] && steps[nextIndex].depart ? steps[nextIndex].depart : null;
-            if (nextMap && nextDepartStation && nextMap[nextDepartStation]) {
-                populateTimeSelect(nextDepartSelect, nextMap[nextDepartStation], selected);
-                if (steps[nextIndex] && steps[nextIndex].departTime && steps[nextIndex].departTime < selected) {
-                    steps[nextIndex].departTime = '';
-                    nextDepartSelect.value = '';
+            const keys = Object.keys(steps).map(Number).sort((a, b) => a - b);
+            if (keys.length > 1) {
+                const lastKey = keys[keys.length - 1];
+                const lastWrapper = document.querySelector(`.step-wrapper[data-wrapper-step="${lastKey}"]`);
+                if (lastWrapper) {
+                    const lastBtn = lastWrapper.querySelector('.btn-remove-step');
+                    if (lastBtn) lastBtn.style.display = 'flex';
                 }
             }
+        });
+        stepWrapper.appendChild(removeBtn);
+    }
+
+    document.getElementById('steps').appendChild(stepWrapper);
+
+    const filterStops = () => {
+        const cache = scheduleCache[stepIndex];
+        if (!cache) return;
+
+        const orderedVilles = cache.orderedVilles;
+        const currentDep = steps[stepIndex].depart || departSelect.value;
+        const currentArr = steps[stepIndex].arrivee || arriveeSelect.value;
+
+        // 1. Villes disponibles pour le départ (tout ce qui est AVANT l'arrivée sélectionnée)
+        let depOptions = orderedVilles;
+        if (currentArr) {
+            const arrIdx = orderedVilles.indexOf(currentArr);
+            depOptions = orderedVilles.slice(0, arrIdx);
         }
+
+        // 2. Villes disponibles pour l'arrivée (tout ce qui est APRÈS le départ sélectionné)
+        let arrOptions = orderedVilles;
+        if (currentDep) {
+            const depIdx = orderedVilles.indexOf(currentDep);
+            arrOptions = orderedVilles.slice(depIdx + 1);
+        }
+
+        // Mise à jour du Select Départ (uniquement si ce n'est pas une étape forcée)
+        if (stepIndex === 0) {
+            populateSelectOptions(departSelect, depOptions, "D'où partez-vous ?");
+            if (currentDep && depOptions.includes(currentDep)) {
+                departSelect.value = currentDep;
+            }
+        }
+
+        // Mise à jour du Select Arrivée
+        populateSelectOptions(arriveeSelect, arrOptions, "Où allez-vous ?");
+        if (currentArr && arrOptions.includes(currentArr)) {
+            arriveeSelect.value = currentArr;
+        }
+
+        triggerValidationAndPrice();
+    };
+
+    const updateTimes = async () => {
+        const cache = scheduleCache[stepIndex];
+        if (!cache) return;
+
+        const depVal = departSelect.value;
+        const arrVal = arriveeSelect.value;
+
+        if (depVal) {
+            const currentSelectedTime = departTimeSelect.value;
+            const prevArrTime = stepIndex > 0 ? (steps[stepIndex - 1].arriveeTime || null) : null;
+            populateTimeSelect(departTimeSelect, cache.map[depVal] || [], prevArrTime);
+            departTimeSelect.disabled = false;
+
+            if (currentSelectedTime && Array.from(departTimeSelect.options).some(o => o.value === currentSelectedTime)) {
+                departTimeSelect.value = currentSelectedTime;
+            }
+        } else {
+            departTimeSelect.innerHTML = '<option value="">Heure</option>';
+            departTimeSelect.disabled = true;
+        }
+
+        if (depVal && arrVal && departTimeSelect.value) {
+            try {
+                const response = await fetch(`/api/reservation.php?getFinalHoraire=1&lineId=${steps[stepIndex].ligne}&codeInseeDepart=${encodeURIComponent(depVal)}&codeInseeArrivee=${encodeURIComponent(arrVal)}&horaireDepart=${encodeURIComponent(departTimeSelect.value)}`);
+                const data = await response.json();
+
+                if (data && data.horaires && data.horaires.length > 0) {
+                    arriveeTimeSelect.innerHTML = `<option value="${data.horaires[0]}">${data.horaires[0]}</option>`;
+                    steps[stepIndex].arriveeTime = data.horaires[0];
+                    arriveeTimeSelect.disabled = false;
+                } else {
+                    arriveeTimeSelect.innerHTML = '<option value="">Indisponible</option>';
+                    steps[stepIndex].arriveeTime = '';
+                }
+            } catch (e) {
+                console.error("Erreur calcul horaire: ", e);
+            }
+        } else {
+            arriveeTimeSelect.innerHTML = '<option value="">Heure</option>';
+            steps[stepIndex].arriveeTime = '';
+            arriveeTimeSelect.disabled = true;
+        }
+        triggerValidationAndPrice();
+    };
+
+    ligneSelect.addEventListener('change', async function () {
+        const ligneValue = this.value;
+        steps[stepIndex].ligne = ligneValue;
+
+        steps[stepIndex].arrivee = '';
+        if (stepIndex === 0) steps[stepIndex].depart = '';
+
+        removeSubsequentSteps(stepIndex);
+
+        if (ligneValue) {
+            const response = await fetch(`/api/reservation.php?ligne=${encodeURIComponent(ligneValue)}`);
+            const data = await response.json();
+
+            const map = {};
+            const orderedVilles = [];
+
+            data.forEach(item => {
+                const ville = item.VILLE_ARRET;
+                const time = item.HEURE_PASSAGE;
+                if (!map[ville]) {
+                    map[ville] = [];
+                    orderedVilles.push(ville);
+                }
+                if (time && !map[ville].includes(time)) map[ville].push(time);
+            });
+
+            scheduleCache[stepIndex] = { map, orderedVilles };
+
+            if (stepIndex === 0) departSelect.disabled = false;
+            arriveeSelect.disabled = false;
+
+            filterStops();
+            updateTimes();
+        } else {
+            departSelect.disabled = true;
+            arriveeSelect.disabled = true;
+            departTimeSelect.disabled = true;
+            arriveeTimeSelect.disabled = true;
+        }
+    });
+
+    departSelect.addEventListener('change', function () {
+        steps[stepIndex].depart = this.value;
+
+        removeSubsequentSteps(stepIndex);
+
+        filterStops();
+        updateTimes();
+    });
+
+    arriveeSelect.addEventListener('change', function () {
+        steps[stepIndex].arrivee = this.value;
+
+        removeSubsequentSteps(stepIndex);
+
+        filterStops();
+        updateTimes();
+    });
+
+    departTimeSelect.addEventListener('change', function () {
+        steps[stepIndex].departTime = this.value;
+
+        removeSubsequentSteps(stepIndex);
+
+        updateTimes();
     });
 }
 
@@ -231,22 +276,81 @@ function buildDivider() {
     return divider;
 }
 
-function computeLineForStep(step) {
-    fetch('/api/reservation.php?findAllLignesFromCity=' + (steps[step - 1].arrivee ? steps[step - 1].arrivee.toLowerCase() : ''))
+function populateSelectOptions(selectObj, optionsArr, placeholder) {
+    selectObj.innerHTML = `<option value="">${placeholder}</option>`;
+    optionsArr.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        selectObj.appendChild(option);
+    });
+}
+
+function populateTimeSelect(selectElement, times, minTime) {
+    selectElement.innerHTML = '<option value="">Heure</option>';
+    times.sort();
+    times.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        if (minTime && t < minTime) opt.disabled = true;
+        selectElement.appendChild(opt);
+    });
+}
+
+function computeLineForStep(step, ligneSelectElement) {
+    const prevArrivee = steps[step - 1].arrivee ? steps[step - 1].arrivee.toLowerCase() : '';
+    fetch('/api/reservation.php?findAllLignesFromCity=' + encodeURIComponent(prevArrivee))
         .then(response => response.json())
         .then(data => {
-            let stepsDatalist = document.getElementById(`lignes-list-${step}`);
-            if (!stepsDatalist) return;
-            stepsDatalist.innerHTML = '';
-            const lineNumber = steps[step - 1].ligne ? steps[step - 1].ligne.slice(0, -1) : null;
+            ligneSelectElement.innerHTML = '<option value="">Choisir une ligne</option>';
+            const previousLine = steps[step - 1].ligne;
+
             data.forEach(ville => {
-                if (lineNumber && ville.LIG_NUM === lineNumber) return;
+                if (previousLine && ville.LIG_NUM === previousLine) return;
                 const option = document.createElement('option');
                 option.value = ville.LIG_NUM;
-                stepsDatalist.appendChild(option);
+                option.textContent = ville.LIG_NUM;
+                ligneSelectElement.appendChild(option);
             });
         });
 }
+
+let priceTimeout;
+function triggerValidationAndPrice() {
+    clearTimeout(priceTimeout);
+
+    const allSteps = Object.values(steps);
+    const isValid = allSteps.length > 0 && allSteps.every(s => s.ligne && s.depart && s.arrivee && s.departTime && s.arriveeTime);
+
+    const btnConfirm = document.getElementById('btn-confirm');
+    if (btnConfirm) btnConfirm.disabled = !isValid;
+
+    if (!isValid) {
+        document.getElementById('dynamic-price').textContent = '0.00 €';
+        return;
+    }
+
+    priceTimeout = setTimeout(async () => {
+        try {
+            const formData = new FormData();
+            formData.append('simulateTripPrice', JSON.stringify(allSteps));
+
+            const response = await fetch('/api/reservation.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.prix !== undefined) {
+                document.getElementById('dynamic-price').textContent = `${data.prix} €`;
+            }
+        } catch (e) {
+            console.error("Erreur lors du calcul du prix :", e);
+        }
+    }, 500);
+}
+
+let originalFormHTML = '';
 
 function confirm() {
     const lastStepIndex = Object.keys(steps).length - 1;
@@ -258,8 +362,23 @@ function confirm() {
         return;
     }
 
-    document.getElementById('steps').innerHTML = '';
-    document.querySelector('.search-actions').style.display = 'none';
+    const busContainer = document.getElementById('bus-animation-container');
+    if (busContainer) {
+        busContainer.classList.remove('animate-bus');
+        busContainer.classList.remove('animate-bus-return');
+        void busContainer.offsetWidth; // Force reflow
+        busContainer.classList.add('animate-bus');
+    }
+
+    const stepsContainer = document.getElementById('steps');
+    const searchActions = document.querySelector('.search-actions');
+
+    stepsContainer.style.display = 'none';
+    searchActions.style.display = 'none';
+
+    const confContainer = document.createElement('div');
+    confContainer.id = 'confirmation-view-container';
+    stepsContainer.parentNode.insertBefore(confContainer, stepsContainer.nextSibling);
 
     const div = document.createElement('div');
     div.classList.add('confirmation-view');
@@ -282,23 +401,61 @@ function confirm() {
         div.appendChild(stepDiv);
     });
 
+    const actionsDiv = document.createElement('div');
+    actionsDiv.style.display = 'flex';
+    actionsDiv.style.gap = '15px';
+    actionsDiv.style.marginTop = '20px';
+
     const payButton = document.createElement('button');
     payButton.type = 'button';
-    payButton.classList.add('btn-search', 'btn-pay');
+    payButton.classList.add('btn-pay');
     payButton.textContent = 'Confirmer et Payer';
     payButton.addEventListener('click', () => {
         const reservationData = new FormData();
         reservationData.append('setTripDetails', JSON.stringify(steps));
+
+
         fetch('/api/reservation.php', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
             body: new URLSearchParams(reservationData).toString()
         }).then(response => {
             if (response.ok) location.href = '/reservation/pay/';
         });
     });
 
-    div.appendChild(payButton);
-    document.getElementById('steps').appendChild(div);
+    const cancelButton = document.createElement('button');
+    cancelButton.type = 'button';
+    cancelButton.classList.add('btn-cancel');
+    cancelButton.textContent = 'Annuler';
+    cancelButton.style.marginTop = '0';
+    cancelButton.addEventListener('click', () => {
+        confContainer.remove();
+        stepsContainer.style.display = 'flex';
+        searchActions.style.display = 'flex';
+
+        const busContainer = document.getElementById('bus-animation-container');
+        if (busContainer) {
+            const currentLeft = window.getComputedStyle(busContainer).left;
+            let startRot = '180deg';
+            if (busContainer.classList.contains('animate-bus')) {
+                startRot = '0deg';
+            }
+            busContainer.style.setProperty('--start-left-return', currentLeft);
+            busContainer.style.setProperty('--start-rot-return', startRot);
+
+            busContainer.classList.remove('animate-bus', 'animate-bus-return');
+            void busContainer.offsetWidth; // Force reflow
+            busContainer.classList.add('animate-bus-return');
+        }
+    });
+
+    actionsDiv.appendChild(payButton);
+    actionsDiv.appendChild(cancelButton);
+    div.appendChild(actionsDiv);
+    confContainer.appendChild(div);
 }
 
 function populateTimeSelect(selectElement, times, minTime) {
@@ -334,9 +491,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function removeSubsequentSteps(currentIndex) {
+    const keys = Object.keys(steps).map(Number).sort((a, b) => a - b);
+    let removed = false;
+
+    keys.forEach(key => {
+        if (key > currentIndex) {
+            const wrapper = document.querySelector(`.step-wrapper[data-wrapper-step="${key}"]`);
+            if (wrapper) wrapper.remove();
+
+            delete steps[key];
+            removed = true;
+        }
+    });
+
+    if (removed) {
+        const newKeys = Object.keys(steps).map(Number).sort((a, b) => a - b);
+        if (newKeys.length > 1) {
+            const lastKey = newKeys[newKeys.length - 1];
+            const lastWrapper = document.querySelector(`.step-wrapper[data-wrapper-step="${lastKey}"]`);
+            if (lastWrapper) {
+                const lastBtn = lastWrapper.querySelector('.btn-remove-step');
+                if (lastBtn) lastBtn.style.display = 'flex';
+            }
+        }
+        triggerValidationAndPrice();
+    }
+}
+
 function hideMap() {
     document.querySelector('.map-container').style.display = 'none';
 }
+
 
 function showMap() {
     document.querySelector('.map-container').style.display = 'block';

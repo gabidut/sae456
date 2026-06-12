@@ -4,6 +4,7 @@ require __DIR__ . '/../modules/bdd.php';
 require __DIR__ . '/../modules/auth.php';
 require __DIR__ . '/../modules/ligne.php';
 require __DIR__ . '/../modules/reservation.php';
+require __DIR__ . '/../modules/admin.php';
 
 $env = require_once __DIR__ . '/../env.php';
 
@@ -22,6 +23,8 @@ $authentificator = new Authentificator(
         $env['password_secret'],
     $session
 );
+
+$admin = new Adminitration($database, $env['password_secret'], $session);
 
 $ligneManager = new Ligne($database);
 $reservationManager = new Reservation($database, $session, $authentificator);

@@ -6,19 +6,31 @@ $villes = $reservationManager->listCities();
 $lignes = $ligneManager->getLignes();
 ?>
 
-<link rel="stylesheet" href="/assets/style/reservation.css">
-<script src="/assets/scripts/reservation.js" defer></script>
+<!-- Style spécifique à la page de réservation -->
+<link rel="stylesheet" href="/assets/style/reservation.css?v=<?php echo time(); ?>">
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<script src="/assets/scripts/reservation.js?v=<?php echo time(); ?>" defer></script>
 <div class="reservation-hero">
     <div class="hero-bg-top"></div>
     <div class="hero-bg-bottom"></div>
+
+    <!-- Bus 3D Animation Container -->
+    <div id="bus-animation-container" class="bus-container">
+        <model-viewer src="/Bus.glb" autoplay animation-name="Squash" shadow-intensity="1" camera-orbit="0deg 90deg auto" interaction-prompt="none" loading="eager">
+            <div slot="progress-bar" style="display: none;"></div>
+        </model-viewer>
+    </div>
 
     <div class="search-bar-container">
         <div class="search-main-layout">
             <div id="steps" class="steps-list">
             </div>
-            <div class="search-actions">
+            <div class="search-actions" style="display: flex; align-items: center; gap: 15px;">
+                <div class="price-display" style="font-size: 1.2rem; font-weight: bold; padding: 10px 20px; background: #f0f0f0; border-radius: 8px;">
+                    Total estimé : <span id="dynamic-price">0.00 €</span>
+                </div>
                 <button class="btn-search btn-reserve" onclick="showMap()">VOIR LA CARTE</button>
-                <button class="btn-search btn-reserve" onclick="confirm()">RESERVER</button>
+                <button class="btn-search btn-reserve" id="btn-confirm" onclick="confirm()" disabled>RESERVER</button>
                 <button class="btn-plus" id="add-step-btn" type="button" title="Ajouter une étape">+</button>
             </div>
         </div>
