@@ -59,42 +59,42 @@ if ($selected_client_id !== null) {
             <h1 class="viking-title">Gestion des utilisateurs</h1>
             <p class="subtitle text-muted">Liste globale des comptes clients enregistrés</p>
             
-            <form method="GET" action="" class="viking-search-form" style="display: flex; gap: 15px; margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: flex-end; flex-wrap: wrap;">
-                
-                <?php if ($selected_client_id !== null): ?>
-                    <input type="hidden" name="client_id" value="<?php echo htmlspecialchars($selected_client_id); ?>">
-                <?php endif; ?>
+            <form method="GET" action="" class="viking-search-form" style="display: flex; gap: 15px; margin-bottom: 25px; background: #141414; padding: 15px; border-radius: 8px; border: 1px solid #222222; align-items: flex-end; flex-wrap: wrap;">
+    
+    <?php if ($selected_client_id !== null): ?>
+        <input type="hidden" name="client_id" value="<?php echo htmlspecialchars($selected_client_id); ?>">
+    <?php endif; ?>
 
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="search_type" style="font-size: 0.85rem; font-weight: bold; color: #475569;">Rechercher par :</label>
-                    <select name="search_type" id="search_type" onchange="toggleSearchInput(this.value)" style="padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; font-weight: 500; color: #1e293b; cursor: pointer; height: 42px;">
-                        <option value="nom" <?php echo $search_type === 'nom' ? 'selected' : ''; ?>>Nom</option>
-                        <option value="prenom" <?php echo $search_type === 'prenom' ? 'selected' : ''; ?>>Prénom</option>
-                        <option value="id" <?php echo $search_type === 'id' ? 'selected' : ''; ?>>ID Client</option>
-                        <option value="email" <?php echo $search_type === 'email' ? 'selected' : ''; ?>>Adresse Email</option>
-                        <option value="ville" <?php echo $search_type === 'ville' ? 'selected' : ''; ?>>Ville</option>
-                        <option value="rang" <?php echo $search_type === 'rang' ? 'selected' : ''; ?>>Rang (Type)</option>
-                        <option value="inactifs" <?php echo $search_type === 'inactifs' ? 'selected' : ''; ?>>⚠️ Comptes inactifs (+2 ans)</option>
-                    </select>
-                </div>
+    <div style="display: flex; flex-direction: column; gap: 5px;">
+        <label for="search_type" style="font-size: 0.85rem; font-weight: bold; color: #ffffff;">Rechercher par :</label>
+        <select name="search_type" id="search_type" onchange="toggleSearchInput(this.value)" style="padding: 10px 12px; border-radius: 6px; border: 1px solid #333333; background: #1f1f1f; font-weight: 500; color: #ffffff; cursor: pointer; height: 42px;">
+            <option value="nom" <?php echo $search_type === 'nom' ? 'selected' : ''; ?>>Nom</option>
+            <option value="prenom" <?php echo $search_type === 'prenom' ? 'selected' : ''; ?>>Prénom</option>
+            <option value="id" <?php echo $search_type === 'id' ? 'selected' : ''; ?>>ID Client</option>
+            <option value="email" <?php echo $search_type === 'email' ? 'selected' : ''; ?>>Adresse Email</option>
+            <option value="ville" <?php echo $search_type === 'ville' ? 'selected' : ''; ?>>Ville</option>
+            <option value="rang" <?php echo $search_type === 'rang' ? 'selected' : ''; ?>>Rang (Type)</option>
+            <option value="inactifs" <?php echo $search_type === 'inactifs' ? 'selected' : ''; ?>>⚠️ Comptes inactifs (+2 ans)</option>
+        </select>
+    </div>
 
-                <div id="search_query_container" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 200px;">
-                    <label for="search_query" style="font-size: 0.85rem; font-weight: bold; color: #475569;">Terme à rechercher :</label>
-                    <input type="text" name="search_query" id="search_query" value="<?php echo htmlspecialchars($search_query); ?>" placeholder="Entrez votre recherche..." style="padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; width: 100%; box-sizing: border-box; height: 42px;">
-                </div>
+    <div id="search_query_container" style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 200px;">
+        <label for="search_query" style="font-size: 0.85rem; font-weight: bold; color: #ffffff;">Terme à rechercher :</label>
+        <input type="text" name="search_query" id="search_query" value="<?php echo htmlspecialchars($search_query); ?>" placeholder="Entrez votre recherche..." style="padding: 10px 12px; border-radius: 6px; border: 1px solid #333333; background: #1f1f1f; color: #ffffff; width: 100%; box-sizing: border-box; height: 42px;">
+    </div>
 
-                <div style="display: flex; gap: 8px; height: 42px;">
-                    <button type="submit" class="btn-action-red" style="padding: 0 20px; height: 100%; cursor: pointer; border: none; font-weight: bold; display: flex; align-items: center; justify-content: center;">
-                        Filtrer
-                    </button>
-                    
-                    <?php if (!empty($search_query) || $search_type === 'inactifs'): ?>
-                        <a href="?" class="btn-action-outline" style="text-decoration: none; padding: 0 15px; display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
-                            Réinitialiser
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </form>
+    <div style="display: flex; gap: 8px; height: 42px;">
+        <button type="submit" class="btn-action-red" style="padding: 0 20px; height: 100%; cursor: pointer; border: none; font-weight: bold; display: flex; align-items: center; justify-content: center;">
+            Filtrer
+        </button>
+        
+        <?php if (!empty($search_query) || $search_type === 'inactifs'): ?>
+            <a href="?" class="btn-action-outline" style="text-decoration: none; padding: 0 15px; display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
+                Réinitialiser
+            </a>
+        <?php endif; ?>
+    </div>
+</form>
             
             <div class="table-responsive-wrapper">
                 <table class="admin-table">
