@@ -114,18 +114,23 @@ if ($selected_client_id !== null) {
                                     <td><?php echo htmlspecialchars($c['CLI_PRENOM'] ?? ''); ?></td>
                                     <td><?php echo htmlspecialchars($c['CLI_COURRIEL'] ?? ''); ?></td>
                                     <td class="text-center">
-                                        
                                         <?php 
                                             $search_params = !empty($search_query) ? '&search_type='.$search_type.'&search_query='.urlencode($search_query) : '';
                                             if ($search_type === 'inactifs') $search_params = '&search_type=inactifs';
                                         ?>
-                                        <a href="?client_id=<?php echo $c['CLI_NUM'] . $search_params; ?>" class="btn-action-red">
+                                        <a href="?client_id=<?php echo htmlspecialchars($c['CLI_NUM']) . $search_params; ?>" class="btn-action-red">
                                             Voir Résas
                                         </a>
                                         
-                                        <button type="button" class="btn-action-outline">
-                                            Modifier
-                                        </button>
+                                        <?php if ($c['CLI_NUM'] == 0): ?>
+                                            <button type="button" class="btn-action-outline" style="opacity: 0.5; cursor: not-allowed; background-color: #e9ecef; border-color: #dee2e6; color: #6c757d;" title="Le compte système ne peut pas être modifié" disabled>
+                                                Modifier
+                                            </button>
+                                        <?php else: ?>
+                                            <a href="/admin/modif_Ligne/index.php?client_id=<?php echo htmlspecialchars($c['CLI_NUM']); ?>" class="btn-action-outline" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                                                Modifier
+                                            </a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -202,7 +207,6 @@ function toggleSearchInput(val) {
         input.placeholder = "Entrez votre recherche...";
     }
 }
-// On l'exécute une fois au chargement pour bloquer le champ si "inactifs" était resté sélectionné
 window.onload = function() {
     toggleSearchInput(document.getElementById('search_type').value);
 };
