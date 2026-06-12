@@ -2,6 +2,8 @@ let steps = {};
 let lignes = [];
 let scheduleCache = {};
 
+document.getElementById('date-depart').value = new Date().toISOString().split('T')[0];
+
 async function fetchLignes() {
     return new Promise(async (resolve, reject) => {
         const response = await fetch('/api/reservation.php?lignes');
@@ -458,7 +460,7 @@ function confirm() {
         reservationData.append('setTripDetails', JSON.stringify(steps));
 
 
-        fetch('/api/reservation.php?tripDepartureTime=' + (tripData.dateTime ? new Date(tripData.dateTime).toISOString() : ''), {
+        fetch('/api/reservation.php?tripDepartureTime=' + (document.getElementById('date-depart').value ? new Date(document.getElementById('date-depart').value).toISOString() : ''), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
