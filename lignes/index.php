@@ -117,19 +117,11 @@ if (isset($_GET['direction'])) {
                                 </a>
                             <?php endforeach; ?>
                         </div> <?php if (isset($_GET['direction']) && !empty($grille)): ?>
-                            <div class="horaires-zone" style="overflow-x: scroll;">
+                            <div class="horaires-zone">
                                 <h3>Direction finale : <span style="color: #ff1b1bff;"><?= htmlspecialchars($villeTerminus) ?></span></h3>
                                 <button class="button-dir" onclick="printline()">Imprimer les horaires</button>
                                 <div class="route-timeline">
                                     <?php foreach ($ordreDesVilles as $index => $v) : ?>
-                                        <div class="timeline-stop">
-                                            <?php if ($index === 0): ?>
-                                                <img src="/image/car_vikingTransport.png" class="spinning-bus" alt="Bus">
-                                            <?php else: ?>
-                                                <span class="stop -dot"></span>
-                                            <?php endif; ?>
-                                            <span class="stop-name"><?= htmlspecialchars($v) ?></span>
-                                        </div>
                                         <?php if ($index < count($ordreDesVilles) - 1): ?>
                                             <span class="timeline-line"></span>
                                         <?php endif; ?>
