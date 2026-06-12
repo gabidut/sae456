@@ -939,7 +939,7 @@ body {
 
 /* --- Cartes / Blocs (Style Informations Personnelles) --- */
 .viking-card {
-    background-color: #141414; /* Gris très foncé/noir pour les blocs */
+    background-color: #141414; 
     border: 1px solid #222222;
     border-radius: 8px;
     padding: 25px;
@@ -947,12 +947,13 @@ body {
     flex-direction: column;
 }
 
+/* CHANGE CETTE VALEUR ICI : */
 .container-users {
-    height: 420px;
+    height: 650px; /* Augmenté de 420px à 650px pour agrandir la zone de scroll */
 }
 
 .container-reservations {
-    height: 420px;
+    height: 420px; /* Tu peux laisser le bloc du bas tel quel ou l'agrandir aussi */
 }
 
 /* --- Titres & Textes --- */
@@ -1004,12 +1005,12 @@ body {
     background-color: #111111;
 }
 
-/* Custom scrollbar pour rester discret */
+/* Custom scrollbar pour qu'elle soit un peu plus large et visible */
 .table-responsive-wrapper::-webkit-scrollbar {
-    width: 6px;
+    width: 8px; /* Passé de 6px à 8px */
 }
 .table-responsive-wrapper::-webkit-scrollbar-thumb {
-    background-color: #333333;
+    background-color: #444444; /* Un gris un peu plus clair pour mieux la voir */
     border-radius: 4px;
 }
 
@@ -1144,12 +1145,6 @@ body {
 
 /* ==========================================================================
    Conteneur principal de la sidebar (Thème Sombre Viking Correct)
-   ========================================================================== */
-/* ==========================================================================
-   Conteneur principal de la sidebar (Thème Sombre Viking Correct)
-   ========================================================================== */
-/* ==========================================================================
-   Conteneur principal de la sidebar (Façon "Carte Indépendante")
    ========================================================================== */
 .admin-sidebar {
     width: 260px;
