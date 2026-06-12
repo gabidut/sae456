@@ -192,7 +192,6 @@ class Adminitration
 
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute();
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
