@@ -1148,19 +1148,28 @@ body {
 /* ==========================================================================
    Conteneur principal de la sidebar (Thème Sombre Viking Correct)
    ========================================================================== */
+/* ==========================================================================
+   Conteneur principal de la sidebar (Façon "Carte Indépendante")
+   ========================================================================== */
 .admin-sidebar {
     width: 260px;
-    height: calc(100vh - 85px); /* Force la taille exacte de l'écran MOINS le header */
-    position: sticky;           /* Magie : rend le bloc flottant au défilement */
-    top: 85px;                  /* Indique de se caler pile sous le header */
-    background-color: #141414;
+    height: fit-content;        /* Magie 1 : Le bloc prend uniquement la taille de ses boutons */
+    align-self: flex-start;     /* Magie 2 : Empêche le conteneur flex de l'étirer vers le bas */
+    
+    position: sticky;           /* Reste fixe au défilement */
+    top: 110px;                 /* Se cale à 110px du haut (85px du header + 25px de marge pour respirer) */
+    
+    margin: 25px 0 25px 25px;   /* Marge : Haut, Droite (0 car le main a déjà un padding), Bas, Gauche */
+    
+    background-color: #141414;  /* Même couleur de fond que tes autres cartes */
     color: #ffffff;
     padding: 24px;
     box-sizing: border-box;
     font-family: 'Segoe UI', Arial, sans-serif;
-    border-right: 1px solid #222222;
-    flex-shrink: 0;             /* Empêche la sidebar de se faire écraser par le tableau */
-    overflow: hidden;           /* Interdit formellement tout débordement ou scroll */
+    
+    border: 1px solid #222222;  /* Bordure complète tout autour (et plus juste à droite) */
+    border-radius: 8px;         /* Arrondis identiques à tes conteneurs user/résa */
+    flex-shrink: 0;
 }
 /* --- Titre du menu --- */
 .sidebar-title {
