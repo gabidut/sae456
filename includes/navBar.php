@@ -29,6 +29,9 @@ if (!isset($_GET['BYPASS_DECO'])) {
                     <li><a href="/reservation" class="<?php echo ($current_dir == 'reservation') ? 'active' : ''; ?>">Réservation</a></li>
                     <li><a href="/reseau" class="<?php echo ($current_dir == 'reseau') ? 'active' : ''; ?>">Réseau</a></li>
                     <li><a href="/lignes" class="<?php echo ($current_dir == 'lignes') ? 'active' : ''; ?>">Lignes</a></li>
+                    <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == true): ?>
+                        <li><a href="/admin/visualise/" class="<?php echo ($current_dir == '/admin/visualise/') ? 'active' : ''; ?>">Admin</a></li>
+                    <?php endif; ?>
                 </ul>
             </nav>
             <div class="header-actions">
