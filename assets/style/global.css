@@ -250,8 +250,13 @@ main {
     background-color: var(--surface-color);
     border-bottom: 3px solid var(--accent-color);
     padding: 1rem 2rem;
-    position: relative; /* Changé de sticky à relative pour éviter les chevauchements */
-    z-index: 1000;
+    position: fixed;     /* Changé de relative à fixed */
+    top: 0;              /* Bloqué tout en haut */
+    left: 0;
+    right: 0;
+    width: 100%;         /* Prend toute la largeur */
+    z-index: 1000;       /* Reste au-dessus de tout */
+    box-sizing: border-box;
 }
 
 .header-container {
@@ -930,8 +935,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 25px;
-    flex: 1;
+    flex: 1;                   /* Occupe tout l'espace restant à droite */
+    min-width: 0;              /* TRÈS IMPORTANT : empêche les grands tableaux de faire déborder ce bloc */
     padding: 25px;
+    background-color: #0d0d0d;
+    box-sizing: border-box;
 }
 
 /* --- Cartes / Blocs (Style Informations Personnelles) --- */
@@ -1144,18 +1152,15 @@ body {
    ========================================================================== */
 .admin-sidebar {
     width: 260px;
-    height: 100vh;
-    background-color: #141414; /* Même noir que tes cartes viking-card */
+    background-color: #141414; /* Noir identique à tes cartes */
     color: #ffffff;
     padding: 24px;
     box-sizing: border-box;
     font-family: 'Segoe UI', Arial, sans-serif;
-    position: fixed;
-    top: 0;
-    left: 0;
-    border-right: 1px solid #222222; /* Bordure discrète */
+    border-right: 1px solid #222222;
+    flex-shrink: 0;            /* Empêche la sidebar de se déformer */
+    align-self: stretch;       /* Devient un bloc fluide qui descend jusqu'au footer */
 }
-
 /* --- Titre du menu --- */
 .sidebar-title {
     font-size: 0.8rem;
@@ -1207,7 +1212,12 @@ body {
 /* --- Ajustement de la page globale --- */
 .admin-dashboard-layout {
     display: flex;
-    padding-left: 260px; /* Décale tout le contenu pour laisser la place à la sidebar fixe */
+    align-items: stretch;    /* Aligne le bas de la sidebar sur le bas du dernier bloc */
+    width: 100vw;            /* Force la largeur exacte de la fenêtre */
+    max-width: 100%;
+    margin-top: 85px;        /* Laisse la place pour ton header fixed */
+    min-height: calc(100vh - 85px);
     background-color: #0d0d0d;
-    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;      /* Supprime le scroll horizontal bizarre */
 }
