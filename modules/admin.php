@@ -76,49 +76,49 @@ class Adminitration
 
     public function listClientsSortID($cliNum): array
     {
-        $sql = "SELECT * FROM vik_client where cli_num LIKE '%:cliNum%";
+        $sql = "SELECT * FROM vik_client where cli_num LIKE :cliNum";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cliNum' => $cliNum]);
+        $stmt->execute(['cliNum' => $cliNum.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortCourriel($cli_courriel): array
     {
-        $sql = "SELECT * FROM vik_client where cli_courriel like '%:cli_courriel%'";
+        $sql = "SELECT * FROM vik_client where lower(cli_courriel) like lower(:cli_courriel )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_courriel' => $cli_courriel]);
+        $stmt->execute(['cli_courriel' =>'%' . $cli_courriel.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function listClientsSortRang($typ_num): array
+    public function listClientsSortRang($typ_nom): array
     {
-        $sql = "SELECT * FROM vik_client where typ_num like '%:typ_num%'";
+        $sql = "SELECT * FROM vik_client join vik_type_client using (typ_num) where lower(typ_nom) like lower(:typ_nom )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['typ_num' => $typ_num]);
+        $stmt->execute(['typ_nom' => $typ_nom.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortPrenom($cli_prenom): array
     {
-        $sql = "SELECT * FROM vik_client where cli_prenom like '%:cli_prenom%'";
+        $sql = "SELECT * FROM vik_client where lower(cli_prenom) like lower(:cli_prenom ) ";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_prenom' => $cli_prenom]);
+        $stmt->execute(['cli_prenom' => $cli_prenom. '%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortNom($cli_nom): array
     {
-        $sql = "SELECT * FROM vik_client where cli_nom like '%:cli_nom%'";
+        $sql = "SELECT * FROM vik_client where lower(cli_nom) like lower(:cli_nom )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_nom' => $cli_nom]);
+        $stmt->execute(['cli_nom' => $cli_nom.'%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listClientsSortVille($cli_ville): array
     {
-        $sql = "SELECT * FROM vik_client where cli_ville like '%:cli_ville%'";
+        $sql = "SELECT * FROM vik_client where lower(cli_ville) like lower(:cli_ville )";
         $stmt = $this->database->prepareStatement($sql);
-        $stmt->execute(['cli_ville' => $cli_ville]);
+        $stmt->execute(['cli_ville' => $cli_ville . '%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -182,17 +182,17 @@ class Adminitration
 
     public function top10BestUsers(): array
     {
-        $sql = "select cli_num from (select cli_num, count(*) as tot from vik_reservation
-                group by cli_num 
-                order by tot desc
-                fetch first 11 rows only) where cli_num != 0";
+        $sql = "SELECT cli_num, tot FROM (
+                    SELECT cli_num, COUNT(*) as tot 
+                    FROM vik_reservation
+                    GROUP BY cli_num 
+                    ORDER BY tot DESC
+                    FETCH FIRST 11 ROWS ONLY
+                ) WHERE cli_num != 0";
 
         $stmt = $this->database->prepareStatement($sql);
         $stmt->execute();
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getListeResEntre($datedebut, $datefin): array
@@ -254,7 +254,7 @@ class Adminitration
 
     public function insertNoeud($lig_num, $code_arret, $code_suivant, $heure_passage, $distance, $duree)
     {
-        $sql = "INSERT INTO VIK_NOEUD (LIG_NUM, COM_CODE_INSEE_ARRET, COM_CODE_INSEE_SUIVAN, NOE_HEURE_PASSAGE, NOE_DISTANCE_PROCHAIN, NOE_DUREE_PROCHAIN) 
+        $sql = "INSERT INTO VIK_NOEUD (LIG_NUM, COM_CODE_INSEE_ARRET, COM_CODE_INSEE_SUIVANT, NOE_HEURE_PASSAGE, NOE_DISTANCE_PROCHAIN, NOE_DUREE_PROCHAIN) 
                 VALUES (:lig_num, :code_arret, :code_suivant, :heure_passage, :distance, :duree)";
 
         $stmt = $this->database->prepareStatement($sql);
@@ -266,5 +266,50 @@ class Adminitration
             'distance'      => $distance,
             'duree'         => $duree
         ]);
+    }
+
+    public function getToutesLesCommunes(): array
+    {
+        $sql = "SELECT COM_CODE_INSEE, COM_NOM FROM VIK_COMMUNE ORDER BY COM_NOM ASC";
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getNoeudsParLigne($lig_num): array
+    {
+        $sql = "SELECT 
+                    n.COM_CODE_INSEE_ARRET AS CODE_ARRET, 
+                    c.COM_NOM AS VILLE_ARRET, 
+                    n.COM_CODE_INSEE_SUIVANT AS CODE_SUIVANTT, 
+                    cs.COM_NOM AS VILLE_SUIVANTTE, 
+                    TO_CHAR(n.NOE_HEURE_PASSAGE, 'HH24:MI') AS HEURE_PASSAGE, 
+                    n.NOE_DISTANCE_PROCHAIN AS DISTANCE, 
+                    n.NOE_DUREE_PROCHAIN AS DUREE 
+                FROM VIK_NOEUD n
+                JOIN VIK_COMMUNE c ON n.COM_CODE_INSEE_ARRET = c.COM_CODE_INSEE
+                LEFT JOIN VIK_COMMUNE cs ON n.COM_CODE_INSEE_SUIVANT = cs.COM_CODE_INSEE
+                WHERE n.LIG_NUM = :lig_num
+                ORDER BY n.NOE_HEURE_PASSAGE ASC";
+
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['lig_num' => $lig_num]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function clientInactif($clientID): bool {
+        $sql = "SELECT 1 FROM vik_client WHERE cli_num = :cli_num AND cli_date_connec < sysdate - (365*2)";
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(["cli_num" => $clientID]);
+        
+        return $stmt->fetchColumn() !== false; 
+    }
+
+    public function getClientInfoFromId($cliNum)
+    {
+        $sql = "SELECT cli_num,cli_nom,cli_prenom,cli_courriel,cli_ville,cli_nb_points_ec,cli_nb_points_tot, typ_nom FROM vik_client  join vik_type_client USING (typ_num) WHERE cli_num = :num";
+        $stmt = $this->database->prepareStatement($sql);
+        $stmt->execute(['num' => $cliNum]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
